@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.0)
+project(Application)
+
+target_include_directories(Application PUBLIC "./Include")
+
+add_library(Application Include/Application.h Src/Main.cpp Src/Application.cpp)
+#target_link_libraries(Application ECS Renderer)

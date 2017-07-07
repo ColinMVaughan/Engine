@@ -1,7 +1,20 @@
 cmake_minimum_required(VERSION 3.0)
 project(Application)
 
-target_include_directories(Application PUBLIC "./Include")
+add_subdirectory(ECS)
+add_subdirectory(GLRenderer)
 
-add_library(Application Include/Application.h Src/Main.cpp Src/Application.cpp)
-#target_link_libraries(Application ECS Renderer)
+target_include_directories(ECS PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+		
+add_library(Application Application/Include/Application.h Application/Src/Main.cpp Application/Src/Application.cpp)
+target_link_libraries(Application ECS GLRenderer)
+
+install(TARGETS Application 
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES Application.h DESTINATION Include/Application)

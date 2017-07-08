@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.5)
+Project(ECS)
+
+file(GLOB SOURCES "Src/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+add_library(ECS STATIC ${SOURCES} ${HEADERS})
+
+target_include_directories(ECS PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+
+install(TARGETS ECS EXPORT ECS_Export
+					ARCHIVE DESTINATION Lib
+					LIBRARY DESTINATION Lib
+					INCLUDES DESTINATION Include)
+					
+install(FILES {${HEADERS} DESTINATION Include/ECS)

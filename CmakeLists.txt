@@ -4,13 +4,16 @@ project(Application)
 add_subdirectory(ECS)
 add_subdirectory(GLRenderer)
 
-target_include_directories(ECS PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+file(GLOB HEADERS "Application/Include/*.h")
+file(GLOB SOURCES "Application/Src/*.cpp")
+		
+add_library(Application STATIC ${HEADERS} ${SOURCES})
+target_link_libraries(Application ECS GLRenderer)
+
+target_include_directories(Application PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Application/Include>
 		$<INSTALL_INTERFACE:Include>
 		)
-		
-add_library(Application Application/Include/Application.h Application/Src/Main.cpp Application/Src/Application.cpp)
-target_link_libraries(Application ECS GLRenderer)
 
 install(TARGETS Application 
 		ARCHIVE DESTINATION Lib

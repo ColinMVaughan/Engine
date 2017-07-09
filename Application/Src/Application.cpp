@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "Renderer/RenderSystem.h"
+#include <RenderSystem.h>
 
 Application::Application()
 {

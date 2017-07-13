@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.0)
 project(GLRenderer)
 
 set(PROJECT_LINK_LIBS freeglut.lib glew32.lib MathLibrary.lib)
-link_directories(../SharedLibs/Lib)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Include)
 
 file(GLOB SOURCES "Src/*.cpp")
 file(GLOB HEADERS "Include/*.h")

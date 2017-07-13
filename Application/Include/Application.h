@@ -1,5 +1,6 @@
 #pragma once
-#include<ECS/ECS.h>
+#include<ECS.h>
+#include "Renderer.h"
 
 class Application
 {
@@ -26,5 +27,7 @@ private:
 	ComponentManager* m_ComponentManager;
 	SystemManager* m_SystemManager;
 	ECS* m_ECS;
+
+	Renderer* m_Renderer;
 };
 

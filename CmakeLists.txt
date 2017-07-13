@@ -20,4 +20,4 @@ install(TARGETS Application
 		LIBRARY DESTINATION Lib
 		INCLUDES DESTINATION Include)
 		
-install(FILES Application.h DESTINATION Include/Application)
+install(FILES ${HEADERS} DESTINATION Include/Application)

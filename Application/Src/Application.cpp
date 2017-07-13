@@ -1,5 +1,5 @@
 #include "Application.h"
-#include <RenderSystem.h>
+#include "RenderSystem.h"
 
 Application::Application()
 {
@@ -42,9 +42,10 @@ void Application::PostInitalize()
 
 void Application::PreUpdate()
 {
+
 }
 
 void Application::PostUpdate()
 {
-	
+	m_ECS->UpdateSystems();
 }

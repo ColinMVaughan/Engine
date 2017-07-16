@@ -1,20 +1,32 @@
 cmake_minimum_required(VERSION 3.0)
 project(GLRenderer)
 
-set(PROJECT_LINK_LIBS freeglut.lib glew32.lib MathLibrary.lib)
+add_library(freeglut STATIC IMPORTED)
+add_library(glew STATIC IMPORTED)
+add_library(mathLib STATIC IMPORTED)
+
+set_property(TARGET freeglut PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/freeglut.lib)
+set_property(TARGET glew PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/glew32.lib)
+set_property(TARGET mathLib PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/MathLibrary.lib)
+
+					  
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Include)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Include)
 
 file(GLOB SOURCES "Src/*.cpp")
 file(GLOB HEADERS "Include/*.h")
 
 add_library(GLRenderer STATIC ${SOURCES} ${HEADERS})
-target_link_libraries(GLRenderer ${PROJECT_LINK_LIBS})
+target_link_libraries(GLRenderer freeglut glew mathLib)
 
 
 target_include_directories(GLRenderer PUBLIC 
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
 			$<INSTALL_INTERFACE:Include>)
+			
+target_include_directories(GLRenderer PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Include/>
+			$<INSTALL_INTERFACE:Dependencies/Include>)
 
 install(TARGETS GLRenderer 
 		ARCHIVE DESTINATION Lib

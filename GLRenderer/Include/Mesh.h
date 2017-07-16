@@ -1,6 +1,6 @@
 #pragma once 
 #include <vector>
-#include <GL\glew.h>
+#include <GL/glew.h>
 #include <GMath/MathLibrary.h>
 
 class Mesh

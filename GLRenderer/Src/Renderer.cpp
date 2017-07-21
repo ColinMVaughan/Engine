@@ -192,7 +192,7 @@ void Renderer::PreRender()
 // Purpose: Renders the scene with the current list of renderables & default shaders
 //
 //---------------------------------
-inline void Renderer::Render(Mesh* mesh, Material* material)
+void Renderer::Render(Mesh* mesh, Material* material)
 {
 
 	//-------------------------------------------------------------------------------

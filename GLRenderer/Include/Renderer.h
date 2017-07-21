@@ -74,7 +74,7 @@ public:
 	
 
 	void PreRender();
-	inline void Render(Mesh* mesh, Material* material);
+	void Render(Mesh* mesh, Material* material);
 	void PostRender();
 
 private:

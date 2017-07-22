@@ -15,6 +15,15 @@ struct Material
 	Material(){}
 	~Material(){}
 
+	void SetTexturesFromFolder(std::string FolderPath)
+	{
+		Albedo.Load(FolderPath + "/Albedo.png");
+		Normal.Load(FolderPath + "/Normal.png");
+		AO.Load(FolderPath + "/AO.png");
+		Metallic.Load(FolderPath + "/Metallic.png");
+		Roughness.Load(FolderPath + "/Roughness.png");
+	}
+
 	void SetAlbedo(){}
 	void SetNormal(){}
 	void SetAO(){}
@@ -77,10 +86,10 @@ public:
 	void Render(Mesh* mesh, Material* material);
 	void PostRender();
 
+	void SetCamera(Camera* cam);
+
 private:
 	void InitalizeDefaultMaterial();
-
-
 
 
 	unsigned m_WindowWidth;

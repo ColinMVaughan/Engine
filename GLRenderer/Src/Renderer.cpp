@@ -194,7 +194,6 @@ void Renderer::PreRender()
 //---------------------------------
 void Renderer::Render(Mesh* mesh, Material* material)
 {
-
 	//-------------------------------------------------------------------------------
 	//			Render Geometry to GBuffer
 	//-------------------------------------------------------------------------------
@@ -381,4 +380,9 @@ void Renderer::PostRender()
 	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	glutSwapBuffers();
 	//------------------------------------------------------------------------------
+}
+
+void Renderer::SetCamera(Camera* cam)
+{
+	m_Camera = cam;
 }

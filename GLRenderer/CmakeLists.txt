@@ -25,3 +25,4 @@ install(TARGETS GLRenderer
 		INCLUDES DESTINATION Include)
 		
 install(FILES ${HEADERS} DESTINATION Include/GLRenderer)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/freeglut.dll ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/glew32.dll DESTINATION bin)

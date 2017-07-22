@@ -18,7 +18,7 @@ Application::~Application()
 void Application::Initalize()
 {
 	PreInitalize();
-	//DoInitalize();
+	DoInitalize();
 	PostInitalize();
 }
 
@@ -26,7 +26,7 @@ void Application::Initalize()
 void Application::Update()
 {
 	PreUpdate();
-	//DoUpdate();
+	DoUpdate();
 	PostUpdate();
 }
 
@@ -34,7 +34,6 @@ void Application::PreInitalize()
 {
 	Camera cam;
 	m_Renderer = new Renderer(800, 800, &cam);
-
 }
 
 void Application::PostInitalize()

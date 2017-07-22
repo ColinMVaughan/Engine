@@ -11,7 +11,7 @@ public:
 	void Initalize();
 	void Update();
 
-private:
+protected:
 
 	void PreInitalize();
 	virtual void DoInitalize() = 0;
@@ -22,7 +22,7 @@ private:
 	void PostUpdate();
 
 
-private:
+protected:
 
 	ComponentManager* m_ComponentManager;
 	SystemManager* m_SystemManager;

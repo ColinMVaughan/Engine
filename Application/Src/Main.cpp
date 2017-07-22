@@ -1,26 +1,124 @@
-#include "Application.h"
+#include <GL/glew.h>
+#include <GL\freeglut.h>
 
+#include "Application.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 class Demo : public Application
 {
 	void DoInitalize() override
 	{
 
+		Entity Orb = m_ECS->CreateEntity();
+		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/SampleSphere.obj");
+		Mesh* mesh = m_ECS->GetComponent<Mesh>(Orb);
+
+
+		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Gold");
+
+
+		
+		m_Renderer->SetCamera(&m_camera);
+		m_Renderer->Initalize();
+		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Tokyo_BigSight_3k.hdr");
+
+		GMath::SetFrustumProjection(m_camera.m_Projection, 45.0f, 1.0f, 1.0f, 1000.0f);
+
+
+		
+		glEnable(GL_DEPTH_TEST);
+		return;
 	}
 
 	void DoUpdate() override
 	{
+		TotalRotation += 0.001f;
 
+		m_camera.m_Transform = glm::mat4();
+		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, TotalRotation, glm::vec3(0, 1, 0));
+		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(0.0f, 5.5f, 10.0f));
+		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.15f, glm::vec3(1, 0, 0));
+
+		return;
 	}
+
+private:
+	Camera m_camera;
+	float TotalRotation = 0;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//This Section is going to be replaced with a new window handler, most likely SDL
+// 
+//first I would like to make sure tha there is no issue with the original rendering 
+////////////////////////////////////////////////////////////////////////////////////////////
+const int FRAME_DELAY_SPRITE = 1000 / 60;
 
 
-int main()
+Demo *demo = new Demo();
+
+void DisplayCallbackFunction()
 {
-	Demo demo;
-	demo.Initalize();
-	demo.Update();
+	demo->Update();
+}
+
+void TimerCallbackFunction(int value)
+{
+	glutPostRedisplay();
+	glutTimerFunc(FRAME_DELAY_SPRITE, TimerCallbackFunction, 0);
+}
+
+void KeyboardCallbackFunction(unsigned char key, int x, int y)
+{
+
+}
+
+void KeyboardUpCallbackFunction(unsigned char key, int x, int y)
+{
+
+}
+
+void MouseClickCallbackFunction(int button, int state, int x, int y)
+{
+	glutPostRedisplay();
+}
+
+void MouseMotionCallbackFunction(int x, int y)
+{
+	glutPostRedisplay();
+
+}
+
+int main(int argc, char **argv)
+{
+
+	glutInit(&argc, argv);
+	glutInitContextVersion(4, 2);
+	glutInitWindowSize(800, 800);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+	glutCreateWindow("TempWindow");
+
+	glewExperimental = true;
+	if (glewInit() != GLEW_OK)
+	{
+		std::cout << "GLEW was not initalized\n";
+		system("pause");
+		return 0;
+	}
+
+
+	glutDisplayFunc(DisplayCallbackFunction);
+	glutKeyboardFunc(KeyboardCallbackFunction);
+	glutKeyboardUpFunc(KeyboardUpCallbackFunction);
+	glutMouseFunc(MouseClickCallbackFunction);
+	glutMotionFunc(MouseMotionCallbackFunction);
+	glutTimerFunc(1,TimerCallbackFunction,0);
+	std::cout << "\nCheck 1";
+	demo->Initalize();
+
+
+	glutMainLoop();
 	
 	return 0;
+
 }

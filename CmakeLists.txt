@@ -8,7 +8,7 @@ file(GLOB HEADERS "Application/Include/*.h")
 file(GLOB SOURCES "Application/Src/*.cpp")
 		
 #add_library(Application STATIC ${HEADERS} ${SOURCES})
-add_executable(Application ${SOURCES})
+add_executable(Application ${SOURCES} ${HEADERS})
 target_link_libraries(Application GLRenderer ECS)
 
 target_include_directories(Application PUBLIC 

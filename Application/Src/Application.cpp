@@ -33,7 +33,7 @@ void Application::Update()
 void Application::PreInitalize()
 {
 	Camera cam;
-	m_Renderer = new Renderer(800, 800, &cam);
+	m_Renderer = new Renderer(720, 1280, &cam);
 }
 
 void Application::PostInitalize()

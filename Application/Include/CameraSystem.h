@@ -2,13 +2,15 @@
 #include<BaseSystem.h>
 #include <Renderer.h>
 
-class CameraSystem : System<Camera>
+class Transform
 {
 public:
 
+	void SetPosition();
+	void SetRotation();
+	void SetScale();
 
-	void Update(unsigned int entity) override
-	{
-		
-	}
+private:
+	glm::fmat4 m_Matrix;
 };
+

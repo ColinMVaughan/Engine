@@ -32,7 +32,7 @@ public:
 	void DestroyEntity(Entity a_entity);
 
 	template<typename T>
-	void AddComponent(Entity a_entity);
+	T* AddComponent(Entity a_entity);
 
 	template<typename T> 
 	void AddSystem();
@@ -46,7 +46,7 @@ private:
 	SystemManager*    m_SystemManager;
 	ComponentManager* m_ComponentManager;
 
-	unsigned int EntityCounter;
+	unsigned int EntityCounter = 0;
 	std::vector<unsigned int> m_EntityList;
 };
 
@@ -55,10 +55,13 @@ private:
 
 //					IMPLEMENTATION
 //------------------------------------------------------------------------------
+
+//TODO: Optimize getting component after adding. currenty pretty Inelegant
 template <typename T>
-void ECS::AddComponent(Entity a_entity)
+T* ECS::AddComponent(Entity a_entity)
 {
 	m_ComponentManager->AddComponent<T>(a_entity.GetID());
+	return m_ComponentManager->GetComponent<T>(a_entity.GetID());
 }
 
 template <typename T>

@@ -1,8 +1,9 @@
 //-------------------------------------------------
-//					Colin Vaughan
-// ECS class is used to
+//					ECS				Colin Vaughan
+//
+// ECS class is used to create entities and connect
+// the system and component managers.
 //--------------------------------------------------
-
 
 
 #pragma once

@@ -1,7 +1,7 @@
 #ifndef BASE_SYSTEM_H
 #define BASE_SYSTEM_H
-
 //Colin Vaughan		June 5th, 2017
+
 #include "ComponentManager.h"
 #include <iostream>
 //-----------------------------------------
@@ -31,6 +31,9 @@ public:
 		std::cout << "\nThis function (BaseSystem::HasComponent) should never be called.";
 		return false;
 	}
+
+	virtual void KeyUp(unsigned char key) {}
+	virtual void KeyDown(unsigned char key) {}
 };
 
 

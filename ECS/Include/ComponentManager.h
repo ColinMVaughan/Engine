@@ -8,8 +8,10 @@
 
 
 //------------------------------------------
-// Holds a list of componet pools
+// Holds a list of componet pools & 
+// accesses components based on entity value
 //--------------------------------------------
+
 class ComponentManager
 {
 public:
@@ -39,8 +41,6 @@ private:
 //---------------------------------------------------
 //				IMPLEMENTATION
 //---------------------------------------------------
-
-
 
 
 template<typename T>

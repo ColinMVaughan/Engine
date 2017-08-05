@@ -1,5 +1,10 @@
 #pragma once
 
+
+//----------------------------------------
+// Depricated & Currently Not in Use
+//---------------------------------------
+
 class BaseComponent
 {
 public:

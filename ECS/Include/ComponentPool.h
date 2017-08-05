@@ -3,6 +3,14 @@
 
 #include <map>
 
+//-------------------------------------------------
+//				Component Pool
+//
+//	Component pool holds an array of componetns that 
+//	can be accessed with the corrisponding entity.
+//-------------------------------------------------
+
+
 class BaseComponentPool
 {
 public:

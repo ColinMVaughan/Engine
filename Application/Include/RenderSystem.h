@@ -3,6 +3,14 @@
 #include "Renderer.h"
 #include "BaseSystem.h"
 
+//-----------------------------------------------------
+//	RenderSystem is used in conjunction with ECS to fit old code into
+//	the new framework.
+//
+//					How to Use:
+//	Add system to system Manager, and send avalid Renderer pointer.
+//-----------------------------------------------------
+
 class RenderSystem : public System<Mesh, Material>
 {
 private:
@@ -20,7 +28,10 @@ public:
 	//THIS IS BAD! LETS FIX THIS.
 	void SetRenderer(Renderer* a_renderer)
 	{
-		m_Renderer = a_renderer;
+		if (a_renderer != nullptr)
+			m_Renderer = a_renderer;
+		else
+			std::cout << "\nDid not send RenderSystem a valid Renderer";
 	}
 
 	void PreUpdate() override

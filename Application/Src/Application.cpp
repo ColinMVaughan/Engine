@@ -50,3 +50,19 @@ void Application::PostUpdate()
 {
 	m_ECS->UpdateSystems();
 }
+
+
+
+void Application::KeyUp(unsigned char key, int x, int y)
+{
+
+	CallbackFunction->KeyUp(key);
+
+}
+
+void Application::KeyDown(unsigned char key, int x, int y)
+{
+
+	CallbackFunction->KeyDown(key);
+
+}

@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
-//							DEMO APP FOREWARD
-//							  Colin Vaughan 
+//									DEMO APP
+//								  Colin Vaughan 
 //
 //
 //	Demo App includes selection of different lighting and material scenareos with a
@@ -32,7 +32,7 @@ class Demo : public Application
 		Mesh* mesh = m_ECS->GetComponent<Mesh>(Orb);
 
 
-		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Blood_Wood");
+		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Wall");
 
 
 		

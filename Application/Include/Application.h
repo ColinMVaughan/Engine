@@ -1,6 +1,14 @@
-#pragma once
+#ifndef APPLICATION_H
+#define APPLICATION_H
+
 #include<ECS.h>
 #include <Renderer.h>
+#include <BaseSystem.h>
+
+//------------------------------------------------
+//
+//
+//-----------------------------------------------
 
 class Application
 {
@@ -22,6 +30,11 @@ protected:
 	void PostUpdate();
 
 
+	void RegisterKeyboardCallback();
+	void KeyUp(unsigned char key, int x, int y);
+	void KeyDown(unsigned char key, int x, int y);
+
+
 protected:
 
 	ComponentManager* m_ComponentManager;
@@ -29,5 +42,7 @@ protected:
 	ECS* m_ECS;
 
 	Renderer* m_Renderer;
+	BaseSystem* CallbackFunction;
 };
 
+#endif

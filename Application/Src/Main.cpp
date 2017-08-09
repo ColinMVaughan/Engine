@@ -24,22 +24,22 @@ class Demo : public Application
 {
 	void DoInitalize() override
 	{
-		LightPosition = new GMath::vec3f({0.0f, 15.0f, -10.0f});
+		LightPosition = GMath::vec3f({0.0f, 15.0f, 10.0f});
 		LightColour = new GMath::vec3f({1000.0f, 1000.0f, 1000.0f});
 
 		Entity Orb = m_ECS->CreateEntity();
-		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/SampleSphere.obj");
+		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/Sprite.obj");
 		Mesh* mesh = m_ECS->GetComponent<Mesh>(Orb);
 
 
-		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Wall");
+		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Sprite2");
 
 
 		
 		m_Renderer->SetCamera(&m_camera);
 		m_Renderer->Initalize();
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Tokyo_BigSight_3k.hdr");
-		m_Renderer->AddPointLight(LightColour, LightPosition, false);
+		m_Renderer->AddPointLight(LightColour, &LightPosition, false);
 
 		GMath::SetFrustumProjection(m_camera.m_Projection, 45.0f, 1280.0f/720.0f, 0.1f, 1000.0f);
 
@@ -49,21 +49,26 @@ class Demo : public Application
 
 	void DoUpdate() override
 	{
-		TotalRotation += 0.005f;
+		TotalRotation += 0.0005f;
 
 		m_camera.m_Transform = glm::mat4();
 		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, TotalRotation, glm::vec3(0, 1, 0));
 		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(0.0f, 5.5f, 10.0f));
 		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.15f, glm::vec3(1, 0, 0));
 
+		LightPosition[0] -= 0.05f;
+		
 		return;
 	}
+
+
 
 private:
 	Camera m_camera;
 	float TotalRotation = 0;
-	GMath::vec3f* LightPosition;
+	GMath::vec3f LightPosition;
 	GMath::vec3f* LightColour;
+	GMath::vec3f test;
 };
 
 

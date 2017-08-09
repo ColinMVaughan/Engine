@@ -17,11 +17,11 @@ struct Material
 
 	void SetTexturesFromFolder(std::string FolderPath)
 	{
-		Albedo.Load(FolderPath + "/Albedo.png");
-		Normal.Load(FolderPath + "/Normal.png");
-		AO.Load(FolderPath + "/AO.png");
-		Metallic.Load(FolderPath + "/Metallic.png");
-		Roughness.Load(FolderPath + "/Roughness.png");
+		Albedo.Load(FolderPath + "/Albedo.png", GL_NEAREST);
+		Normal.Load(FolderPath + "/Normal.png", GL_NEAREST);
+		AO.Load(FolderPath + "/AO.png", GL_NEAREST);
+		Metallic.Load(FolderPath + "/Metallic.png", GL_NEAREST);
+		Roughness.Load(FolderPath + "/_Roughness.png", GL_NEAREST);
 	}
 
 	void SetAlbedo(){}

@@ -10,7 +10,7 @@ Texture::~Texture()
 	Unload();
 }
 
-bool Texture::Load(const std::string &file)
+bool Texture::Load(const std::string &file, GLuint SampleType)
 {
 
 	stbi_set_flip_vertically_on_load(true);
@@ -34,7 +34,7 @@ bool Texture::Load(const std::string &file)
 		glBindTexture(GL_TEXTURE_2D, TexObj);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, image);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SampleType);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //U axis
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); //V axis

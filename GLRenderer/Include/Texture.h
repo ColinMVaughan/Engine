@@ -8,7 +8,7 @@ public:
 	Texture() = default;
 	~Texture();
 
-	bool Load(const std::string &file);
+	bool Load(const std::string &file, GLuint SampleType = GL_LINEAR);
 	bool LoadHDR(const std::string &file);
 	
 	bool CreateCubeMap(GLsizei size, bool mipmap);

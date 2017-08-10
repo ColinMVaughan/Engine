@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(Application)
 
+add_subdirectory(Events)
 add_subdirectory(ECS)
 add_subdirectory(GLRenderer)
 
@@ -9,7 +10,7 @@ file(GLOB SOURCES "Application/Src/*.cpp")
 		
 #add_library(Application STATIC ${HEADERS} ${SOURCES})
 add_executable(Application ${SOURCES} ${HEADERS})
-target_link_libraries(Application GLRenderer ECS)
+target_link_libraries(Application GLRenderer ECS Events)
 
 target_include_directories(Application PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Application/Include>

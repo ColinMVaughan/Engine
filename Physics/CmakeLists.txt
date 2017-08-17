@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.0)
+project(Physics)
+
+file(GLOB SOURCES "Src/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+
+add_library(Physics STATIC ${SOURCES} ${HEADERS})
+target_link_libraries(Physics 
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3DEBUG_x86.lib
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3CommonDEBUG_x86.lib 
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PxFoundationDEBUG_x86.lib
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PxPvdSDKDEBUG_x86.lib
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3ExtensionsDEBUG.lib)
+
+
+target_include_directories(Physics PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+			$<INSTALL_INTERFACE:Include>)
+			
+target_include_directories(Physics PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Include/>
+			$<INSTALL_INTERFACE:Dependencies/PhysX/Include>)
+
+install(TARGETS Physics 
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES ${HEADERS} DESTINATION Include/Physics)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PhysX3DEBUG_x86.dll 
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PhysX3CommonDEBUG_x86.dll
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PxFoundationDEBUG_x86.dll
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PxPvdSDKDEBUG_x86.dll
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/nvToolsExt32_1.dll
+DESTINATION bin)

@@ -176,7 +176,6 @@ void Renderer::PreRender()
 	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", &glm::mat4()[0][0], false);
 	GBufferPass.SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
 	GBufferPass.SendUniformMat4("uProj", m_Camera->m_Projection.GetData(), false);
 
@@ -192,12 +191,13 @@ void Renderer::PreRender()
 // Purpose: Renders the scene with the current list of renderables & default shaders
 //
 //---------------------------------
-void Renderer::Render(Mesh* mesh, Material* material)
+void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 {
 	//-------------------------------------------------------------------------------
 	//			Render Geometry to GBuffer
 	//-------------------------------------------------------------------------------
 	//Draw each mesh in Meshlist.
+	GBufferPass.SendUniformMat4("uModel", matrix, false);
 
 		glActiveTexture(GL_TEXTURE0);
 		material->Metallic.Bind();

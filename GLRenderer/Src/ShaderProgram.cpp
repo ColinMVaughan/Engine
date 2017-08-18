@@ -281,6 +281,12 @@ void ShaderProgram::SendUniformMat4(const std::string &name, float *matrix, bool
 	glUniformMatrix4fv(location, 1, transpose, matrix);
 }
 
+void ShaderProgram::SendUniformMat4(const std::string &name, const float *matrix, bool transpose)
+{
+	GLint location = GetUniformLocation(name);
+	glUniformMatrix4fv(location, 1, transpose, matrix);
+}
+
 std::string ShaderProgram::ReadFile(const std::string &fileName) const
 {
 	std::ifstream inStream(fileName);

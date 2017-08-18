@@ -51,6 +51,7 @@ public:
 
 	void SendUniformMat3(const std::string &name, float *matrix, bool transpose);
 	void SendUniformMat4(const std::string &name, float *matrix,bool transpose);
+	void SendUniformMat4(const std::string &name, const float *matrix, bool transpose);
 
 private:
 	bool _IsInit			= false;

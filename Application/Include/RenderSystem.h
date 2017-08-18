@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Renderer.h"
 #include "BaseSystem.h"
+#include <PxPhysicsAPI.h>
 
 //-----------------------------------------------------
 //	RenderSystem is used in conjunction with ECS to fit old code into
@@ -11,7 +12,7 @@
 //	Add system to system Manager, and send avalid Renderer pointer.
 //-----------------------------------------------------
 
-class RenderSystem : public System<Mesh, Material>
+class RenderSystem : public System<Mesh, Material, RigidActor>
 {
 private:
 	Renderer* m_Renderer;
@@ -41,11 +42,45 @@ public:
 
 	void Update(unsigned int entity) override
 	{
-		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity));
+		RigidActor* rigidactor = m_CManager->GetComponent<RigidActor>(entity);
+		PxMat44 mat(rigidactor->m_RigidActor->getGlobalPose());
+
+		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity), mat.front());
 	}
 	void PostUpdate() override
 	{
 		m_Renderer->PostRender();
+	}
+
+};
+
+//-----------------------------------------------------------------------------
+//						Point Light System
+//-----------------------------------------------------------------------------
+
+class PointLightComponent
+{
+public:
+	GMath::vec3f position;
+	GMath::vec3f Color;
+};
+
+class PointLightSystem : public System<PointLightComponent, RigidActor>
+{
+public:
+
+	PointLightSystem(ComponentManager* a_Cmanager)
+		:System(a_Cmanager) {}
+
+	void Update(unsigned int entity) override
+	{
+		PxVec3 Pos = m_CManager->GetComponent<RigidActor>(entity)->m_RigidActor->getGlobalPose().p;
+		PointLightComponent* light = m_CManager->GetComponent<PointLightComponent>(entity);
+
+		light->position[0] = Pos.x;
+		light->position[1] = Pos.y;
+		light->position[2] = Pos.z;
+
 	}
 
 };

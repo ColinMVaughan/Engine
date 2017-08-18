@@ -34,6 +34,7 @@ void Application::PreInitalize()
 {
 	Camera cam;
 	m_Renderer = new Renderer(720, 1280, &cam);
+	m_Physics.Initalize();
 }
 
 void Application::PostInitalize()
@@ -48,21 +49,22 @@ void Application::PreUpdate()
 
 void Application::PostUpdate()
 {
+	m_Physics.StepPhysics();
 	m_ECS->UpdateSystems();
 }
 
 
-
 void Application::KeyUp(unsigned char key, int x, int y)
 {
-
 	CallbackFunction->KeyUp(key);
-
 }
 
 void Application::KeyDown(unsigned char key, int x, int y)
 {
-
 	CallbackFunction->KeyDown(key);
+}
 
+void Application::Unload()
+{
+	m_Physics.Unload();
 }

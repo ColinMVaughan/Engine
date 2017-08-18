@@ -4,6 +4,7 @@
 #include<ECS.h>
 #include <Renderer.h>
 #include <BaseSystem.h>
+#include <PhysicsSystem.h>
 
 //------------------------------------------------
 //
@@ -18,7 +19,7 @@ public:
 
 	void Initalize();
 	void Update();
-
+	void Unload();
 protected:
 
 	void PreInitalize();
@@ -29,6 +30,7 @@ protected:
 	virtual void DoUpdate() = 0;
 	void PostUpdate();
 
+	
 
 	void RegisterKeyboardCallback();
 	void KeyUp(unsigned char key, int x, int y);
@@ -43,6 +45,7 @@ protected:
 
 	Renderer* m_Renderer;
 	BaseSystem* CallbackFunction;
+	PhysicsSystem m_Physics;
 };
 
 #endif

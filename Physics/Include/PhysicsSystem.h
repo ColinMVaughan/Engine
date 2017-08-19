@@ -4,7 +4,7 @@
 #include "PxPhysicsAPI.h"
 using namespace physx;
 
-
+//Note: Add ability to set parent***
 class RigidActor
 {
 public:
@@ -30,6 +30,7 @@ public:
 	PxScene* CreateScene(PxSceneDesc a_SceneDescription);
 	PxPhysics* GetPhysics();
 	PxScene* GetScene();
+	PxControllerManager* GetControllerManager();
 
 	void StepPhysics();
 
@@ -47,6 +48,8 @@ private:
 
 	PxMaterial* m_DefaultMaterial;
 	PxPvd* m_Pvd;
+
+	PxControllerManager* m_ControllerManager;
 
 };
 

@@ -47,6 +47,7 @@ class Demo : public Application
 
 		//Add rigidbody / rigidActor
 		PxRigidBody* body = m_Physics.GetPhysics()->createRigidDynamic(PxTransform(0, 10.0f, 0));
+		body->setMass(100000.0f);
 		m_Physics.GetScene()->addActor(*body);
 
 		m_ECS->AddComponent<RigidActor>(Orb)->m_RigidActor = body; //Attach rigidbody to RigidActor component
@@ -93,7 +94,7 @@ class Demo : public Application
 		Material* cubeMat = new Material();
 
 		cubeMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		cubeMat->SetTexturesFromFolder("./Assets/Textures/Gold");
+		cubeMat->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
 
 		PxMaterial* cubePhysMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 		PxShape* cubeShape = m_Physics.GetPhysics()->createShape(PxBoxGeometry(0.5f, 0.5f, 0.5f), *cubePhysMat, false);
@@ -121,7 +122,7 @@ class Demo : public Application
 
 					//Add Shape
 					cubeBody->attachShape(*cubeShape);
-
+					cubeBody->setMass(10.0f);
 				}
 			}
 		}

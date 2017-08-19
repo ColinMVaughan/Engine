@@ -1,29 +1,38 @@
-#pragma once
-#include<BaseSystem.h>
-#include <glm\gtc\matrix_transform.hpp>
-#include <glm\gtc\quaternion.hpp>
+#ifndef PLAYER_CONTROL_H
+#define PLAYER_CONTROL_H
 
-class Transform
+#include<BaseSystem.h>
+#include <PhysicsSystem.h>
+
+//	**This file will be renamed to PlayerControlSystem**
+
+// PlayerControl is used to control the player.
+
+class PlayerControl
 {
 public:
-
-	glm::fvec3 Position;
-	glm::fvec3 Scale;
-	glm::fquat Rotation;
-
-
-
-	//Builds a model transform matrix and returns it's const reference
-	const glm::fmat4& GetMatrix()
+	void Initalize(PxCapsuleControllerDesc controlDescription)
 	{
-		m_Matrix = glm::mat4();
-		m_Matrix = glm::scale(m_Matrix, Scale)* glm::mat4_cast(Rotation) * glm::translate(m_Matrix, Position);
-
-		return m_Matrix;
+	
 	}
 
-private:
-	glm::fmat4 m_Matrix;
-
+	PxController* m_Controller;
 };
 
+class PlayerControlSystem : public System<PlayerControl>
+{
+public:
+	PlayerControlSystem(ComponentManager* a_cmanager)
+		:System(a_cmanager) {}
+
+	void Update(unsigned int entity) override;
+
+	void KeyDown(int key);
+	void KeyUp(int key);
+
+
+private:
+	PxVec3 MoveDirection;
+};
+
+#endif

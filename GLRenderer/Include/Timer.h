@@ -21,7 +21,7 @@ public:
 	~Timer();
 
 	// update the timer clock
-	float tick()
+	double tick()
 	{
 		currentTime = glutGet(GLUT_ELAPSED_TIME);
 		elapsedTime = currentTime - previousTime;
@@ -30,22 +30,22 @@ public:
 	}
 
 	// delta time in milliseconds 
-	float getElapsedTimeMS()
+	double getElapsedTimeMS()
 	{
 		return elapsedTime;
 	}
 
 	// delta time in seconds
-	float getElapsedTimeSeconds()
+	double getElapsedTimeSeconds()
 	{
 		return elapsedTime / 1000.f;
 	}
 
-	float getCurrentTime()
+	double getCurrentTime()
 	{
 		return currentTime;
 	}
 
 private:
-	float currentTime, previousTime, elapsedTime;
+	double currentTime, previousTime, elapsedTime;
 };

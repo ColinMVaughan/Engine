@@ -6,7 +6,7 @@
 
 //	**This file will be renamed to PlayerControlSystem**
 
-// PlayerControl is used to control the player.
+// PlayerControl is used to take input and control the player's movement.
 
 class PlayerControl
 {

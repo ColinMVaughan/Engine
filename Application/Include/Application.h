@@ -7,8 +7,11 @@
 #include <PhysicsSystem.h>
 
 //------------------------------------------------
+//				Application
 //
-//
+//	Application class is the entry point for the engine.
+//	Users can inheret from this class and deifine cusom initalization and update methods.
+//	All other methods ensure proper initalization and updatre order of key engine systems.
 //-----------------------------------------------
 
 class Application
@@ -26,9 +29,9 @@ protected:
 	virtual void DoInitalize() = 0;
 	void PostInitalize();
 
-	void PreUpdate();
-	virtual void DoUpdate() = 0;
-	void PostUpdate();
+	void PreUpdate(double deltaTime);
+	virtual void DoUpdate(double deltaTime) = 0;
+	void PostUpdate(double deltaTime);
 
 	
 
@@ -46,6 +49,9 @@ protected:
 	Renderer* m_Renderer;
 	BaseSystem* CallbackFunction;
 	PhysicsSystem m_Physics;
+
+	Timer* m_Timer;
+
 };
 
 #endif

@@ -6,6 +6,7 @@ Application::Application()
 	m_ComponentManager = new ComponentManager;
 	m_SystemManager = new SystemManager(m_ComponentManager);
 	m_ECS = new ECS(m_SystemManager, m_ComponentManager);
+	m_Timer = new Timer();
 }
 
 Application::~Application()
@@ -25,9 +26,11 @@ void Application::Initalize()
 
 void Application::Update()
 {
-	PreUpdate();
-	DoUpdate();
-	PostUpdate();
+	double deltaTime = m_Timer->tick();
+
+	PreUpdate(deltaTime);
+	DoUpdate(deltaTime);
+	PostUpdate(deltaTime);
 }
 
 void Application::PreInitalize()
@@ -42,12 +45,12 @@ void Application::PostInitalize()
 	m_SystemManager->AddSystem<RenderSystem>()->SetRenderer(m_Renderer);
 }
 
-void Application::PreUpdate()
+void Application::PreUpdate(double deltaTime)
 {
-
+	
 }
 
-void Application::PostUpdate()
+void Application::PostUpdate(double deltaTime)
 {
 	m_Physics.StepPhysics();
 	m_ECS->UpdateSystems();

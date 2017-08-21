@@ -133,7 +133,7 @@ class Demo : public Application
 		return;
 	}
 
-	void DoUpdate() override
+	void DoUpdate(double deltaTime) override
 	{
 		TotalRotation += 0.005f;
 

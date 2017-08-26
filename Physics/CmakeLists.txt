@@ -10,7 +10,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3DEBUG_x86.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3CommonDEBUG_x86.lib 
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PxFoundationDEBUG_x86.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PxPvdSDKDEBUG_x86.lib
-${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3ExtensionsDEBUG.lib)
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3ExtensionsDEBUG.lib
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/PhysX3CharacterKinematicDEBUG_x86.lib)
 
 
 target_include_directories(Physics PUBLIC 
@@ -33,4 +34,5 @@ ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PhysX3CommonDEBUG_x86.dll
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PxFoundationDEBUG_x86.dll
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PxPvdSDKDEBUG_x86.dll
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/nvToolsExt32_1.dll
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/PhysX3CharacterKinematicDEBUG_x86.dll
 DESTINATION bin)

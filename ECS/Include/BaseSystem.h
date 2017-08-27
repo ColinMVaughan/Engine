@@ -19,9 +19,9 @@ public:
 	// Update:     runs once per applicable entity
 	// PostUpdate: runs once per frame
 
-	virtual void PreUpdate() {};
-	virtual void Update(unsigned int entity) = 0;
-	virtual void PostUpdate() {};
+	virtual void PreUpdate(double deltaTime) {};
+	virtual void Update(double deltaTime, unsigned int entity) = 0;
+	virtual void PostUpdate(double deltaTime) {};
 
 	virtual void UnInitalize() {};
 
@@ -58,9 +58,9 @@ public:
 	// Update:     runs once per applicable entity
 	// PostUpdate: runs once per frame
 
-	virtual void PreUpdate() {};
-	virtual void Update(unsigned int entity) {};
-	virtual void PostUpdate() {};
+	virtual void PreUpdate(double deltaTime) {};
+	virtual void Update(double deltaTime, unsigned int entity) {};
+	virtual void PostUpdate(double deltaTime) {};
 
 	virtual void UnInitalize() {};
 
@@ -89,7 +89,7 @@ public:
 //-----------------------------------------------------
 class ExampleDerrivedSystem : public System<int, bool>
 {
-	void Update(unsigned int entity) override
+	void Update(double deltaTime, unsigned int entity) override
 	{
 		return;
 	}

@@ -39,15 +39,15 @@ public:
 	{
 		for (int i = 0; i < SystemList.size(); ++i)
 		{
-			SystemList[i]->PreUpdate();
+			SystemList[i]->PreUpdate(deltaTime);
 
 			for (unsigned int count = 0; count < entityCount; ++count)
 			{
 				if(SystemList[i]->HasComponents(entityList[count]))
-					SystemList[i]->Update(entityList[count]);
+					SystemList[i]->Update(deltaTime, entityList[count]);
 			}
 
-			SystemList[i]->PostUpdate();
+			SystemList[i]->PostUpdate(deltaTime);
 		}
 	}
 

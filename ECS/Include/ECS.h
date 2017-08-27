@@ -36,7 +36,7 @@ public:
 	T* AddComponent(Entity a_entity);
 
 	template<typename T> 
-	void AddSystem();
+	T* AddSystem();
 
 	template<typename T>
 	T* GetComponent(Entity a_entity);
@@ -66,9 +66,9 @@ T* ECS::AddComponent(Entity a_entity)
 }
 
 template <typename T>
-void ECS::AddSystem()
+T* ECS::AddSystem()
 {
-	m_SystemManager->AddSystem<T>();
+	return m_SystemManager->AddSystem<T>();
 }
 
 template <typename T>

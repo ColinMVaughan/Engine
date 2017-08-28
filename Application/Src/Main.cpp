@@ -17,7 +17,7 @@
 #include <GMath\MathLibrary.h>
 #include <PhysicsSystem.h>
 #include <RenderSystem.h>
-#include "CameraSystem.h"
+#include "PlayerControlSystem.h"
 
 class Demo : public Application
 {

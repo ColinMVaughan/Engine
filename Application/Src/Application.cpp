@@ -53,7 +53,7 @@ void Application::PreUpdate(double deltaTime)
 void Application::PostUpdate(double deltaTime)
 {
 	m_Physics.StepPhysics();
-	m_ECS->UpdateSystems();
+	m_ECS->UpdateSystems(deltaTime);
 }
 
 void Application::RegisterKeyboardCallback(BaseSystem* system)

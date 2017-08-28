@@ -41,7 +41,7 @@ public:
 	template<typename T>
 	T* GetComponent(Entity a_entity);
 
-	void UpdateSystems();
+	void UpdateSystems(double deltaTime);
 	
 private:
 	SystemManager*    m_SystemManager;
@@ -85,9 +85,9 @@ inline Entity ECS::CreateEntity()
 	return Entity(EntityCounter);
 }
 
-inline void ECS::UpdateSystems()
+inline void ECS::UpdateSystems(double deltaTime)
 {
-	m_SystemManager->UpdateSystems(0.0, m_EntityList.data(), m_EntityList.size());
+	m_SystemManager->UpdateSystems(deltaTime, m_EntityList.data(), m_EntityList.size());
 }
 
 ////Destroys all components associated with the entity and remove it from the list

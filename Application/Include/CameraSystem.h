@@ -36,20 +36,29 @@ private:
 
 
 
-
-
-
-
-
 class PlayerControlSystem : public System<PlayerControl>
 {
 public:
 	PlayerControlSystem(ComponentManager* a_cmanager)
-		:System(a_cmanager) {}
+		:System(a_cmanager) 
+	{
+		XForce *= 0;
+		YForce *= 0;
+		ZForce *= 0;
+
+		YForce.y = -0.0981;
+	}
+
+
+	void PreUpdate(double deltaTime) override
+	{
+		MoveDirection *= 0.0f;
+		MoveDirection = XForce + YForce + ZForce;
+	}
 
 	void Update(double deltaTime, unsigned int entity) override
 	{
-		m_CManager->GetComponent<PlayerControl>(entity)->Move(MoveDirection, 0.016);
+		m_CManager->GetComponent<PlayerControl>(entity)->Move(MoveDirection, deltaTime);
 		return;
 	}
 
@@ -58,13 +67,16 @@ public:
 		switch (key)
 		{
 		case 'w':
-			std::cout << "W down";
+			XForce.x = 0.3f;
 			break;
 		case 'a':
+			ZForce.z = -0.3f;
 			break;
 		case 's':
+			XForce.x = -0.3f;
 			break;
 		case'd':
+			ZForce.z = 0.3f;
 			break;
 
 		}
@@ -74,12 +86,16 @@ public:
 		switch (key)
 		{
 		case 'w':
+			XForce.x = 0.0f;
 			break;
 		case 'a':
+			ZForce.z = 0.0f;
 			break;
 		case 's':
+			XForce.x = 0.0f;
 			break;
 		case'd':
+			ZForce.z = 0.0f;
 			break;
 
 		}
@@ -87,6 +103,10 @@ public:
 
 
 private:
+	PxVec3 XForce;
+	PxVec3 YForce;
+	PxVec3 ZForce;
+	
 	PxVec3 MoveDirection;
 };
 

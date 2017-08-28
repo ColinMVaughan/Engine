@@ -47,20 +47,23 @@ class Demo : public Application
 		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/Orb.obj");
 		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Gold");
 
-
-		//Add rigidbody / rigidActor
-		PxRigidBody* body = m_Physics.GetPhysics()->createRigidDynamic(PxTransform(0, 10.0f, 0));
-		body->setMass(100000.0f);
-		m_Physics.GetScene()->addActor(*body);
-
-		m_ECS->AddComponent<RigidActor>(Orb)->m_RigidActor = body; //Attach rigidbody to RigidActor component
-		
-		//Add Shape
+		//create shape and physics material
 		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 		PxShape* shape = m_Physics.GetPhysics()->createShape(PxSphereGeometry(3.0f), *myMat, true);
+
+		//Add PlayerController
+		PxCapsuleControllerDesc description;
+		description.position = PxExtendedVec3(0, 10.0f, 0);
+		description.height = 0.001f;
+		description.radius = 3.0f;
+		description.material = myMat;
 		
-		body->attachShape(*shape);
-		shape->release();
+		auto pc = m_ECS->AddComponent<PlayerControl>(Orb);
+		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
+		m_ECS->AddComponent<RigidActor>(Orb)->m_RigidActor = pc->GetActor();
+		
+		//body->attachShape(*shape);
+		//shape->release();
 
 		//Add Light
 		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Orb);

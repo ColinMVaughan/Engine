@@ -29,7 +29,6 @@ bool PhysicsSystem::Initalize()
 
 	//Create the controller manager
 	m_ControllerManager = PxCreateControllerManager(*m_Scene);
-
 }
 
 void PhysicsSystem::Unload()

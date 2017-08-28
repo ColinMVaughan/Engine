@@ -17,6 +17,7 @@
 #include <GMath\MathLibrary.h>
 #include <PhysicsSystem.h>
 #include <RenderSystem.h>
+#include "CameraSystem.h"
 
 class Demo : public Application
 {
@@ -25,6 +26,8 @@ class Demo : public Application
 		//Rendering Setup
 
 		m_ECS->AddSystem<PointLightSystem>();
+		RegisterKeyboardCallback(m_ECS->AddSystem<PlayerControlSystem>());
+
 
 		m_Renderer->SetCamera(&m_camera);
 		m_Renderer->Initalize();
@@ -177,12 +180,12 @@ void TimerCallbackFunction(int value)
 
 void KeyboardCallbackFunction(unsigned char key, int x, int y)
 {
-
+	demo->KeyDown(key, x, y);
 }
 
 void KeyboardUpCallbackFunction(unsigned char key, int x, int y)
 {
-
+	demo->KeyUp(key, x, y);
 }
 
 void MouseClickCallbackFunction(int button, int state, int x, int y)

@@ -35,19 +35,19 @@ public:
 			std::cout << "\nDid not send RenderSystem a valid Renderer";
 	}
 
-	void PreUpdate() override
+	void PreUpdate(double deltaTime) override
 	{
 		m_Renderer->PreRender();
 	}
 
-	void Update(unsigned int entity) override
+	void Update(double deltaTime, unsigned int entity) override
 	{
 		RigidActor* rigidactor = m_CManager->GetComponent<RigidActor>(entity);
 		PxMat44 mat(rigidactor->m_RigidActor->getGlobalPose());
 
 		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity), mat.front());
 	}
-	void PostUpdate() override
+	void PostUpdate(double deltaTime) override
 	{
 		m_Renderer->PostRender();
 	}
@@ -72,7 +72,7 @@ public:
 	PointLightSystem(ComponentManager* a_Cmanager)
 		:System(a_Cmanager) {}
 
-	void Update(unsigned int entity) override
+	void Update(double deltaTime, unsigned int entity) override
 	{
 		PxVec3 Pos = m_CManager->GetComponent<RigidActor>(entity)->m_RigidActor->getGlobalPose().p;
 		PointLightComponent* light = m_CManager->GetComponent<PointLightComponent>(entity);

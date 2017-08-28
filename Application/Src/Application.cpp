@@ -56,15 +56,25 @@ void Application::PostUpdate(double deltaTime)
 	m_ECS->UpdateSystems();
 }
 
+void Application::RegisterKeyboardCallback(BaseSystem* system)
+{
+	InputCallbackList.push_back(system);
+}
 
 void Application::KeyUp(unsigned char key, int x, int y)
 {
-	CallbackFunction->KeyUp(key);
+	for each (auto callback in InputCallbackList)
+	{
+		callback->KeyUp(key);
+	}
 }
 
 void Application::KeyDown(unsigned char key, int x, int y)
 {
-	CallbackFunction->KeyDown(key);
+	for each (auto callback in InputCallbackList)
+	{
+		callback->KeyDown(key);
+	}
 }
 
 void Application::Unload()

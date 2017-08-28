@@ -23,8 +23,11 @@ public:
 	void Initalize();
 	void Update();
 	void Unload();
-protected:
 
+	void KeyUp(unsigned char key, int x, int y);
+	void KeyDown(unsigned char key, int x, int y);
+
+protected:
 	void PreInitalize();
 	virtual void DoInitalize() = 0;
 	void PostInitalize();
@@ -33,11 +36,8 @@ protected:
 	virtual void DoUpdate(double deltaTime) = 0;
 	void PostUpdate(double deltaTime);
 
-	
+	void RegisterKeyboardCallback(BaseSystem* system);
 
-	void RegisterKeyboardCallback();
-	void KeyUp(unsigned char key, int x, int y);
-	void KeyDown(unsigned char key, int x, int y);
 
 
 protected:
@@ -47,11 +47,10 @@ protected:
 	ECS* m_ECS;
 
 	Renderer* m_Renderer;
-	BaseSystem* CallbackFunction;
 	PhysicsSystem m_Physics;
 
 	Timer* m_Timer;
-
+	std::vector<BaseSystem*> InputCallbackList;
 };
 
 #endif

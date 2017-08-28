@@ -23,10 +23,23 @@ public:
 		m_Controller->move(moveDirection, 0.0001f, deltaTime, filters);
 	}
 
+	PxRigidDynamic* GetActor()
+	{
+		return m_Controller->getActor();
+	}
+
 private:
 	PxController* m_Controller;
 	PxControllerFilters filters;
 };
+
+
+
+
+
+
+
+
 
 class PlayerControlSystem : public System<PlayerControl>
 {
@@ -34,17 +47,18 @@ public:
 	PlayerControlSystem(ComponentManager* a_cmanager)
 		:System(a_cmanager) {}
 
-	void Update(unsigned int entity) override
+	void Update(double deltaTime, unsigned int entity) override
 	{
 		m_CManager->GetComponent<PlayerControl>(entity)->Move(MoveDirection, 0.016);
 		return;
 	}
 
-	void KeyDown(int key)
+	void KeyDown(unsigned char key) override
 	{
 		switch (key)
 		{
 		case 'w':
+			std::cout << "W down";
 			break;
 		case 'a':
 			break;
@@ -55,7 +69,7 @@ public:
 
 		}
 	}
-	void KeyUp(int key)
+	void KeyUp(unsigned char key) override
 	{
 		switch (key)
 		{

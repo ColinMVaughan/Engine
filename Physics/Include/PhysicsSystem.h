@@ -4,12 +4,25 @@
 #include "PxPhysicsAPI.h"
 using namespace physx;
 
-//Note: Add ability to set parent***
-class RigidActor
+//Note: probably should inline these member functions
+class Transform
 {
 public:
-	PxRigidActor* m_RigidActor;
+
+	PxMat44 GetGlobalTransformMatrix();
+	PxMat44 GetLocalTransformMatrix();
+
+	void SetActor(PxRigidActor* transform);
+	void SetParentActor(PxRigidActor* parent);
+
+	PxTransform GetTransform();
+
+private:
+	PxRigidActor* m_Actor = nullptr;
+	PxRigidActor* m_Parent = nullptr;
 };
+
+
 
 class RigidBody
 {

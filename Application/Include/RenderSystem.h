@@ -12,7 +12,7 @@
 //	Add system to system Manager, and send avalid Renderer pointer.
 //-----------------------------------------------------
 
-class RenderSystem : public System<Mesh, Material, RigidActor>
+class RenderSystem : public System<Mesh, Material, Transform>
 {
 private:
 	Renderer* m_Renderer;
@@ -42,8 +42,7 @@ public:
 
 	void Update(double deltaTime, unsigned int entity) override
 	{
-		RigidActor* rigidactor = m_CManager->GetComponent<RigidActor>(entity);
-		PxMat44 mat(rigidactor->m_RigidActor->getGlobalPose());
+		auto mat = m_CManager->GetComponent<Transform>(entity)->GetGlobalTransformMatrix();
 
 		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity), mat.front());
 	}
@@ -65,7 +64,7 @@ public:
 	GMath::vec3f Color;
 };
 
-class PointLightSystem : public System<PointLightComponent, RigidActor>
+class PointLightSystem : public System<PointLightComponent, Transform>
 {
 public:
 
@@ -74,7 +73,7 @@ public:
 
 	void Update(double deltaTime, unsigned int entity) override
 	{
-		PxVec3 Pos = m_CManager->GetComponent<RigidActor>(entity)->m_RigidActor->getGlobalPose().p;
+		PxVec3 Pos = m_CManager->GetComponent<Transform>(entity)->GetTransform().p;
 		PointLightComponent* light = m_CManager->GetComponent<PointLightComponent>(entity);
 
 		light->position[0] = Pos.x;

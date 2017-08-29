@@ -84,3 +84,35 @@ void PhysicsSystem::StepPhysics()
 
 	return;
 }
+
+
+//-------------------------------------------------------------------------------
+
+PxMat44 Transform::GetGlobalTransformMatrix()
+{
+	if(m_Parent != nullptr)
+		return PxMat44(m_Actor->getGlobalPose().transform(m_Parent->getGlobalPose()));
+	else
+		return PxMat44(m_Actor->getGlobalPose());
+}
+
+PxMat44 Transform::GetLocalTransformMatrix()
+{
+	return PxMat44(m_Actor->getGlobalPose());
+}
+
+
+void Transform::SetActor(PxRigidActor* actor)
+{
+	m_Actor = actor;
+}
+
+void Transform::SetParentActor(PxRigidActor* parent)
+{
+	m_Parent = parent;
+}
+
+PxTransform Transform::GetTransform()
+{
+	return m_Actor->getGlobalPose();
+}

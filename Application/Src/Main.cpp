@@ -60,10 +60,8 @@ class Demo : public Application
 		
 		auto pc = m_ECS->AddComponent<PlayerControl>(Orb);
 		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
-		m_ECS->AddComponent<RigidActor>(Orb)->m_RigidActor = pc->GetActor();
+		m_ECS->AddComponent<Transform>(Orb)->SetActor(pc->GetActor());
 		
-		//body->attachShape(*shape);
-		//shape->release();
 
 		//Add Light
 		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Orb);
@@ -87,7 +85,7 @@ class Demo : public Application
 		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
 		m_Physics.GetScene()->addActor(*groundPlane);
 
-		m_ECS->AddComponent<RigidActor>(Plane)->m_RigidActor = groundPlane; // Attach rigidbody to RigidActor Component
+		m_ECS->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
 
 
 
@@ -124,7 +122,7 @@ class Demo : public Application
 					//Add rigidbody / rigidActor
 					PxRigidBody* cubeBody = m_Physics.GetPhysics()->createRigidDynamic(PxTransform(x, y, z));
 					m_Physics.GetScene()->addActor(*cubeBody);
-					m_ECS->AddComponent<RigidActor>(cube)->m_RigidActor = cubeBody; //Attach rigidbody to RigidActor component
+					m_ECS->AddComponent<Transform>(cube)->SetActor(cubeBody); //Attach rigidbody to Transform component
 
 					//Add Shape
 					cubeBody->attachShape(*cubeShape);

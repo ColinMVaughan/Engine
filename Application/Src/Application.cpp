@@ -36,7 +36,7 @@ void Application::Update()
 void Application::PreInitalize()
 {
 	Camera cam;
-	m_Renderer = new Renderer(720, 1280, &cam);
+	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
 	m_Physics.Initalize();
 }
 

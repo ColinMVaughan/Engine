@@ -10,8 +10,8 @@
 //---------------------------------------------------------------------------------------------------
 
 #include <GL/glew.h>
-#include <GL\freeglut.h>
 #include <SDL\SDL.h>
+
 
 #include "Application.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -169,42 +169,41 @@ const int FRAME_DELAY_SPRITE = 1000 / 60;
 
 Demo *demo = new Demo();
 
-void DisplayCallbackFunction()
-{
-	demo->Update();
-}
-
-void TimerCallbackFunction(int value)
-{
-	glutPostRedisplay();
-	glutTimerFunc(FRAME_DELAY_SPRITE, TimerCallbackFunction, 0);
-}
-
-void KeyboardCallbackFunction(unsigned char key, int x, int y)
-{
-	demo->KeyDown(key, x, y);
-}
-
-void KeyboardUpCallbackFunction(unsigned char key, int x, int y)
-{
-	demo->KeyUp(key, x, y);
-}
-
-void MouseClickCallbackFunction(int button, int state, int x, int y)
-{
-	glutPostRedisplay();
-}
-
-void MouseMotionCallbackFunction(int x, int y)
-{
-	glutPostRedisplay();
-
-}
+//void DisplayCallbackFunction()
+//{
+//	demo->Update();
+//}
+//
+//void TimerCallbackFunction(int value)
+//{
+//	glutPostRedisplay();
+//	glutTimerFunc(FRAME_DELAY_SPRITE, TimerCallbackFunction, 0);
+//}
+//
+//void KeyboardCallbackFunction(unsigned char key, int x, int y)
+//{
+//	demo->KeyDown(key, x, y);
+//}
+//
+//void KeyboardUpCallbackFunction(unsigned char key, int x, int y)
+//{
+//	demo->KeyUp(key, x, y);
+//}
+//
+//void MouseClickCallbackFunction(int button, int state, int x, int y)
+//{
+//	glutPostRedisplay();
+//}
+//
+//void MouseMotionCallbackFunction(int x, int y)
+//{
+//	glutPostRedisplay();
+//
+//}
 
 int main(int argc, char **argv)
 {
 
-	SDL_Window* window;
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
 		std::cout << "SDL was not Initalized.";
@@ -215,17 +214,12 @@ int main(int argc, char **argv)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	window = SDL_CreateWindow("Ocean Engine", 0, 0, 1280, 720, WindowFlags);
-	SDL_GL_CreateContext(window);
+	demo->m_Window = SDL_CreateWindow("Ocean Engine", 100, 100, 1280, 720, WindowFlags);
+	SDL_GL_CreateContext(demo->m_Window);
 
 	//---------------------------------------------------------
-
-	glutInit(&argc, argv);
-	glutInitContextVersion(4, 2);
-	glutInitWindowSize(1280, 720);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-	glutCreateWindow("TempWindow");
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK)
@@ -236,18 +230,18 @@ int main(int argc, char **argv)
 	}
 
 
-	glutDisplayFunc(DisplayCallbackFunction);
-	glutKeyboardFunc(KeyboardCallbackFunction);
-	glutKeyboardUpFunc(KeyboardUpCallbackFunction);
-	glutMouseFunc(MouseClickCallbackFunction);
-	glutMotionFunc(MouseMotionCallbackFunction);
-	glutTimerFunc(1,TimerCallbackFunction,0);
-	std::cout << "\nCheck 1";
+	//glutDisplayFunc(DisplayCallbackFunction);
+	//glutKeyboardFunc(KeyboardCallbackFunction);
+	//glutKeyboardUpFunc(KeyboardUpCallbackFunction);
+	//glutMouseFunc(MouseClickCallbackFunction);
+	//glutMotionFunc(MouseMotionCallbackFunction);
+	//glutTimerFunc(1,TimerCallbackFunction,0);
+
 	demo->Initalize();
-
-
-	glutMainLoop();
-
+	while (demo->Running)
+	{
+		demo->Update();
+	}
 	demo->Unload();
 	
 	return 0;

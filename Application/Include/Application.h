@@ -39,6 +39,9 @@ protected:
 	void RegisterKeyboardCallback(BaseSystem* system);
 
 
+public:
+	bool Running = true;
+	SDL_Window* m_Window;
 protected:
 
 	ComponentManager* m_ComponentManager;
@@ -51,7 +54,6 @@ protected:
 	Timer* m_Timer;
 	std::vector<BaseSystem*> InputCallbackList;
 
-	SDL_Window* m_Window;
 };
 
 #endif

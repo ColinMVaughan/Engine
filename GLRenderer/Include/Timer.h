@@ -1,8 +1,6 @@
 #pragma once
 #include <iostream>
-
-#include "GL/glut.h"
-
+#include<SDL\SDL_timer.h>
 /*
  * timer class
  * - this lets us keep track of the elapsed time
@@ -14,7 +12,7 @@ class Timer
 public:
 	Timer()
 	{
-		previousTime = glutGet(GLUT_ELAPSED_TIME);
+		//previousTime = glutGet(GLUT_ELAPSED_TIME);
 		this->tick();
 	}
 
@@ -23,7 +21,7 @@ public:
 	// update the timer clock
 	double tick()
 	{
-		currentTime = glutGet(GLUT_ELAPSED_TIME);
+		currentTime = (double)SDL_GetTicks();
 		elapsedTime = currentTime - previousTime;
 		previousTime = currentTime;
 		return elapsedTime;

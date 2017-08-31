@@ -32,10 +32,37 @@ public:
 
 
 
+//------------------------------------------------------------------------------
+//
+//
+//-------------------------------------------------------------------------------
+
+struct PhysicsSettings
+{
+	// DEFAULT: 0
+	// Must Pass the OpenGL context if using GPU rigidbodies. 
+	// If not, this may remain 0.
+	int OpenGLContext = 0;
+
+	// DEFAULT: 2
+	// The number of threads Physx will use
+	unsigned int NumberOfThreads = 2;
+
+	// DEFAULT: true
+	// Allows Physx to use CUDA to simulate rigidbodies.
+	// Must pass GLContext if enabled
+	bool GpuRigidbodies = false;
+
+	// DEFAULT: false
+	// Use the Physx Visual Debugger
+	bool UsePVD = false;
+
+};
+
+
 class PhysicsSystem
 {
 public:
-
 
 	bool Initalize();
 	void Unload();
@@ -63,6 +90,8 @@ private:
 	PxPvd* m_Pvd;
 
 	PxControllerManager* m_ControllerManager;
+
+	PxCudaContextManager* m_CudaContextManager;
 
 };
 

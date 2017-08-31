@@ -17,6 +17,10 @@ bool PhysicsSystem::Initalize()
 	if (!m_Physics)
 		return false;
 
+	//Create Cuda context for gpu rigidbodies
+	//PxCudaContextManagerDesc cudaDesc;
+	//m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaDesc);
+
 	//Create Dispatcher with 2 threads
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(2);
 
@@ -43,9 +47,12 @@ void PhysicsSystem::Unload()
 
 PxScene* PhysicsSystem::CreateScene(PxSceneDesc a_SceneDescription)
 {
-
+	//Set scene settings that will be constant across the apllication
 	a_SceneDescription.cpuDispatcher = m_Dispatcher;
+	//a_SceneDescription.gpuDispatcher = m_CudaContextManager->getGpuDispatcher();
 	a_SceneDescription.filterShader = PxDefaultSimulationFilterShader;
+	//a_SceneDescription.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
+	//a_SceneDescription.broadPhaseType = PxBroadPhaseType::eGPU;
 
 	PxScene* tempScene = m_Physics->createScene(a_SceneDescription);
 

@@ -6,7 +6,11 @@ file(GLOB SOURCES "Src/*.cpp")
 file(GLOB HEADERS "Include/*.h")
 
 add_library(GLRenderer STATIC ${SOURCES} ${HEADERS})
-target_link_libraries(GLRenderer ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2.lib
+
+find_package(OpenGL)
+
+target_link_libraries(GLRenderer ${OPENGL_LIBRARIES}
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2.lib 
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2main.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2test.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/glew32.lib

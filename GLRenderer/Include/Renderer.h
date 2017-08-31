@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "FrameBuffer.h"
 #include <glm/mat4x4.hpp>
+#include <SDL\SDL.h>
 
 //-----------------------------
 // Material represents the look and feel of an object.
@@ -70,9 +71,9 @@ public:
 class Renderer
 {
 public:
-	Renderer(unsigned windowHeight, unsigned windowWidth, Camera* camera)
+	Renderer(unsigned windowHeight, unsigned windowWidth,SDL_Window* window, Camera* camera)
 		:m_WindowWidth(windowWidth), m_WindowHeight(windowHeight), 
-		m_Camera(camera),
+		m_Camera(camera),m_Window(window),
 		GBuffer(6), LightpassBuffer(1), CombinedLighingBuffer(1){}
 
 	void Initalize();
@@ -127,4 +128,7 @@ private:
 
 	//Default Material
 	Material m_DefaultMaterial;
+
+	//Window Pointer 
+	SDL_Window* m_Window;
 };

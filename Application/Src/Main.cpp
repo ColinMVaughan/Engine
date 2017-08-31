@@ -11,6 +11,7 @@
 
 #include <GL/glew.h>
 #include <GL\freeglut.h>
+#include <SDL\SDL.h>
 
 #include "Application.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -202,6 +203,23 @@ void MouseMotionCallbackFunction(int x, int y)
 
 int main(int argc, char **argv)
 {
+
+	SDL_Window* window;
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+	{
+		std::cout << "SDL was not Initalized.";
+		return 1;
+	}
+
+	Uint32 WindowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	window = SDL_CreateWindow("Ocean Engine", 0, 0, 1280, 720, WindowFlags);
+	SDL_GL_CreateContext(window);
+
+	//---------------------------------------------------------
 
 	glutInit(&argc, argv);
 	glutInitContextVersion(4, 2);

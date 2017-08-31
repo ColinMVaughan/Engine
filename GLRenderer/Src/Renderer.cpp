@@ -378,7 +378,8 @@ void Renderer::PostRender()
 
 	CombinedLighingBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
-	glutSwapBuffers();
+	//glutSwapBuffers();
+	SDL_GL_SwapWindow(m_Window);
 	//------------------------------------------------------------------------------
 }
 

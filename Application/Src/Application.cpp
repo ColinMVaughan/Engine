@@ -26,7 +26,9 @@ void Application::Initalize()
 
 void Application::Update()
 {
-	double deltaTime = m_Timer->tick();
+
+	m_Timer->tick();
+	double deltaTime = m_Timer->getElapsedTimeSeconds();
 
 	PreUpdate(deltaTime);
 	DoUpdate(deltaTime);
@@ -47,12 +49,27 @@ void Application::PostInitalize()
 
 void Application::PreUpdate(double deltaTime)
 {
-	
+	while (SDL_PollEvent(&InputEvent))
+	{
+		switch (InputEvent.type)
+		{
+		case SDL_KEYDOWN:
+			KeyDown(InputEvent.key);
+			break;
+		case SDL_KEYUP:
+			KeyUp(InputEvent.key);
+			break;
+		case SDL_QUIT:
+			Running = false;
+			break;
+		}
+	}
 }
 
 void Application::PostUpdate(double deltaTime)
 {
-	m_Physics.StepPhysics();
+	m_Physics.StepPhysics(deltaTime);
+	m_Physics.FetchResults();
 	m_ECS->UpdateSystems(deltaTime);
 }
 
@@ -61,19 +78,19 @@ void Application::RegisterKeyboardCallback(BaseSystem* system)
 	InputCallbackList.push_back(system);
 }
 
-void Application::KeyUp(unsigned char key, int x, int y)
+void Application::KeyUp(SDL_KeyboardEvent key)
 {
 	for each (auto callback in InputCallbackList)
 	{
-		callback->KeyUp(key);
+		callback->KeyUp('w');
 	}
 }
 
-void Application::KeyDown(unsigned char key, int x, int y)
+void Application::KeyDown(SDL_KeyboardEvent key)
 {
 	for each (auto callback in InputCallbackList)
 	{
-		callback->KeyDown(key);
+		callback->KeyDown('w');
 	}
 }
 

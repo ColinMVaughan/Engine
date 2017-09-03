@@ -72,7 +72,8 @@ public:
 	PxScene* GetScene();
 	PxControllerManager* GetControllerManager();
 
-	void StepPhysics();
+	void StepPhysics(double deltaTime);
+	void FetchResults();
 
 private:
 
@@ -92,7 +93,7 @@ private:
 	PxControllerManager* m_ControllerManager;
 
 	PxCudaContextManager* m_CudaContextManager;
-
+	double m_Accumulator = 0;
 };
 
 #endif

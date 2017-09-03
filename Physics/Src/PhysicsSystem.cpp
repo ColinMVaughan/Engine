@@ -39,7 +39,7 @@ void PhysicsSystem::Unload()
 {
 	PX_UNUSED(false);
 	m_Scene->release();
-	m_Pvd->release();
+	//m_Pvd->release(); //will remove pvd stuff
 	m_Physics->release();
 	m_Foundation->release();
 }
@@ -83,16 +83,22 @@ PxControllerManager* PhysicsSystem::GetControllerManager()
 	return m_ControllerManager;
 }
 
-void PhysicsSystem::StepPhysics()
+void PhysicsSystem::StepPhysics(double deltaTime)
 {
 	PX_UNUSED(false); //I don't know what this does
-	m_Scene->simulate(1.0f / 30.0f);
-	m_Scene->fetchResults(true);
 
+	m_Accumulator += deltaTime;
+	if (m_Accumulator < (1.0 / 30.0))
+		return;
+
+	m_Scene->simulate(1.0f / 30.0f);
 	return;
 }
 
-
+void  PhysicsSystem::FetchResults()
+{
+	m_Scene->fetchResults(true);
+}
 //-------------------------------------------------------------------------------
 
 PxMat44 Transform::GetGlobalTransformMatrix()

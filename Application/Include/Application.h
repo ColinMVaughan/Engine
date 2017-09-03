@@ -24,8 +24,8 @@ public:
 	void Update();
 	void Unload();
 
-	void KeyUp(unsigned char key, int x, int y);
-	void KeyDown(unsigned char key, int x, int y);
+	void KeyUp(SDL_KeyboardEvent key);
+	void KeyDown(SDL_KeyboardEvent key);
 
 protected:
 	void PreInitalize();
@@ -53,7 +53,7 @@ protected:
 
 	Timer* m_Timer;
 	std::vector<BaseSystem*> InputCallbackList;
-
+	SDL_Event InputEvent;
 };
 
 #endif

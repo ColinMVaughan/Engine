@@ -128,6 +128,12 @@ class Demo : public Application
 					//Add Shape
 					cubeBody->attachShape(*cubeShape);
 					cubeBody->setMass(10.0f);
+
+					//Add light
+
+					auto cubelight = m_ECS->AddComponent<PointLightComponent>(cube);
+					cubelight->Color = GMath::vec3f({ 10.0f, 10.0f, 10.0f });
+					m_Renderer->AddPointLight(&cubelight->Color, &cubelight->position, false);
 				}
 			}
 		}

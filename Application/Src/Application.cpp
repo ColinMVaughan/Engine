@@ -39,7 +39,11 @@ void Application::PreInitalize()
 {
 	Camera cam;
 	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
-	m_Physics.Initalize();
+
+	PhysicsSettings PSettings;
+	PSettings.GpuRigidbodies = true;
+	PSettings.OpenGLContext = SDL_GL_GetCurrentContext();
+	m_Physics.Initalize(PSettings);
 }
 
 void Application::PostInitalize()
@@ -69,7 +73,6 @@ void Application::PreUpdate(double deltaTime)
 void Application::PostUpdate(double deltaTime)
 {
 	m_Physics.StepPhysics(deltaTime);
-	m_Physics.FetchResults();
 	m_ECS->UpdateSystems(deltaTime);
 }
 

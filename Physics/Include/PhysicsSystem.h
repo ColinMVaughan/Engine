@@ -42,7 +42,7 @@ struct PhysicsSettings
 	// DEFAULT: 0
 	// Must Pass the OpenGL context if using GPU rigidbodies. 
 	// If not, this may remain 0.
-	int OpenGLContext = 0;
+	void* OpenGLContext = nullptr;
 
 	// DEFAULT: 2
 	// The number of threads Physx will use
@@ -64,7 +64,7 @@ class PhysicsSystem
 {
 public:
 
-	bool Initalize();
+	bool Initalize(PhysicsSettings a_physicsSettings);
 	void Unload();
 
 	PxScene* CreateScene(PxSceneDesc a_SceneDescription);
@@ -94,6 +94,7 @@ private:
 
 	PxCudaContextManager* m_CudaContextManager;
 	double m_Accumulator = 0;
+	bool m_GPURigidbodiesEnabled = false;
 };
 
 #endif

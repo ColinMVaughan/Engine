@@ -1,6 +1,6 @@
 #include "PhysicsSystem.h"
 
-bool PhysicsSystem::Initalize()
+bool PhysicsSystem::Initalize(PhysicsSettings a_physicsSettings)
 {
 	//Create Foundation for Physics
 	m_Foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, m_defaultAllocator, m_defaultErrorCallback);
@@ -17,9 +17,15 @@ bool PhysicsSystem::Initalize()
 	if (!m_Physics)
 		return false;
 
-	//Create Cuda context for gpu rigidbodies
-	//PxCudaContextManagerDesc cudaDesc;
-	//m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaDesc);
+	//if GPU physics are enabled and the user ha provided a valid opengl context
+	//initalize gpu rigidbodies
+	if (a_physicsSettings.OpenGLContext != nullptr && a_physicsSettings.GpuRigidbodies)
+	{
+		PxCudaContextManagerDesc cudaDesc;
+		cudaDesc.graphicsDevice = a_physicsSettings.OpenGLContext;
+		m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaDesc);
+		m_GPURigidbodiesEnabled = true;
+	}
 
 	//Create Dispatcher with 2 threads
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(2);
@@ -49,10 +55,14 @@ PxScene* PhysicsSystem::CreateScene(PxSceneDesc a_SceneDescription)
 {
 	//Set scene settings that will be constant across the apllication
 	a_SceneDescription.cpuDispatcher = m_Dispatcher;
-	//a_SceneDescription.gpuDispatcher = m_CudaContextManager->getGpuDispatcher();
 	a_SceneDescription.filterShader = PxDefaultSimulationFilterShader;
-	//a_SceneDescription.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
-	//a_SceneDescription.broadPhaseType = PxBroadPhaseType::eGPU;
+
+	if (m_GPURigidbodiesEnabled)
+	{
+		a_SceneDescription.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		a_SceneDescription.broadPhaseType = PxBroadPhaseType::eGPU;
+		a_SceneDescription.gpuDispatcher = m_CudaContextManager->getGpuDispatcher();
+	}
 
 	PxScene* tempScene = m_Physics->createScene(a_SceneDescription);
 
@@ -85,13 +95,18 @@ PxControllerManager* PhysicsSystem::GetControllerManager()
 
 void PhysicsSystem::StepPhysics(double deltaTime)
 {
-	PX_UNUSED(false); //I don't know what this does
+	PX_UNUSED(false); 
 
+	//if less time has passed than needed to simulate a physics step
+	//then return immediatly
 	m_Accumulator += deltaTime;
 	if (m_Accumulator < (1.0 / 30.0))
 		return;
 
+	//Otherwise subtract the step size from the accumulator and simulate
+	m_Accumulator -= (1.0/30.0);
 	m_Scene->simulate(1.0f / 30.0f);
+	m_Scene->fetchResults(true);
 	return;
 }
 

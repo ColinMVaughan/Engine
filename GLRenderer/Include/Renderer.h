@@ -85,6 +85,7 @@ public:
 
 	void PreRender();
 	void Render(Mesh* mesh, Material* material, const float* matrix);
+	void RenderInstanced();
 	void PostRender();
 
 	void SetCamera(Camera* cam);

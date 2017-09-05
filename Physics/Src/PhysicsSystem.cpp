@@ -22,7 +22,9 @@ bool PhysicsSystem::Initalize(PhysicsSettings a_physicsSettings)
 	if (a_physicsSettings.OpenGLContext != nullptr && a_physicsSettings.GpuRigidbodies)
 	{
 		PxCudaContextManagerDesc cudaDesc;
-		cudaDesc.graphicsDevice = a_physicsSettings.OpenGLContext;
+		//cudaDesc.appGUID = 0;
+		//cudaDesc.graphicsDevice = a_physicsSettings.OpenGLContext;
+
 		m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaDesc);
 		m_GPURigidbodiesEnabled = true;
 	}

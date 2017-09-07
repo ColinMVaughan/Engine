@@ -6,17 +6,19 @@ file(GLOB HEADERS "Include/*.h")
 
 add_library(Physics STATIC ${SOURCES} ${HEADERS})
 
-set(PhysLibraryPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/Checked_x86")
-set(PhysLibType "CHECKED_x86.lib")
+set(PhysLibType "DEBUG")
+set(PhysLibPlatform "_x86")
+set(PhysLibraryPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/${PhysLibType}${PhysLibPlatform}")
+
 
 target_link_libraries(Physics 
-${PhysLibraryPath}/PhysX3${PhysLibType}
-${PhysLibraryPath}/PhysX3Common${PhysLibType}
-${PhysLibraryPath}/PxFoundation${PhysLibType}
-${PhysLibraryPath}/PxPvdSDK${PhysLibType}
-${PhysLibraryPath}/PhysX3ExtensionsCHECKED.lib
-${PhysLibraryPath}/PhysX3Gpu${PhysLibType}
-${PhysLibraryPath}/PhysX3CharacterKinematic${PhysLibType})
+${PhysLibraryPath}/PhysX3${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PxFoundation${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PxPvdSDK${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PhysX3Extensions${PhysLibType}.lib
+${PhysLibraryPath}/PhysX3Gpu${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PhysX3CharacterKinematic${PhysLibType}${PhysLibPlatform}.lib)
 
 
 target_include_directories(Physics PUBLIC 
@@ -34,14 +36,14 @@ install(TARGETS Physics
 		
 install(FILES ${HEADERS} DESTINATION Include/Physics)
 
-set(PhysDLLPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/Checked_x86")
-set(PhysDLLType "CHECKED_x86.dll")
+set(PhysDLLPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/${PhysLibType}${PhysLibPlatform}")
+set(PhysDLLType "DEBUG_x86.dll")
 
 install(FILES 
-${PhysDLLPath}/PhysX3${PhysDLLType}
-${PhysDLLPath}/PhysX3Common${PhysDLLType}
-${PhysDLLPath}/PxFoundation${PhysDLLType}
-${PhysDLLPath}/PxPvdSDK${PhysDLLType}
+${PhysDLLPath}/PhysX3${PhysLibType}${PhysLibPlatform}
+${PhysDLLPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}
+${PhysDLLPath}/PxFoundation${PhysLibType}${PhysLibPlatform}
+${PhysDLLPath}/PxPvdSDK${PhysLibType}${PhysLibPlatform}
 ${PhysDLLPath}/nvToolsExt32_1.dll
-${PhysDLLPath}/PhysX3CharacterKinematic${PhysDLLType}
+${PhysDLLPath}/PhysX3CharacterKinematic${PhysLibType}${PhysLibPlatform}
 DESTINATION bin)

@@ -60,8 +60,8 @@ public:
 class PointLightComponent
 {
 public:
-	GMath::vec3f position;
-	GMath::vec3f Color;
+	glm::fvec3 position;
+	glm::fvec3 Color;
 };
 
 class PointLightSystem : public System<PointLightComponent, Transform>

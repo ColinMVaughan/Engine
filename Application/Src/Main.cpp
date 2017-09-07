@@ -12,10 +12,8 @@
 #include <GL/glew.h>
 #include <SDL\SDL.h>
 
-
 #include "Application.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include <GMath\MathLibrary.h>
 #include <PhysicsSystem.h>
 #include <RenderSystem.h>
 #include "PlayerControlSystem.h"
@@ -66,7 +64,7 @@ class Demo : public Application
 
 		//Add Light
 		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Orb);
-		light->Color = GMath::vec3f({ 424.0f, 350.0f, 110.0f });
+		light->Color = glm::fvec3({ 424.0f, 350.0f, 110.0f });
 		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 
 

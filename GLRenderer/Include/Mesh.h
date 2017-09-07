@@ -1,13 +1,13 @@
 #pragma once 
 #include <vector>
 #include <GL/glew.h>
-#include <GMath/MathLibrary.h>
-
+#include <glm/mat4x4.hpp>
 class Mesh
 {
 public:
-	typedef GMath::vec3f vec3;
-	typedef GMath::vec2f vec2;
+	
+	typedef glm::fvec3 vec3;
+	typedef glm::fvec2 vec2;
 public:
 	Mesh();
 	~Mesh();

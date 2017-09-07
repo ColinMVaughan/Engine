@@ -41,8 +41,8 @@ void Application::PreInitalize()
 	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
 
 	PhysicsSettings PSettings;
-	//PSettings.GpuRigidbodies = true;
-	//PSettings.OpenGLContext = SDL_GL_GetCurrentContext();
+	PSettings.GpuRigidbodies = true;
+	PSettings.OpenGLContext = SDL_GL_GetCurrentContext();
 	m_Physics.Initalize(PSettings);
 }
 

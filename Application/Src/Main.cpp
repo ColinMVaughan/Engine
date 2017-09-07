@@ -34,7 +34,7 @@ class Demo : public Application
 		m_Renderer->Initalize();
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Tokyo_BigSight_3k.hdr");
 
-		GMath::SetFrustumProjection(m_camera.m_Projection, 45.0f, 1280.0f/720.0f, 0.1f, 1000.0f);
+		m_camera.m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
 		glEnable(GL_DEPTH_TEST);
 
 		//--------------------------------------------------------------------------------------------
@@ -131,9 +131,9 @@ class Demo : public Application
 
 					//Add light
 
-					auto cubelight = m_ECS->AddComponent<PointLightComponent>(cube);
-					cubelight->Color = GMath::vec3f({ 10.0f, 10.0f, 10.0f });
-					m_Renderer->AddPointLight(&cubelight->Color, &cubelight->position, false);
+					//auto cubelight = m_ECS->AddComponent<PointLightComponent>(cube);
+					//cubelight->Color = GMath::vec3f({ 10.0f, 10.0f, 10.0f });
+					//m_Renderer->AddPointLight(&cubelight->Color, &cubelight->position, false);
 				}
 			}
 		}

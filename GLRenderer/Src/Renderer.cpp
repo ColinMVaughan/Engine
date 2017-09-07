@@ -140,7 +140,7 @@ void Renderer::AddMesh(Mesh* mesh, Material* material)
 //
 // TODO: Add safegaurds
 //---------------------------------------------------
-void Renderer::AddPointLight(GMath::vec3f* lightColor, GMath::vec3f* lightpPosition, bool castsShadows)
+void Renderer::AddPointLight(glm::fvec3* lightColor, glm::fvec3* lightpPosition, bool castsShadows)
 {
 	m_PointLightPositions.push_back(lightpPosition);
 	m_PointLightColors.push_back(lightColor);
@@ -153,7 +153,7 @@ void Renderer::AddPointLight(GMath::vec3f* lightColor, GMath::vec3f* lightpPosit
 //
 // TODO: Actually add directional Light
 //---------------------------------------------------
-void Renderer::AddDirectionalLight(GMath::vec3f lightColor, GMath::vec3f lightDirection, bool castsShadows)
+void Renderer::AddDirectionalLight(glm::fvec3 lightColor, glm::fvec3 lightDirection, bool castsShadows)
 {
 
 }
@@ -177,7 +177,7 @@ void Renderer::PreRender()
 
 	GBufferPass.Bind();
 	GBufferPass.SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
-	GBufferPass.SendUniformMat4("uProj", m_Camera->m_Projection.GetData(), false);
+	GBufferPass.SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
 
 	GBufferPass.SendUniform("AO", 4);
 	GBufferPass.SendUniform("Normal", 3);
@@ -240,7 +240,7 @@ void Renderer::PostRender()
 
 
 	StaticGeometry.SendUniformMat4("view", &glm::inverse(m_Camera->m_Transform)[0][0], false);
-	StaticGeometry.SendUniformMat4("projection", m_Camera->m_Projection.GetData(), false);
+	StaticGeometry.SendUniformMat4("projection", &m_Camera->m_Projection[0][0], false);
 	StaticGeometry.SendUniform("environmentMap", 0);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMap.TexObj);

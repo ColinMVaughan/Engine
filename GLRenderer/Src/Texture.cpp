@@ -1,6 +1,5 @@
 #include "Texture.h"
 #include "stb_image.h"
-//#include "SOIL\SOIL.h"
 
 
 #include <iostream>

@@ -107,7 +107,7 @@ void ParticleEffect::Update(float elapsed)
 
 		//send the particle in a random direction, with a velocity between our range
 		_Particles.Velocities[_NumCurrentParticles] = vec3({ RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f) });
-		_Particles.Velocities[_NumCurrentParticles].Normalize();
+		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity[0], RangeVelocity[1]);
 
 		//counters...
@@ -138,8 +138,11 @@ void ParticleEffect::Update(float elapsed)
 
 		float interp = _Particles.Ages[i] / _Particles.Lifetimes[i];
 		
-		_Particles.Alpha[i] = GMath::LERP(LerpAlpha[0], LerpAlpha[1], interp);
-		_Particles.Size[i]	= GMath::LERP(LerpSize[0], LerpSize[1], interp);
+		//Commenting this out because honestly im going to replace this whole class with GPU particles.
+
+		//_Particles.Alpha[i] = GMath::LERP(LerpAlpha[0], LerpAlpha[1], interp);
+		//_Particles.Size[i]	= GMath::LERP(LerpSize[0], LerpSize[1], interp);
+
 	}
 
 	//update OpenGL on the changes

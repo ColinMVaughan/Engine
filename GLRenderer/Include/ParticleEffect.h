@@ -1,13 +1,20 @@
 #pragma once
 
+//------------------------------------------------
+//				DEPRICATED!
+//	This class will be replaced by GPU Particles
+//------------------------------------------------
+
+
 #include <vector>
-#include <GMath/MathLibrary.h>
+//#include <GMath/MathLibrary.h>
+#include <glm\mat4x4.hpp>
 #include "Texture.h"
 
 struct ParticleList
 {
-	GMath::vec3f *Positions = nullptr;
-	GMath::vec3f *Velocities = nullptr;
+	glm::fvec3 *Positions = nullptr;
+	glm::fvec3 *Velocities = nullptr;
 	float *Size = nullptr;
 	float *Alpha = nullptr;
 	float *Ages = nullptr;
@@ -18,9 +25,10 @@ class ParticleEffect
 {
 
 public:
-	typedef GMath::mat4f mat4;
-	typedef GMath::vec3f vec3;
-	typedef GMath::vec2f vec2;
+	
+	typedef glm::mat4 mat4;
+	typedef glm::fvec3 vec3;
+	typedef glm::fvec2 vec2;
 
 public:
 	ParticleEffect();

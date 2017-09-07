@@ -55,16 +55,16 @@ private:
 class Camera
 {
 public:
-	GMath::vec3f GetPosition()
+	glm::fvec3 GetPosition()
 	{
 		glm::vec4 pos(0,0,0,1);
 		pos = m_Transform * pos;
 
-		return GMath::vec3f({ pos[0], pos[1], pos[2] });
+		return glm::fvec3({ pos[0], pos[1], pos[2] });
 	}
 
 
-	GMath::mat4f m_Projection;
+	glm::mat4 m_Projection;
 	glm::mat4 m_Transform;
 };
 
@@ -79,8 +79,8 @@ public:
 	void Initalize();
 	void InitalizePBREnvironmentMaps(std::string filepath);
 	void AddMesh(Mesh* mesh, Material* material);
-	void AddPointLight(GMath::vec3f* lightColor, GMath::vec3f* lightpPsition, bool castsShadows);
-	void AddDirectionalLight(GMath::vec3f lightColor, GMath::vec3f lightDirection, bool castsShadows);
+	void AddPointLight(glm::fvec3* lightColor, glm::fvec3* lightpPsition, bool castsShadows);
+	void AddDirectionalLight(glm::fvec3 lightColor, glm::fvec3 lightDirection, bool castsShadows);
 	
 
 	void PreRender();
@@ -104,8 +104,8 @@ private:
 	std::vector<Material*> MaterialList;
 
 	//Lights
-	std::vector<GMath::vec3f*> m_PointLightColors;
-	std::vector<GMath::vec3f*> m_PointLightPositions;
+	std::vector<glm::fvec3*> m_PointLightColors;
+	std::vector<glm::fvec3*> m_PointLightPositions;
 
 	//updateTimer
 	Timer* m_UpdateTimer;

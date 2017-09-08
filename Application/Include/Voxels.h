@@ -16,21 +16,20 @@ public:
 class VoxelContainer
 {
 public:
-	void Initalize(int x, int y, int z)
-	{
 
-	}
-
-	void ReadQubicBinaryFile(std::string file);
-	void ReadVoxFile(std::string filepath);
+	void ReadQubicBinaryFile(std::string file, Mesh* mesh);
 
 private:
-	struct ContainerSize { int x, y, z; };
-	ContainerSize m_ContainerSize;
+	void ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
+
+
 
 	Voxel voxels[10][10][10];
 	physx::PxRigidStatic* m_Body;
+
+
 	Material m_Material;
+	Mesh m_Mesh;
 };
 
 

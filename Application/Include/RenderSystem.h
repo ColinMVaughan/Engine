@@ -43,7 +43,7 @@ public:
 	void Update(double deltaTime, unsigned int entity) override
 	{
 		auto mat = m_CManager->GetComponent<Transform>(entity)->GetGlobalTransformMatrix();
-
+		//mat.scale(PxVec4(1, 1, 1, 1));
 		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity), mat.front());
 	}
 	void PostUpdate(double deltaTime) override

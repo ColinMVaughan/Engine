@@ -5,7 +5,7 @@
 #define CODEFLAG 2
 #define NEXTSLICEFLAG 6
 
-void VoxelContainer::ReadQubicBinaryFile(std::string file)
+void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
 {
 	char* data;
 	Uint32 offset;
@@ -87,6 +87,9 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file)
 			}
 		}
 	}
+
+	ImportQB(Matrix, mesh, matrixSizeX, matrixSizeY, matrixSizeZ);
+	delete[] Matrix;
 	//Uint32 x = 0;
 	//Uint32 y = 0;
 	//Uint32 z = 0;
@@ -130,21 +133,38 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file)
 	//}
 
 
-	for (int i = 0; i < matrixSizeX*matrixSizeY*matrixSizeZ; ++i)
+}
+
+void VoxelContainer::ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
+{
+
+	std::vector<glm::fvec3> offsets;
+	size_t blockNumber = 0;
+
+	//iterate through each potential block in the matrix
+	for (int z = 0; z < sizeZ; ++z)
 	{
-		Uint32 val = Matrix[i];
+		for (int y = 0; y < sizeY; ++y)
+		{
+			for (int x = 0; x < sizeX; ++x)
+			{
+				//get the RGBA value of the block and extract the alpha value
+				Uint32 temp = Matrix[x + y*sizeX + z*sizeX*sizeY];
+				Uint8* tempPtr = (Uint8*)&temp;
 
-
-		Uint8* valPtr = (Uint8*)&val;
-		Uint8 testval = 255;
-
-		std::cout << "\n-----------------";
-		std::cout << "\n BLOCK: " << i;
-		std::cout << "\n R: " << (int)valPtr[0];
-		std::cout << "\n G: " << (int)valPtr[1];
-		std::cout << "\n B: " << (int)valPtr[2];
-		std::cout << "\n A: " << (int)valPtr[3];
-
+				//if the block is visible, add its offset to the vector
+				if ((int)tempPtr[3] != 0)
+				{
+					offsets.push_back(glm::fvec3(x, y, z));
+					blockNumber++;
+				}
+			}
+		}
 	}
-	std::cout << "\nHoly Shit";
+
+	//push the positions from all visible blocks to the instance buffer
+	if (!mesh->SetInstancing(offsets.data(), blockNumber))
+	{
+		std::cout << "\nSomething went wrong with the instancing";
+	}
 }

@@ -33,7 +33,7 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
-	if (!GBufferPassInstanced.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
+	if (!GBufferPassInstanced.Load("./Assets/Shaders/InstancedGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
 		std::cout << "Shaders failed to initalize.\n";
 		system("pause");
@@ -181,16 +181,7 @@ void Renderer::PreRender()
 
 	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
 
-	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
-	GBufferPass.SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
 
-	GBufferPass.SendUniform("AO", 4);
-	GBufferPass.SendUniform("Normal", 3);
-	GBufferPass.SendUniform("Albedo", 2);
-	GBufferPass.SendUniform("Roughness", 1);
-	GBufferPass.SendUniform("Metallic", 0);
-	GBuffer.Bind();
 }
 
 //---------------------------------
@@ -203,7 +194,23 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 	//			Render Geometry to GBuffer
 	//-------------------------------------------------------------------------------
 	//Draw each mesh in Meshlist.
-	GBufferPass.SendUniformMat4("uModel", matrix, false);
+	ShaderProgram* GBP = &GBufferPass;
+	if (mesh->IsInstanced)
+	{
+		GBP = &GBufferPassInstanced;
+	}
+
+	GBP->Bind();
+	GBP->SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
+	GBP->SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
+
+	GBP->SendUniform("AO", 4);
+	GBP->SendUniform("Normal", 3);
+	GBP->SendUniform("Albedo", 2);
+	GBP->SendUniform("Roughness", 1);
+	GBP->SendUniform("Metallic", 0);
+	GBuffer.Bind();
+	GBP->SendUniformMat4("uModel", matrix, false);
 
 		glActiveTexture(GL_TEXTURE0);
 		material->Metallic.Bind();
@@ -217,7 +224,10 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 		material->AO.Bind();
 
 		glBindVertexArray(mesh->VAO);
-		glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumVertices());
+		if (mesh->IsInstanced)
+			glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->GetNumVertices(), mesh->InstanceNumber);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumVertices());
 		glBindVertexArray(0);
 
 		material->AO.UnBind();
@@ -229,14 +239,15 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 		material->Roughness.UnBind();
 		glActiveTexture(GL_TEXTURE0);
 		material->Metallic.UnBind();
+		GBP->UnBind();
+		GBuffer.UnBind();
 	
 }
 
 
 void Renderer::PostRender()
 {
-	GBufferPass.UnBind();
-	GBuffer.UnBind();
+
 
 	//-----------------------------------------------
 	//			Render Skybox

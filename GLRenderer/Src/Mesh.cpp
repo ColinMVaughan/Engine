@@ -187,6 +187,7 @@ void Mesh::Unload()
 	glDeleteBuffers(1, &VBO_Normals);
 	glDeleteBuffers(1, &VBO_UVs);
 	glDeleteBuffers(1, &VBO_Verticies);
+	//glDeleteBuffers(1, &VBO_Instance);
 	glDeleteVertexArrays(1, &VAO);
 
 	VBO_Normals		= 0;
@@ -206,4 +207,28 @@ unsigned int Mesh::GetNumFaces() const
 unsigned int Mesh::GetNumVertices() const
 {
 	return _NumVertices;
+}
+
+bool Mesh::SetInstancing(vec3* dataBuffer, size_t bufferSize)
+{
+	//if the vertex attrib object has not been created, 
+	//we can not generate our instance buffer
+	if (VAO == 0)
+		return false;
+
+	glGenBuffers(1, &VBO_Instance);
+	glBindVertexArray(VAO);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Instance);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3)* bufferSize, &dataBuffer[0], GL_STATIC_DRAW);
+	glVertexAttribPointer((GLuint)3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glVertexAttribDivisor(3, 1);
+	glBindVertexArray(0);
+
+	IsInstanced = true;
+	InstanceNumber = bufferSize;
+	return true;
 }

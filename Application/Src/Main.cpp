@@ -39,34 +39,34 @@ class Demo : public Application
 		//--------------------------------------------------------------------------------------------
 		//Orb Setup
 		//--------------------------------------------------------------------------------------------
-
-		//Create entity
-		Entity Orb = m_ECS->CreateEntity();
-
-		//Add Mesh and Material
-		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/Orb.obj");
-		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Gold");
-
-		//create shape and physics material
+//
+//		//Create entity
+//		Entity Orb = m_ECS->CreateEntity();
+//
+//		//Add Mesh and Material
+//		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/Orb.obj");
+//		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Gold");
+//
+//		//create shape and physics material
 		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 		PxShape* shape = m_Physics.GetPhysics()->createShape(PxSphereGeometry(3.0f), *myMat, true);
-
-		//Add PlayerController
-		PxCapsuleControllerDesc description;
-		description.position = PxExtendedVec3(0, 10.0f, 0);
-		description.height = 0.001f;
-		description.radius = 3.0f;
-		description.material = myMat;
-		
-		auto pc = m_ECS->AddComponent<PlayerControl>(Orb);
-		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
-		m_ECS->AddComponent<Transform>(Orb)->SetActor(pc->GetActor());
-		
-
-		//Add Light
-		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Orb);
-		light->Color = glm::fvec3({ 424.0f, 350.0f, 110.0f });
-		m_Renderer->AddPointLight(&light->Color, &light->position, false);
+//
+//		//Add PlayerController
+//		PxCapsuleControllerDesc description;
+//		description.position = PxExtendedVec3(0, 10.0f, 0);
+//		description.height = 0.001f;
+//		description.radius = 3.0f;
+//		description.material = myMat;
+//		
+//		auto pc = m_ECS->AddComponent<PlayerControl>(Orb);
+//		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
+//		m_ECS->AddComponent<Transform>(Orb)->SetActor(pc->GetActor());
+//		
+//
+//		//Add Light
+//		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Orb);
+//		light->Color = glm::fvec3({ 424.0f, 350.0f, 110.0f });
+//		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 
 
 		//--------------------------------------------------------------------------------------------
@@ -77,8 +77,8 @@ class Demo : public Application
 		Entity Plane = m_ECS->CreateEntity();
 
 		//Add Mesh and Material
-		m_ECS->AddComponent<Mesh>(Plane)->LoadFromFile("./Assets/Models/Plane.obj");
-		m_ECS->AddComponent<Material>(Plane)->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
+		//m_ECS->AddComponent<Mesh>(Plane)->LoadFromFile("./Assets/Models/Plane.obj");
+		//m_ECS->AddComponent<Material>(Plane)->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
 
 
 		//Add Physics / rigidBody
@@ -94,55 +94,64 @@ class Demo : public Application
 		//------------------------------------------------------------------------------------------------
 		// Tiny Cubes Setup
 		//-------------------------------------------------------------------------------------------------
-		Mesh* cubeMesh = new Mesh();
-		Material* cubeMat = new Material();
-
-		cubeMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		cubeMat->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
-
-		PxMaterial* cubePhysMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
-		PxShape* cubeShape = m_Physics.GetPhysics()->createShape(PxBoxGeometry(0.5f, 0.5f, 0.5f), *cubePhysMat, false);
-
-
-		//Create a 3d grid of dynamic cubes
-		for (float y = 100.0f; y < 105.0f; y += 1.1f)
-		{
-			for (float x = 0.0f; x < 5.0f; x += 1.1f)
-			{
-				for (float z = 0.0f; z < 5.0f; z += 1.1f)
-				{
-
-					Entity cube = m_ECS->CreateEntity();
-					
-					//sharing mesh and material to avoid needlessly wasting video memory 
-					//(Cpu mem still wasted but I want SOME accuracy :p)
-					*m_ECS->AddComponent<Mesh>(cube) = *cubeMesh;
-					*m_ECS->AddComponent<Material>(cube) = *cubeMat;
-
-					//Add rigidbody / rigidActor
-					PxRigidBody* cubeBody = m_Physics.GetPhysics()->createRigidDynamic(PxTransform(x, y, z));
-					m_Physics.GetScene()->addActor(*cubeBody);
-					m_ECS->AddComponent<Transform>(cube)->SetActor(cubeBody); //Attach rigidbody to Transform component
-
-					//Add Shape
-					cubeBody->attachShape(*cubeShape);
-					cubeBody->setMass(10.0f);
-
-					//Add light
-
-					//auto cubelight = m_ECS->AddComponent<PointLightComponent>(cube);
-					//cubelight->Color = GMath::vec3f({ 10.0f, 10.0f, 10.0f });
-					//m_Renderer->AddPointLight(&cubelight->Color, &cubelight->position, false);
-				}
-			}
-		}
+		//Mesh* cubeMesh = new Mesh();
+		//Material* cubeMat = new Material();
+		//
+		//cubeMesh->LoadFromFile("./Assets/Models/Cube.obj");
+		//cubeMat->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
+		//
+		//PxMaterial* cubePhysMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
+		//PxShape* cubeShape = m_Physics.GetPhysics()->createShape(PxBoxGeometry(0.5f, 0.5f, 0.5f), *cubePhysMat, false);
+		//
+		//
+		////Create a 3d grid of dynamic cubes
+		//for (float y = 100.0f; y < 105.0f; y += 1.1f)
+		//{
+		//	for (float x = 0.0f; x < 5.0f; x += 1.1f)
+		//	{
+		//		for (float z = 0.0f; z < 5.0f; z += 1.1f)
+		//		{
+		//
+		//			Entity cube = m_ECS->CreateEntity();
+		//			
+		//			//sharing mesh and material to avoid needlessly wasting video memory 
+		//			//(Cpu mem still wasted but I want SOME accuracy :p)
+		//			*m_ECS->AddComponent<Mesh>(cube) = *cubeMesh;
+		//			*m_ECS->AddComponent<Material>(cube) = *cubeMat;
+		//
+		//			//Add rigidbody / rigidActor
+		//			PxRigidBody* cubeBody = m_Physics.GetPhysics()->createRigidDynamic(PxTransform(x, y, z));
+		//			m_Physics.GetScene()->addActor(*cubeBody);
+		//			m_ECS->AddComponent<Transform>(cube)->SetActor(cubeBody); //Attach rigidbody to Transform component
+		//
+		//			//Add Shape
+		//			cubeBody->attachShape(*cubeShape);
+		//			cubeBody->setMass(10.0f);
+		//
+		//			//Add light
+		//
+		//			//auto cubelight = m_ECS->AddComponent<PointLightComponent>(cube);
+		//			//cubelight->Color = GMath::vec3f({ 10.0f, 10.0f, 10.0f });
+		//			//m_Renderer->AddPointLight(&cubelight->Color, &cubelight->position, false);
+		//		}
+		//	}
+		//}
 
 		shape->release();
 
-
+		//VOXEL TEST
 		//-------------------------------------------
-		VoxelContainer voxTest;
-		voxTest.ReadQubicBinaryFile("./Assets/Voxels/TestVoxel.qb");
+
+		Entity World = m_ECS->CreateEntity();
+		m_ECS->AddComponent<Transform>(World)->SetActor(groundPlane);
+		auto worldMesh = m_ECS->AddComponent<Mesh>(World);
+		m_ECS->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
+
+		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
+		m_ECS->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestVoxel.qb", worldMesh);
+
+		//VoxelContainer voxTest;
+		//voxTest.ReadQubicBinaryFile("./Assets/Voxels/TestVoxel.qb");
 		//----------------------------------------------
 
 		return;

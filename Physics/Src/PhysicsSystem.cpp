@@ -124,6 +124,9 @@ PxMat44 Transform::GetGlobalTransformMatrix()
 		return PxMat44(m_Actor->getGlobalPose().transform(m_Parent->getGlobalPose()));
 	else
 		return PxMat44(m_Actor->getGlobalPose());
+
+	PxMat44 mat;
+	
 }
 
 PxMat44 Transform::GetLocalTransformMatrix()

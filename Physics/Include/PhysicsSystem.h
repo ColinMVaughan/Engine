@@ -17,6 +17,7 @@ public:
 
 	PxTransform GetTransform();
 
+	PxTransform m_Transform;
 private:
 	PxRigidActor* m_Actor = nullptr;
 	PxRigidActor* m_Parent = nullptr;

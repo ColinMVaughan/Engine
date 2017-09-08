@@ -26,8 +26,14 @@ void Renderer::Initalize()
 	}
 
 	//Default Gbuffer Shader.
-	//TODO: Make this shader customizable
 	if (!GBufferPass.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
+	{
+		std::cout << "Shaders failed to initalize.\n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!GBufferPassInstanced.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
 		std::cout << "Shaders failed to initalize.\n";
 		system("pause");

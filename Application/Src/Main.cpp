@@ -17,6 +17,7 @@
 #include <PhysicsSystem.h>
 #include <RenderSystem.h>
 #include "PlayerControlSystem.h"
+#include "Voxels.h"
 
 class Demo : public Application
 {
@@ -138,6 +139,11 @@ class Demo : public Application
 
 		shape->release();
 
+
+		//-------------------------------------------
+		VoxelContainer voxTest;
+		voxTest.ReadQubicBinaryFile("./Assets/Voxels/TestVoxel.qb");
+		//----------------------------------------------
 
 		return;
 	}

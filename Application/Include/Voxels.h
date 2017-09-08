@@ -21,6 +21,9 @@ public:
 
 	}
 
+	void ReadQubicBinaryFile(std::string file);
+	void ReadVoxFile(std::string filepath);
+
 private:
 	struct ContainerSize { int x, y, z; };
 	ContainerSize m_ContainerSize;

@@ -118,6 +118,7 @@ private:
 	//Shaders used for rendering
 	ShaderProgram StaticGeometry;
 	ShaderProgram GBufferPass;
+	ShaderProgram GBufferPassInstanced;
 	ShaderProgram LightPassShader;
 	ShaderProgram LightingCombinedShader;
 	

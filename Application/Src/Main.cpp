@@ -82,7 +82,7 @@ class Demo : public Application
 
 
 		//Add Physics / rigidBody
-		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
+		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(1, 0, 0, 0), *myMat);
 		m_Physics.GetScene()->addActor(*groundPlane);
 
 		m_ECS->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
@@ -162,8 +162,9 @@ class Demo : public Application
 		TotalRotation += 0.005f;
 
 		m_camera.m_Transform = glm::mat4();
+		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(50.0f, 0.0f, 50.0f));
 		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, TotalRotation, glm::vec3(0, 1, 0));
-		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(0.0f, 5.5f, 20.0f));
+		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(0.0f, 55.5f, 180.0f));
 		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.15f, glm::vec3(1, 0, 0));
 
 		return;

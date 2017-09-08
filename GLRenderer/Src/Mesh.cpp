@@ -219,10 +219,10 @@ bool Mesh::SetInstancing(vec3* dataBuffer, size_t bufferSize)
 	glGenBuffers(1, &VBO_Instance);
 	glBindVertexArray(VAO);
 
-
+	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_Instance);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3)* bufferSize, &dataBuffer[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer((GLuint)3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glVertexAttribDivisor(3, 1);

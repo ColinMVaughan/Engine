@@ -163,7 +163,7 @@ void VoxelContainer::ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t s
 	}
 
 	//push the positions from all visible blocks to the instance buffer
-	if (!mesh->SetInstancing(offsets.data(), blockNumber))
+	if (!mesh->SetInstancing(offsets.data(), offsets.size()))
 	{
 		std::cout << "\nSomething went wrong with the instancing";
 	}

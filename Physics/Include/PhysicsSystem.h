@@ -8,19 +8,21 @@ using namespace physx;
 class Transform
 {
 public:
+	Transform();
 
 	PxMat44 GetGlobalTransformMatrix();
 	PxMat44 GetLocalTransformMatrix();
 
 	void SetActor(PxRigidActor* transform);
-	void SetParentActor(PxRigidActor* parent);
+	void SetParentTransform(Transform* parent);
 
-	PxTransform GetTransform();
+	PxTransform* GetTransform();
 
-	PxTransform m_Transform;
+
 private:
 	PxRigidActor* m_Actor = nullptr;
-	PxRigidActor* m_Parent = nullptr;
+	Transform* m_Parent = nullptr;
+	PxTransform m_Transform;
 };
 
 

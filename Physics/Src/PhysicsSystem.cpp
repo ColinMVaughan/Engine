@@ -118,20 +118,28 @@ void  PhysicsSystem::FetchResults()
 }
 //-------------------------------------------------------------------------------
 
+Transform::Transform()
+{
+	m_Transform = PxTransform(0, 0, 0);
+}
+
 PxMat44 Transform::GetGlobalTransformMatrix()
 {
-	if(m_Parent != nullptr)
-		return PxMat44(m_Actor->getGlobalPose().transform(m_Parent->getGlobalPose()));
-	else
-		return PxMat44(m_Actor->getGlobalPose());
+	if (m_Actor)
+		m_Transform = m_Actor->getGlobalPose();
 
-	PxMat44 mat;
-	
+	if (m_Parent)
+		return PxMat44(m_Transform.transform(*m_Parent->GetTransform()));
+
+	return PxMat44(m_Transform);
 }
 
 PxMat44 Transform::GetLocalTransformMatrix()
 {
-	return PxMat44(m_Actor->getGlobalPose());
+	if (m_Actor)
+		m_Transform = m_Actor->getGlobalPose();
+
+	return PxMat44(m_Transform);
 }
 
 
@@ -140,12 +148,15 @@ void Transform::SetActor(PxRigidActor* actor)
 	m_Actor = actor;
 }
 
-void Transform::SetParentActor(PxRigidActor* parent)
+void Transform::SetParentTransform(Transform* parent)
 {
 	m_Parent = parent;
 }
 
-PxTransform Transform::GetTransform()
+PxTransform* Transform::GetTransform()
 {
-	return m_Actor->getGlobalPose();
+	if (m_Actor)
+		m_Transform = m_Actor->getGlobalPose();
+
+	return &m_Transform;
 }

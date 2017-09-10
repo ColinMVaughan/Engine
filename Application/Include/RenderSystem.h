@@ -73,7 +73,7 @@ public:
 
 	void Update(double deltaTime, unsigned int entity) override
 	{
-		PxVec3 Pos = m_CManager->GetComponent<Transform>(entity)->GetTransform().p;
+		PxVec3 Pos = m_CManager->GetComponent<Transform>(entity)->GetTransform()->p;
 		PointLightComponent* light = m_CManager->GetComponent<PointLightComponent>(entity);
 
 		light->position[0] = Pos.x;

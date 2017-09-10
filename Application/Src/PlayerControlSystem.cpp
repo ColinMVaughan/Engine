@@ -43,17 +43,17 @@ void PlayerControlSystem::KeyDown(unsigned char key)
 {
 	switch (key)
 	{
-	case 'w':
-		XForce.x = 0.3f;
+	case 'W':
+		XForce.z = 0.3f;
 		break;
-	case 'a':
-		ZForce.z = -0.3f;
+	case 'A':
+		ZForce.x = -0.3f;
 		break;
-	case 's':
-		XForce.x = -0.3f;
+	case 'S':
+		XForce.z = -0.3f;
 		break;
-	case'd':
-		ZForce.z = 0.3f;
+	case'D':
+		ZForce.x = 0.3f;
 		break;
 
 	}
@@ -63,17 +63,17 @@ void PlayerControlSystem::KeyUp(unsigned char key)
 {
 	switch (key)
 	{
-	case 'w':
-		XForce.x = 0.0f;
+	case 'W':
+		XForce.z = 0.0f;
 		break;
-	case 'a':
-		ZForce.z = 0.0f;
+	case 'A':
+		ZForce.x = 0.0f;
 		break;
-	case 's':
-		XForce.x = 0.0f;
+	case 'S':
+		XForce.z = 0.0f;
 		break;
-	case'd':
-		ZForce.z = 0.0f;
+	case'D':
+		ZForce.x = 0.0f;
 		break;
 
 	}

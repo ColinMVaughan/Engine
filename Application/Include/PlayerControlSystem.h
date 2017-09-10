@@ -42,7 +42,7 @@ private:
 	PxVec3 XForce;
 	PxVec3 YForce;
 	PxVec3 ZForce;
-	
+	float speed = 0.3f;
 	PxVec3 MoveDirection;
 };
 

@@ -68,11 +68,12 @@ void Application::PreUpdate(double deltaTime)
 			break;
 		}
 	}
+	m_Physics.StepPhysics(deltaTime);
 }
 
 void Application::PostUpdate(double deltaTime)
 {
-	m_Physics.StepPhysics(deltaTime);
+
 	m_ECS->UpdateSystems(deltaTime);
 }
 
@@ -85,16 +86,16 @@ void Application::KeyUp(SDL_KeyboardEvent key)
 {
 	for each (auto callback in InputCallbackList)
 	{
-		//callback->KeyUp(*SDL_GetKeyName(key.keysym.sym));
+		callback->KeyUp(*SDL_GetKeyName(key.keysym.sym));
 	}
 }
 
 void Application::KeyDown(SDL_KeyboardEvent key)
 {
-	std::cout << *SDL_GetKeyName(key.keysym.sym);
+	std::cout <<*SDL_GetKeyName(key.keysym.sym);
 	for each (auto callback in InputCallbackList)
 	{
-		//callback->KeyDown(*SDL_GetKeyName(key.keysym.sym));
+		callback->KeyDown(*SDL_GetKeyName(key.keysym.sym));
 	}
 }
 

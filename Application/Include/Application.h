@@ -54,6 +54,9 @@ protected:
 	Timer* m_Timer;
 	std::vector<BaseSystem*> InputCallbackList;
 	SDL_Event InputEvent;
+
+	//Take this out later
+	Transform CameraPos;
 };
 
 #endif

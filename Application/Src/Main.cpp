@@ -31,43 +31,50 @@ class Demo : public Application
 
 		m_Renderer->SetCamera(&m_camera);
 		m_Renderer->Initalize();
-		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Tokyo_BigSight_3k.hdr");
+		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/GCanyon_C_YumaPoint_3k.hdr");
 
 		m_camera.m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
-		glEnable(GL_DEPTH_TEST);
+
+
 
 		//--------------------------------------------------------------------------------------------
-		//Orb Setup
+		//Player Setup
 		//--------------------------------------------------------------------------------------------
-//
-//		//Create entity
-//		Entity Orb = m_ECS->CreateEntity();
-//
-//		//Add Mesh and Material
-//		m_ECS->AddComponent<Mesh>(Orb)->LoadFromFile("./Assets/Models/Orb.obj");
-//		m_ECS->AddComponent<Material>(Orb)->SetTexturesFromFolder("./Assets/Textures/Gold");
-//
-//		//create shape and physics material
+		//Create entity
+		Entity Player = m_ECS->CreateEntity();
+
+		//Add Mesh and Material
+		auto characterMesh = m_ECS->AddComponent<Mesh>(Player);
+		characterMesh->LoadFromFile("./Assets/Models/Cube.obj");
+
+		m_ECS->AddComponent<VoxelContainer>(Player)->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
+		m_ECS->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
+
+		//create shape and physics material
 		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 		PxShape* shape = m_Physics.GetPhysics()->createShape(PxSphereGeometry(3.0f), *myMat, true);
-//
-//		//Add PlayerController
-//		PxCapsuleControllerDesc description;
-//		description.position = PxExtendedVec3(0, 10.0f, 0);
-//		description.height = 0.001f;
-//		description.radius = 3.0f;
-//		description.material = myMat;
-//		
-//		auto pc = m_ECS->AddComponent<PlayerControl>(Orb);
-//		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
-//		m_ECS->AddComponent<Transform>(Orb)->SetActor(pc->GetActor());
-//		
-//
-//		//Add Light
-//		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Orb);
-//		light->Color = glm::fvec3({ 424.0f, 350.0f, 110.0f });
-//		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 
+		//Add PlayerController
+		PxCapsuleControllerDesc description;
+		description.position = PxExtendedVec3(0, 10.0f, 0);
+		description.height = 0.001f;
+		description.radius = 3.0f;
+		description.material = myMat;
+		description.upDirection = PxVec3(1, 0, 0);
+		
+		auto pc = m_ECS->AddComponent<PlayerControl>(Player);
+		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
+		m_ECS->AddComponent<Transform>(Player)->SetActor(pc->GetActor());
+		
+
+		//Add Light
+		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Player);
+		light->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
+		m_Renderer->AddPointLight(&light->Color, &light->position, false);
+
+		//ConnectCamera
+		//CameraPos.SetParentTransform(m_ECS->GetComponent<Transform>(Player));
+		//CameraPos.GetTransform()->p = PxVec3(-25, 50, 0);
 
 		//--------------------------------------------------------------------------------------------
 		//Ground Setup
@@ -76,19 +83,12 @@ class Demo : public Application
 		//Create entity
 		Entity Plane = m_ECS->CreateEntity();
 
-		//Add Mesh and Material
-		//m_ECS->AddComponent<Mesh>(Plane)->LoadFromFile("./Assets/Models/Plane.obj");
-		//m_ECS->AddComponent<Material>(Plane)->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
-
 
 		//Add Physics / rigidBody
-		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(1, 0, 0, 0), *myMat);
+		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
 		m_Physics.GetScene()->addActor(*groundPlane);
 
 		m_ECS->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
-
-
-
 
 
 		//------------------------------------------------------------------------------------------------
@@ -139,19 +139,17 @@ class Demo : public Application
 
 		shape->release();
 
-		//VOXEL TEST
+		//World Setup
 		//-------------------------------------------
 
 		Entity World = m_ECS->CreateEntity();
-		m_ECS->AddComponent<Transform>(World)->SetActor(groundPlane);
+		m_ECS->AddComponent<Transform>(World);
 		auto worldMesh = m_ECS->AddComponent<Mesh>(World);
-		m_ECS->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
+		m_ECS->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/RedBrick");
 
 		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		m_ECS->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestVoxel.qb", worldMesh);
+		m_ECS->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
 
-		//VoxelContainer voxTest;
-		//voxTest.ReadQubicBinaryFile("./Assets/Voxels/TestVoxel.qb");
 		//----------------------------------------------
 
 		return;
@@ -159,14 +157,20 @@ class Demo : public Application
 
 	void DoUpdate(double deltaTime) override
 	{
-		TotalRotation += 0.005f;
+		//for (int i = 0; i < 4; ++i)
+		//{
+		//	for (int j = 0; j < 4; ++j)
+		//	{
+		//		m_camera.m_Transform[i][j] = CameraPos.GetGlobalTransformMatrix()[i][j];
+		//	}
+		//}
 
-		m_camera.m_Transform = glm::mat4();
-		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(50.0f, 0.0f, 50.0f));
-		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, TotalRotation, glm::vec3(0, 1, 0));
-		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(0.0f, 55.5f, 180.0f));
-		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.15f, glm::vec3(1, 0, 0));
+		m_camera.m_Transform = glm::fmat4();
 
+		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(-5, 60, 70));
+		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -2.5f, glm::vec3(0, 0, 1));
+		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -1.586f, glm::vec3(0, 1, 0));
+		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.6f, glm::vec3(1, 0, 0));
 		return;
 	}
 
@@ -189,37 +193,6 @@ const int FRAME_DELAY_SPRITE = 1000 / 60;
 
 Demo *demo = new Demo();
 
-//void DisplayCallbackFunction()
-//{
-//	demo->Update();
-//}
-//
-//void TimerCallbackFunction(int value)
-//{
-//	glutPostRedisplay();
-//	glutTimerFunc(FRAME_DELAY_SPRITE, TimerCallbackFunction, 0);
-//}
-//
-//void KeyboardCallbackFunction(unsigned char key, int x, int y)
-//{
-//	demo->KeyDown(key, x, y);
-//}
-//
-//void KeyboardUpCallbackFunction(unsigned char key, int x, int y)
-//{
-//	demo->KeyUp(key, x, y);
-//}
-//
-//void MouseClickCallbackFunction(int button, int state, int x, int y)
-//{
-//	glutPostRedisplay();
-//}
-//
-//void MouseMotionCallbackFunction(int x, int y)
-//{
-//	glutPostRedisplay();
-//
-//}
 
 int main(int argc, char **argv)
 {
@@ -234,7 +207,7 @@ int main(int argc, char **argv)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
 
 	demo->m_Window = SDL_CreateWindow("Ocean Engine", 100, 100, 1280, 720, WindowFlags);
 	SDL_GL_CreateContext(demo->m_Window);
@@ -250,12 +223,6 @@ int main(int argc, char **argv)
 	}
 
 
-	//glutDisplayFunc(DisplayCallbackFunction);
-	//glutKeyboardFunc(KeyboardCallbackFunction);
-	//glutKeyboardUpFunc(KeyboardUpCallbackFunction);
-	//glutMouseFunc(MouseClickCallbackFunction);
-	//glutMotionFunc(MouseMotionCallbackFunction);
-	//glutTimerFunc(1,TimerCallbackFunction,0);
 
 	demo->Initalize();
 	while (demo->Running)

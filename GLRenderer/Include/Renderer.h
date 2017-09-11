@@ -74,7 +74,7 @@ public:
 	Renderer(unsigned windowHeight, unsigned windowWidth,SDL_Window* window, Camera* camera)
 		:m_WindowWidth(windowWidth), m_WindowHeight(windowHeight), 
 		m_Camera(camera),m_Window(window),
-		GBuffer(6), LightpassBuffer(1), CombinedLighingBuffer(1){}
+		GBuffer(6), LightpassBuffer(1), CombinedLighingBuffer(1), SSAOBuffer(1){}
 
 	void Initalize();
 	void InitalizePBREnvironmentMaps(std::string filepath);
@@ -87,6 +87,9 @@ public:
 	void Render(Mesh* mesh, Material* material, const float* matrix);
 	void RenderInstanced();
 	void PostRender();
+
+	void InitalizeSSAO();
+	void SSAOPass();
 
 	void SetCamera(Camera* cam);
 
@@ -114,6 +117,7 @@ private:
 	FrameBuffer GBuffer;
 	FrameBuffer LightpassBuffer;
 	FrameBuffer CombinedLighingBuffer;
+	FrameBuffer SSAOBuffer;
 
 	//Shaders used for rendering
 	ShaderProgram StaticGeometry;
@@ -121,13 +125,18 @@ private:
 	ShaderProgram GBufferPassInstanced;
 	ShaderProgram LightPassShader;
 	ShaderProgram LightingCombinedShader;
+	ShaderProgram SSAO;
 	
 	//Environment maps
 	Texture m_CubeMap;
 	Texture m_IrradianceMap;
 	Texture m_PrefilterMap;
 	Texture m_BDRFMap;
+	Texture m_SSAONoiseTex;
 
+
+	//KernalForSsao
+	std::vector<glm::vec3> m_SSAOKernal;
 	//Default Material
 	Material m_DefaultMaterial;
 

@@ -2,7 +2,7 @@
 #include "Utilities.h"
 #include "Timer.h"
 #include "Game.h"
-
+#include <random>
 
 //---------------------------------------------------
 // Purpose: Initalizes the Renderer's default shaders and framebuffers
@@ -27,6 +27,13 @@ void Renderer::Initalize()
 
 	//Default Gbuffer Shader.
 	if (!GBufferPass.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
+	{
+		std::cout << "Shaders failed to initalize.\n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!SSAO.Load("./Assets/Shaders/PassThorugh.vert", "./Assets/Shaders/SSAO.frag"))
 	{
 		std::cout << "Shaders failed to initalize.\n";
 		system("pause");
@@ -94,6 +101,7 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
+	InitalizeSSAO();
 }
 
 void Renderer::InitalizeDefaultMaterial()
@@ -267,6 +275,15 @@ void Renderer::PostRender()
 	StaticGeometry.UnBind();
 	CombinedLighingBuffer.UnBind();
 
+
+	//------------------------------------------------------
+	//SSAO Pass
+	//-----------------------------------------------------
+
+	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
+	
+	SSAOPass();
+
 	//--------------------------------------------------------
 	//			Deffered Lighting Pass
 	//--------------------------------------------------------
@@ -274,7 +291,7 @@ void Renderer::PostRender()
 	glBlendFunc(GL_ONE, GL_ONE);
 	LightpassBuffer.Clear();
 
-	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
+
 
 	for (int i = 0; i < m_PointLightPositions.size(); ++i)
 	{
@@ -325,6 +342,8 @@ void Renderer::PostRender()
 	}
 
 	glDisable(GL_BLEND);
+
+
 	//--------------------------------------------------------
 	//				IBL + Composite Lighting
 	//
@@ -366,7 +385,7 @@ void Renderer::PostRender()
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, m_BDRFMap.TexObj);
 	glActiveTexture(GL_TEXTURE8);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(5));
+	glBindTexture(GL_TEXTURE_2D, SSAOBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE9);
 	glBindTexture(GL_TEXTURE_2D, LightpassBuffer.GetColorHandle(0));
 	DrawFullScreenQuad();
@@ -394,6 +413,7 @@ void Renderer::PostRender()
 	CombinedLighingBuffer.UnBind();
 
 	CombinedLighingBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	//SSAOBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//glutSwapBuffers();
 	SDL_GL_SwapWindow(m_Window);
@@ -403,4 +423,89 @@ void Renderer::PostRender()
 void Renderer::SetCamera(Camera* cam)
 {
 	m_Camera = cam;
+}
+
+void Renderer::InitalizeSSAO()
+{
+	std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+	std::default_random_engine generator;
+
+
+	//Generate SSAO samples
+	for (int i = 0; i < 64; i++)
+	{
+		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0,
+			randomFloats(generator) * 2.0 - 1.0,
+			randomFloats(generator));
+		
+		sample = glm::normalize(sample);
+		sample += randomFloats(generator);
+
+		float scale = (float)i / 64.0f;
+		scale = LERP(0.1f, 0.1f, scale*scale);
+		sample *= scale;
+		m_SSAOKernal.push_back(sample);
+	}
+
+	//Generate SSAO rotations
+	std::vector<glm::vec3> ssaoNoise;
+	for (int i = 0; i < 16; ++i)
+	{
+		glm::vec3 noise(
+			randomFloats(generator) * 2.0 - 1.0,
+			randomFloats(generator) * 2.0 - 1.0,
+			0.0f);
+	}
+
+
+
+	//Generate noise Texture
+	glGenTextures(1, &m_SSAONoiseTex.TexObj);
+	glBindTexture(GL_TEXTURE_2D, m_SSAONoiseTex.TexObj);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise.data()[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//Init SSAO framebuffer
+	SSAOBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_R32F, GL_NEAREST, GL_CLAMP);
+	if (!SSAOBuffer.CheckFBO())
+	{
+		std::cout << "FBO Failed to Initalize.\n";
+		system("pause");
+		exit(0);
+	}
+
+}
+
+void Renderer::SSAOPass()
+{
+	SSAOBuffer.Bind();
+	SSAO.Bind();
+
+	SSAO.SendUniformMat4("Projection" ,&m_Camera->m_Projection[0][0], false);
+	SSAO.SendUniformMat4("View", &glm::inverse(m_Camera->m_Transform)[0][0], false);
+	SSAO.SendUniformArray("Samples", m_SSAOKernal.data(), m_SSAOKernal.size());
+
+	SSAO.SendUniform("PositionTex", 0);
+	SSAO.SendUniform("NormalTex", 1);
+	SSAO.SendUniform("NoiseTex", 2);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2)); //position
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1)); //normal
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_SSAONoiseTex.TexObj); //noiseTexture
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+	SSAO.UnBind();
+	SSAOBuffer.UnBind();
 }

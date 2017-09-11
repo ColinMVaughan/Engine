@@ -309,3 +309,14 @@ void EnvironmentmapToCubemap(std::string filepath, Texture& CubeMap)
 	TexHouse.UnBind();
 	eqConvertShader.UnBind();
 }
+
+
+glm::vec3 LERP(glm::vec3 vec1, glm::vec3 vec2, float t)
+{
+	return vec1 + t * (vec2 - vec1);
+}
+
+float LERP(float p1, float p2, float t)
+{
+	return p1 + t *(p2 - p1);
+}

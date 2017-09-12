@@ -470,7 +470,7 @@ void Renderer::InitalizeSSAO()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//Init SSAO framebuffer
-	SSAOBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_R32F, GL_NEAREST, GL_CLAMP);
+	SSAOBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA32F, GL_NEAREST, GL_CLAMP);
 	if (!SSAOBuffer.CheckFBO())
 	{
 		std::cout << "FBO Failed to Initalize.\n";
@@ -484,6 +484,7 @@ void Renderer::SSAOPass()
 {
 	SSAOBuffer.Bind();
 	SSAO.Bind();
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	SSAO.SendUniformMat4("Projection" ,&m_Camera->m_Projection[0][0], false);
 	SSAO.SendUniformMat4("View", &glm::inverse(m_Camera->m_Transform)[0][0], false);

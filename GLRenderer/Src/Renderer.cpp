@@ -178,17 +178,29 @@ void Renderer::PreRender()
 	//--------------------------------------------------------
 	//			Get Ready for Render
 	//--------------------------------------------------------
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
 	glClearColor(0.0, 0.0, 0.0, 0);
 	LightpassBuffer.Clear();
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	GBuffer.Clear();
 
 
-	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
+	//-----------------------------------------------
+	//			Render Skybox
+	//----------------------------------------------
+	CombinedLighingBuffer.Bind();
+	StaticGeometry.Bind();
 
+
+	StaticGeometry.SendUniformMat4("view", &glm::inverse(m_Camera->m_Transform)[0][0], false);
+	StaticGeometry.SendUniformMat4("projection", &m_Camera->m_Projection[0][0], false);
+	StaticGeometry.SendUniform("environmentMap", 0);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMap.TexObj);
+	DrawCube();
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	StaticGeometry.UnBind();
+	CombinedLighingBuffer.UnBind();
 
 }
 
@@ -253,103 +265,74 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 }
 
 
-void Renderer::PostRender()
+void Renderer::PointLightPass()
 {
-
-
-	//-----------------------------------------------
-	//			Render Skybox
-	//----------------------------------------------
-	CombinedLighingBuffer.Bind();
-	StaticGeometry.Bind();
-
-
-	StaticGeometry.SendUniformMat4("view", &glm::inverse(m_Camera->m_Transform)[0][0], false);
-	StaticGeometry.SendUniformMat4("projection", &m_Camera->m_Projection[0][0], false);
-	StaticGeometry.SendUniform("environmentMap", 0);
-
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMap.TexObj);
-	DrawCube();
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	StaticGeometry.UnBind();
-	CombinedLighingBuffer.UnBind();
-
-
-	//------------------------------------------------------
-	//SSAO Pass
-	//-----------------------------------------------------
-
-	glViewport(0, 0, m_WindowWidth, m_WindowHeight);
-	
-	SSAOPass();
 
 	//--------------------------------------------------------
 	//			Deffered Lighting Pass
 	//--------------------------------------------------------
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
-	LightpassBuffer.Clear();
+
+	LightPassShader.Bind();
+
+	LightPassShader.SendUniform("albedoMap", 0);
+	LightPassShader.SendUniform("normalMap", 1);
+	LightPassShader.SendUniform("positionMap", 2);
+
+	LightPassShader.SendUniform("roughnessMap", 3);
+	LightPassShader.SendUniform("metallicMap", 4);
+
+	LightPassShader.SendUniform("camPos", m_Camera->GetPosition());
 
 
+	LightpassBuffer.Bind();
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(3));
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(4));
 
 	for (int i = 0; i < m_PointLightPositions.size(); ++i)
 	{
-		LightPassShader.Bind();
-
-		LightPassShader.SendUniform("albedoMap", 0);
-		LightPassShader.SendUniform("normalMap", 1);
-		LightPassShader.SendUniform("positionMap", 2);
-
-		LightPassShader.SendUniform("roughnessMap", 3);
-		LightPassShader.SendUniform("metallicMap", 4);
-
-
-		LightPassShader.SendUniform("aoMap", 5);
-
-		LightPassShader.SendUniform("camPos", m_Camera->GetPosition());
 		LightPassShader.SendUniform("lightPosition", *m_PointLightPositions[i]);
 		LightPassShader.SendUniform("lightColor", *m_PointLightColors[i]);
 
-		LightpassBuffer.Bind();
-
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(3));
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(4));
-		glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(5));
 		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_CUBE_MAP, GL_NONE);
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		LightpassBuffer.UnBind();
-		LightPassShader.UnBind();
 	}
+
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+	LightpassBuffer.UnBind();
+	LightPassShader.UnBind();
 
 	glDisable(GL_BLEND);
 
 
-	//--------------------------------------------------------
-	//				IBL + Composite Lighting
-	//
-	// Combines The composite lighpass with the IBL 
-	// lighting + Gamma correction for the final image.
-	//--------------------------------------------------------
+
+}
+
+//--------------------------------------------------------
+//				IBL + Composite Lighting
+//
+// Combines The composite lighpass with the IBL 
+// lighting + Gamma correction for the final image.
+//--------------------------------------------------------
+void Renderer::CombineLighting()
+{
+
 	CombinedLighingBuffer.Bind();
 	LightingCombinedShader.Bind();
 
@@ -420,6 +403,7 @@ void Renderer::PostRender()
 	//------------------------------------------------------------------------------
 }
 
+
 void Renderer::SetCamera(Camera* cam)
 {
 	m_Camera = cam;
@@ -484,7 +468,6 @@ void Renderer::SSAOPass()
 {
 	SSAOBuffer.Bind();
 	SSAO.Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	SSAO.SendUniformMat4("Projection" ,&m_Camera->m_Projection[0][0], false);
 	SSAO.SendUniformMat4("View", &glm::inverse(m_Camera->m_Transform)[0][0], false);

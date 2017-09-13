@@ -85,11 +85,15 @@ public:
 
 	void PreRender();
 	void Render(Mesh* mesh, Material* material, const float* matrix);
-	void RenderInstanced();
-	void PostRender();
+
+	void CombineLighting();
+	void PointLightPass();
 
 	void InitalizeSSAO();
 	void SSAOPass();
+
+	void InitalizeShadowMapping();
+	void RenderShadow();
 
 	void SetCamera(Camera* cam);
 

@@ -33,28 +33,23 @@ private:
 };
 
 
-
-class VoxelRenderSystem: public System<VoxelContainer, Transform>
+class VoxelDestructionSystem: public System<VoxelContainer, Transform>
 {
 public:
 	void PreUpdate(double deltaTime) override
 	{
-		if (m_Renderer == nullptr)
-			std::cout << "";
-
-
-
 	}
 	void Update(double deltaTime, unsigned int entity) override
 	{
-		m_Renderer->RenderInstanced();
 	}
 	void PostUpdate(double deltaTime) override
 	{
-
 	}
 
 private:
-	Renderer* m_Renderer;
+	Mesh mesh;
+	Material mat;
+
+
 };
 #endif

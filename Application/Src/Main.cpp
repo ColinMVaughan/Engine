@@ -165,19 +165,17 @@ class Demo : public Application
 		//	}
 		//}
 
-		m_camera.m_Transform = glm::fmat4();
 
-		m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(10, 50, 70));
 		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -2.5f, glm::vec3(0, 0, 1));
-		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -1.586f, glm::vec3(0, 1, 0));
-		m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.6f, glm::vec3(1, 0, 0));
+		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -1.586f, glm::vec3(0, 1, 0));
+		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.6f, glm::vec3(1, 0, 0));
 		return;
 	}
 
 
 
 private:
-	Camera m_camera;
+
 	float TotalRotation = 0;
 
 };

@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "RenderSystem.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 Application::Application()
 {
@@ -41,9 +42,9 @@ void Application::PreInitalize()
 	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
 
 	PhysicsSettings PSettings;
-	//PSettings.GpuRigidbodies = true;
-	//PSettings.OpenGLContext = SDL_GL_GetCurrentContext();
 	m_Physics.Initalize(PSettings);
+
+	currentRot = glm::vec2(0);
 }
 
 void Application::PostInitalize()
@@ -62,6 +63,9 @@ void Application::PreUpdate(double deltaTime)
 			break;
 		case SDL_KEYUP:
 			KeyUp(InputEvent.key);
+			break;
+		case SDL_MOUSEMOTION:
+			MouseMoved(InputEvent.motion);
 			break;
 		case SDL_QUIT:
 			Running = false;
@@ -92,11 +96,25 @@ void Application::KeyUp(SDL_KeyboardEvent key)
 
 void Application::KeyDown(SDL_KeyboardEvent key)
 {
-	std::cout <<*SDL_GetKeyName(key.keysym.sym);
 	for each (auto callback in InputCallbackList)
 	{
 		callback->KeyDown(*SDL_GetKeyName(key.keysym.sym));
 	}
+}
+
+void Application::MouseMoved(SDL_MouseMotionEvent motion)
+{
+	currentRot.y += ((float)motion.yrel) * -0.01f;
+	currentRot.x += ((float)motion.xrel) * -0.01f;
+
+	m_camera.m_Transform = glm::fmat4();
+
+	m_camera.m_Transform = glm::rotate(m_camera.m_Transform, currentRot.x, glm::vec3(0, 1, 0));
+	m_camera.m_Transform = glm::rotate(m_camera.m_Transform, currentRot.y, glm::vec3(1, 0, 0));
+
+
+	m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(10, 50, 70));
+
 }
 
 void Application::Unload()

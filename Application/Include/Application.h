@@ -26,6 +26,7 @@ public:
 
 	void KeyUp(SDL_KeyboardEvent key);
 	void KeyDown(SDL_KeyboardEvent key);
+	void MouseMoved(SDL_MouseMotionEvent motion);
 
 protected:
 	void PreInitalize();
@@ -55,8 +56,11 @@ protected:
 	std::vector<BaseSystem*> InputCallbackList;
 	SDL_Event InputEvent;
 
-	//Take this out later
+	//Take this out later -----------------
 	Transform CameraPos;
+	Camera m_camera;
+	glm::vec2 currentRot;
+	glm::vec3 currentPos;
 };
 
 #endif

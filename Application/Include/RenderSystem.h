@@ -43,12 +43,13 @@ public:
 	void Update(double deltaTime, unsigned int entity) override
 	{
 		auto mat = m_CManager->GetComponent<Transform>(entity)->GetGlobalTransformMatrix();
-		//mat.scale(PxVec4(1, 1, 1, 1));
 		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity), mat.front());
 	}
 	void PostUpdate(double deltaTime) override
 	{
-		m_Renderer->PostRender();
+		m_Renderer->PointLightPass();
+		m_Renderer->SSAOPass();
+		m_Renderer->CombineLighting();
 	}
 
 };
@@ -56,7 +57,6 @@ public:
 //-----------------------------------------------------------------------------
 //						Point Light System
 //-----------------------------------------------------------------------------
-
 class PointLightComponent
 {
 public:
@@ -82,4 +82,19 @@ public:
 
 	}
 
+};
+
+//-------------------------------------------------------------------------------------------------
+//								Directional Light System
+//-------------------------------------------------------------------------------------------------
+
+class DirectionalLight
+{
+public:
+	glm::vec3 Colour;
+	glm::vec3 Direction;
+	bool CastsShadow;
+
+private:
+	FrameBuffer m_ShadowMap;
 };

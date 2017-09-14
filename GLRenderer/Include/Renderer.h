@@ -93,7 +93,7 @@ public:
 	void SSAOPass();
 
 	void InitalizeShadowMapping();
-	void RenderShadow();
+	void DirectionalLightPass();
 
 	void SetCamera(Camera* cam);
 
@@ -127,7 +127,9 @@ private:
 	ShaderProgram StaticGeometry;
 	ShaderProgram GBufferPass;
 	ShaderProgram GBufferPassInstanced;
-	ShaderProgram LightPassShader;
+	ShaderProgram PointLightPassShader;
+	ShaderProgram DirectionalLightPassShader;
+
 	ShaderProgram LightingCombinedShader;
 	ShaderProgram SSAO;
 	

@@ -150,6 +150,11 @@ class Demo : public Application
 		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
 		m_ECS->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
 
+		//add light
+		PointLightComponent* Wlight = m_ECS->AddComponent<PointLightComponent>(World);
+		Wlight->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
+		m_Renderer->AddPointLight(&Wlight->Color, &Wlight->position, false);
+
 		//----------------------------------------------
 
 		return;

@@ -8,6 +8,7 @@ public:
 	
 	typedef glm::fvec3 vec3;
 	typedef glm::fvec2 vec2;
+	typedef glm::mat4 mat4;
 public:
 	Mesh();
 	~Mesh();
@@ -20,7 +21,7 @@ public:
 
 
 	bool SetInstancing(vec3* dataBuffer, size_t bufferSize);
-
+	bool SetInstancing(mat4* dataBuffer, size_t bufferSize);
 
 	GLuint VBO_Verticies = 0;
 	GLuint VBO_UVs		 = 0;

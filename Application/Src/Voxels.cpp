@@ -1,6 +1,7 @@
 #include "Voxels.h"
 #include <iostream>
 #include <fstream>
+#include <glm\gtc\matrix_transform.hpp>
 
 #define CODEFLAG 2
 #define NEXTSLICEFLAG 6
@@ -40,7 +41,11 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
 		MyFile.read(data, size);
 		MyFile.close();
 	}
-
+	else
+	{
+		std::cout << "\nCould Not open Qubic Binary File.";
+		return;
+	}
 	//Loop through header data, increasing offset as we collect the data
 	offset = 0;
 	for (int i = 0; i < 6; ++i)
@@ -88,56 +93,14 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
 		}
 	}
 
-	ImportQB(Matrix, mesh, matrixSizeX, matrixSizeY, matrixSizeZ);
+	ConstructVoxelMesh(Matrix, mesh, matrixSizeX, matrixSizeY, matrixSizeZ);
 	delete[] Matrix;
-	//Uint32 x = 0;
-	//Uint32 y = 0;
-	//Uint32 z = 0;
-	//Uint32 MatData;
-	//int loopCount = 0;
-	//while (z < matrixSizeZ)
-	//{
-	//	z++;
-	//	Uint32 index = 0;
-	//	while (true)
-	//	{
-	//		MatData = *reinterpret_cast<Uint32*>(data + offset);
-	//		offset += 4;
-
-	//		if (MatData == NEXTSLICEFLAG)
-	//			break;
-	//		else if (MatData == CODEFLAG)
-	//		{
-	//			Uint32 count = *reinterpret_cast<Uint32*>(data + offset);
-	//			offset += 4;
-	//			Uint32 MatData = *reinterpret_cast<Uint32*>(data + offset);
-	//			offset += 4;
-
-	//			for (int i = 0; i < count; ++i)
-	//			{
-	//				x = index % matrixSizeX + 1;
-	//				y = index / matrixSizeY + 1;
-	//				index++;
-	//				Matrix[x + y*matrixSizeX + z*matrixSizeX*matrixSizeY] = MatData;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			x = index % matrixSizeX + 1;
-	//			y = index / matrixSizeY + 1;
-	//			index++;
-	//			Matrix[x + y*matrixSizeY + z*matrixSizeX*matrixSizeY] = MatData;
-	//		}
-	//		loopCount++;
-	//	}
-	//}
-
-
+	delete[] data;
 }
 
-void VoxelContainer::ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
+void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
 {
-
+	std::vector<glm::mat4> positions;
 	std::vector<glm::fvec3> offsets;
 	size_t blockNumber = 0;
 
@@ -149,13 +112,16 @@ void VoxelContainer::ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t s
 			for (int x = 0; x < sizeX; ++x)
 			{
 				//get the RGBA value of the block and extract the alpha value
-				Uint32 temp = Matrix[x + y*sizeX + z*sizeX*sizeY];
+				Uint32 temp = VoxelMatrix[x + y*sizeX + z*sizeX*sizeY];
 				Uint8* tempPtr = (Uint8*)&temp;
 
 				//if the block is visible, add its offset to the vector
 				if ((int)tempPtr[3] != 0)
 				{
-					offsets.push_back(glm::fvec3(x, y, z));
+					glm::mat4 tempMat;
+					tempMat = glm::translate(tempMat, glm::fvec3(x, y, z));
+					positions.push_back(tempMat);
+
 					blockNumber++;
 				}
 			}
@@ -163,7 +129,7 @@ void VoxelContainer::ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t s
 	}
 
 	//push the positions from all visible blocks to the instance buffer
-	if (!mesh->SetInstancing(offsets.data(), offsets.size()))
+	if (!mesh->SetInstancing(positions.data(), positions.size()))
 	{
 		std::cout << "\nSomething went wrong with the instancing";
 	}

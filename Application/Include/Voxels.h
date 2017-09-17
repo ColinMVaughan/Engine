@@ -20,7 +20,7 @@ public:
 	void ReadQubicBinaryFile(std::string file, Mesh* mesh);
 
 private:
-	void ImportQB(Uint32* Matrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
+	void ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
 
 
 

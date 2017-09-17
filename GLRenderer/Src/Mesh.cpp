@@ -232,3 +232,41 @@ bool Mesh::SetInstancing(vec3* dataBuffer, size_t bufferSize)
 	InstanceNumber = bufferSize;
 	return true;
 }
+
+bool Mesh::SetInstancing(mat4* dataBuffer, size_t bufferSize)
+{
+	if (VAO == 0)
+		return false;
+
+	GLsizei vec4Size = sizeof(glm::vec4);
+
+	glGenBuffers(1, &VBO_Instance);
+	glBindVertexArray(VAO);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Instance);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(mat4)* bufferSize, &dataBuffer[0][0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer((GLuint)3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer((GLuint)4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, BUFFER_OFFSET(vec4Size));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer((GLuint)5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, BUFFER_OFFSET(2 * vec4Size));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer((GLuint)6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, BUFFER_OFFSET(3 * vec4Size));
+	
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+
+	glBindVertexArray(0);
+
+	IsInstanced = true;
+	InstanceNumber = bufferSize;
+	return true;
+}

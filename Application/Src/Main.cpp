@@ -26,6 +26,7 @@ class Demo : public Application
 		//Rendering Setup
 
 		m_ECS->AddSystem<PointLightSystem>();
+		m_ECS->AddSystem<VoxelDestructionSystem>();
 		RegisterKeyboardCallback(m_ECS->AddSystem<PlayerControlSystem>());
 
 

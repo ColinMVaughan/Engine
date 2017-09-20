@@ -23,6 +23,18 @@ public:
 	bool SetInstancing(vec3* dataBuffer, size_t bufferSize);
 	bool SetInstancing(mat4* dataBuffer, size_t bufferSize);
 
+
+	inline void BufferSubData(GLuint targetBuffer, GLintptr offset, GLsizeiptr size, const void* data)
+	{
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, targetBuffer);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindVertexArray(0);
+	}
+
 	GLuint VBO_Verticies = 0;
 	GLuint VBO_UVs		 = 0;
 	GLuint VBO_Normals	 = 0;

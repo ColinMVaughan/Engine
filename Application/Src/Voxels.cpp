@@ -100,8 +100,7 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
 
 void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
 {
-	std::vector<glm::mat4> positions;
-	std::vector<glm::fvec3> offsets;
+
 	size_t blockNumber = 0;
 
 	//iterate through each potential block in the matrix
@@ -120,7 +119,7 @@ void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t 
 				{
 					glm::mat4 tempMat;
 					tempMat = glm::translate(tempMat, glm::fvec3(x, y, z));
-					positions.push_back(tempMat);
+					m_Matricies.push_back(tempMat);
 
 					blockNumber++;
 				}
@@ -129,7 +128,7 @@ void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t 
 	}
 
 	//push the positions from all visible blocks to the instance buffer
-	if (!mesh->SetInstancing(positions.data(), positions.size()))
+	if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
 	{
 		std::cout << "\nSomething went wrong with the instancing";
 	}

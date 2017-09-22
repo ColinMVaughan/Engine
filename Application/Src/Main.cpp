@@ -26,13 +26,16 @@ class Demo : public Application
 		//Rendering Setup
 
 		m_ECS->AddSystem<PointLightSystem>();
-		m_ECS->AddSystem<VoxelDestructionSystem>();
-		RegisterKeyboardCallback(m_ECS->AddSystem<PlayerControlSystem>());
+		auto vds = m_ECS->AddSystem<VoxelDestructionSystem>();
+		vds->Initalize(&m_Physics);
 
+
+		RegisterKeyboardCallback(m_ECS->AddSystem<PlayerControlSystem>());
+		RegisterKeyboardCallback(vds);
 
 		m_Renderer->SetCamera(&m_camera);
 		m_Renderer->Initalize();
-		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/GCanyon_C_YumaPoint_3k.hdr");
+		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
 		m_camera.m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
 
@@ -48,7 +51,11 @@ class Demo : public Application
 		auto characterMesh = m_ECS->AddComponent<Mesh>(Player);
 		characterMesh->LoadFromFile("./Assets/Models/Cube.obj");
 
-		m_ECS->AddComponent<VoxelContainer>(Player)->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
+		auto m_Test = m_ECS->AddComponent<VoxelContainer>(Player);
+		m_Test->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
+		vds->AddTestCase(m_Test);
+
+
 		m_ECS->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
 
 		//create shape and physics material
@@ -163,18 +170,6 @@ class Demo : public Application
 
 	void DoUpdate(double deltaTime) override
 	{
-		//for (int i = 0; i < 4; ++i)
-		//{
-		//	for (int j = 0; j < 4; ++j)
-		//	{
-		//		m_camera.m_Transform[i][j] = CameraPos.GetGlobalTransformMatrix()[i][j];
-		//	}
-		//}
-
-
-		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -2.5f, glm::vec3(0, 0, 1));
-		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -1.586f, glm::vec3(0, 1, 0));
-		//m_camera.m_Transform = glm::rotate(m_camera.m_Transform, -0.6f, glm::vec3(1, 0, 0));
 		return;
 	}
 
@@ -183,7 +178,6 @@ class Demo : public Application
 private:
 
 	float TotalRotation = 0;
-
 };
 
 

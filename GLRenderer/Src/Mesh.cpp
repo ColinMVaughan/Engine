@@ -245,7 +245,7 @@ bool Mesh::SetInstancing(mat4* dataBuffer, size_t bufferSize)
 
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_Instance);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(mat4)* bufferSize, &dataBuffer[0][0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(mat4)* bufferSize, &dataBuffer[0][0], GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer((GLuint)3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, BUFFER_OFFSET(0));

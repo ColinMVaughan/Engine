@@ -6,7 +6,7 @@ file(GLOB HEADERS "Include/*.h")
 
 add_library(Physics STATIC ${SOURCES} ${HEADERS})
 
-set(PhysLibType "DEBUG")
+set(PhysLibType "CHECKED")
 set(PhysLibPlatform "_x86")
 set(PhysLibraryPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/${PhysLibType}${PhysLibPlatform}")
 
@@ -37,7 +37,7 @@ install(TARGETS Physics
 install(FILES ${HEADERS} DESTINATION Include/Physics)
 
 set(PhysDLLPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/${PhysLibType}${PhysLibPlatform}")
-set(PhysDLLType "DEBUG_x86.dll")
+set(PhysDLLType "CHECKED_x86.dll")
 
 install(FILES 
 ${PhysDLLPath}/PhysX3${PhysLibType}${PhysLibPlatform}

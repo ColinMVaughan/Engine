@@ -61,6 +61,8 @@ protected:
 	Camera m_camera;
 	glm::vec2 currentRot;
 	glm::vec3 currentPos;
+
+	//-------------------------------------
 };
 
 #endif

@@ -59,9 +59,8 @@ protected:
 	//Take this out later -----------------
 	Transform CameraPos;
 	Camera m_camera;
-	glm::vec2 currentRot;
 	glm::vec3 currentPos;
-
+	PxQuat rotation;
 	//-------------------------------------
 };
 

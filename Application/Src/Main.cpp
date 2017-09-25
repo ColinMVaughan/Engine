@@ -23,23 +23,33 @@ class Demo : public Application
 {
 	void DoInitalize() override
 	{
-		//Rendering Setup
-
+		//---------------------------------------------------
+		//  Rendering Setup
+		//-------------------------------------------------
 		m_ECS->AddSystem<PointLightSystem>();
 		auto vds = m_ECS->AddSystem<VoxelDestructionSystem>();
 		vds->Initalize(&m_Physics);
 
 
-		RegisterKeyboardCallback(m_ECS->AddSystem<PlayerControlSystem>());
+		RegisterKeyboardCallback(m_ECS->AddSystem<FPSControlSystem>());
 		RegisterKeyboardCallback(vds);
 
-		m_Renderer->SetCamera(&m_camera);
+
 		m_Renderer->Initalize();
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
-		m_camera.m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+		
 
+		//---------------------------------------------------------------
+		//	Camera Setup
+		//--------------------------------------------------------------
 
+		auto cameraEntity = m_ECS->CreateEntity();
+		auto camera = m_ECS->AddComponent<Camera>(cameraEntity);
+		m_ECS->AddComponent<Transform>(cameraEntity);
+
+		m_Renderer->SetCamera(camera);
+		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
 
 		//--------------------------------------------------------------------------------------------
 		//Player Setup
@@ -71,7 +81,8 @@ class Demo : public Application
 		description.upDirection = PxVec3(1, 0, 0);
 		
 		auto pc = m_ECS->AddComponent<PlayerControl>(Player);
-		pc->Initalize(m_Physics.GetControllerManager()->createController(description));
+		auto characterController = m_Physics.GetControllerManager()->createController(description);
+		pc->Initalize(characterController);
 		m_ECS->AddComponent<Transform>(Player)->SetActor(pc->GetActor());
 		
 
@@ -83,6 +94,7 @@ class Demo : public Application
 		//ConnectCamera
 		//CameraPos.SetParentTransform(m_ECS->GetComponent<Transform>(Player));
 		//CameraPos.GetTransform()->p = PxVec3(-25, 50, 0);
+
 
 		//--------------------------------------------------------------------------------------------
 		//Ground Setup

@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "RenderSystem.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
 
 Application::Application()
 {
@@ -39,17 +40,20 @@ void Application::Update()
 void Application::PreInitalize()
 {
 	Camera cam;
+	
 	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
 
 	PhysicsSettings PSettings;
 	m_Physics.Initalize(PSettings);
 
-	currentRot = glm::vec2(0);
 }
 
 void Application::PostInitalize()
 {
 	m_SystemManager->AddSystem<RenderSystem>()->SetRenderer(m_Renderer);
+	CameraPos.GetTransform()->p = PxVec3(10.0f,50.0f,70.0f);
+	//CameraPos.GetTransform()->q *= PxQuat(0.5, PxVec3(1, 0, 0));
+	std::cout << "Block";
 }
 
 void Application::PreUpdate(double deltaTime)
@@ -102,21 +106,13 @@ void Application::KeyDown(SDL_KeyboardEvent key)
 	}
 }
 
+//Call the callback for each registered system
 void Application::MouseMoved(SDL_MouseMotionEvent motion)
 {
-	currentRot.y += ((float)motion.yrel) * -0.01f;
-	currentRot.x += ((float)motion.xrel) * -0.01f;
-
-	m_camera.m_Transform = glm::fmat4();
-
-	m_camera.m_Transform = glm::translate(m_camera.m_Transform, glm::vec3(10, 50, 70));
-
-	m_camera.m_Transform = glm::rotate(m_camera.m_Transform, currentRot.x, glm::vec3(0, 1, 0));
-	m_camera.m_Transform = glm::rotate(m_camera.m_Transform, currentRot.y, glm::vec3(1, 0, 0));
-
-
-
-
+	for each (auto callback in InputCallbackList)
+	{
+		callback->MouseMoved((float)motion.xrel * -0.01f, (float)motion.yrel *-0.01f);
+	}
 }
 
 void Application::Unload()

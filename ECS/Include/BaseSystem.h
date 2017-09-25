@@ -34,6 +34,7 @@ public:
 
 	virtual void KeyUp(unsigned char key) {}
 	virtual void KeyDown(unsigned char key) {}
+	virtual void MouseMoved(float xVelocity, float yVelicity) {}
 };
 
 
@@ -64,8 +65,6 @@ public:
 
 	virtual void UnInitalize() {};
 
-	virtual void KeyDownCallback(int Key) {};
-	virtual void KeyUpCallback(int Key) {};
 
 	// Returns true if the entity is registered with all the required components.
 	// Marked final to prevent definition by derrived classes.

@@ -3,7 +3,7 @@
 
 #include<BaseSystem.h>
 #include <PhysicsSystem.h>
-
+#include <Renderer.h>
 
 // PlayerControl is used to take input and control the player's movement.
 // Note: Each Playercontrol component will be moved in the same direction defined by the 
@@ -20,30 +20,35 @@ public:
 private:
 	PxController* m_Controller;
 	PxControllerFilters filters;
+	PxQuat ForeWard;
 };
 
 //------------------------------------------------------------------------------------------
 
 
-class PlayerControlSystem : public System<PlayerControl>
+class FPSControlSystem : public System<Transform, Camera>
 {
 public:
 
-	PlayerControlSystem(ComponentManager* a_cmanager);
+	FPSControlSystem(ComponentManager* a_cmanager);
 
 	void PreUpdate(double deltaTime) override;
 	void Update(double deltaTime, unsigned int entity) override;
+	void PostUpdate(double deltaTime) override;
 
 	void KeyDown(unsigned char key) override;
 	void KeyUp(unsigned char key) override;
 
+	void MouseMoved(float xVelocity, float yVelocity);
 
 private:
-	PxVec3 XForce;
-	PxVec3 YForce;
-	PxVec3 ZForce;
+	PxVec3 MovementDirection;
+
 	float speed = 0.3f;
 	PxVec3 MoveDirection;
+	PxQuat rotation;
+
+	PxVec2 rotations;
 };
 
 #endif

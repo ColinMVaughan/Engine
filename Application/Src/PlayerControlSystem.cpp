@@ -1,4 +1,5 @@
 #include "PlayerControlSystem.h"
+#include <glm/gtc/type_ptr.hpp>
 
 void PlayerControl::Initalize(PxController* controller)
 {
@@ -17,64 +18,105 @@ PxRigidDynamic* PlayerControl::GetActor()
 
 //--------------------------------------------------------------------------------------------------
 
-PlayerControlSystem::PlayerControlSystem(ComponentManager* a_cmanager)
+FPSControlSystem::FPSControlSystem(ComponentManager* a_cmanager)
 	:System(a_cmanager)
 {
-	XForce *= 0;
-	YForce *= 0;
-	ZForce *= 0;
-
-	YForce.y = -0.0981;
+	MoveDirection = PxVec3(0);
+	rotations = PxVec2(0);
 }
 
-void PlayerControlSystem::PreUpdate(double deltaTime)
+void FPSControlSystem::PreUpdate(double deltaTime)
 {
-	MoveDirection *= 0.0f;
-	MoveDirection = XForce + YForce + ZForce;
+
 }
 
-void PlayerControlSystem::Update(double deltaTime, unsigned int entity)
+
+void FPSControlSystem::Update(double deltaTime, unsigned int entity)
 {
-	m_CManager->GetComponent<PlayerControl>(entity)->Move(MoveDirection, deltaTime);
+	//m_CManager->GetComponent<PlayerControl>(entity)->Move(MoveDirection, deltaTime);
+	//glm::mat4* viewMatrix = &m_CManager->GetComponent<Camera>(entity)->m_Transform;
+	
+	//*viewMatrix = glm::make_mat4(PxMat44(rotation).front());
+
+
+	//Get Transform and camera components of entity
+	auto transform = m_CManager->GetComponent<Transform>(entity);
+	auto camera    = m_CManager->GetComponent<Camera>(entity);
+
+	//Rotate camera by whatever ammout
+	transform->GetTransform()->q = PxQuat(PxIdentity);
+	transform->GetTransform()->q *= PxQuat(rotations.x, PxVec3(0, 1, 0));
+	transform->GetTransform()->q *= PxQuat(rotations.y, PxVec3(1, 0, 0));
+
+	//Translate camera in orientation corrected movement direction
+	transform->GetTransform()->p += transform->GetTransform()->rotate(MoveDirection);
+
+
+	// Convert physx::PxMat44 to glm::mat4 and send updated transform to camera component
+	// (I would like to change this in the fututre)
+	camera->m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
 	return;
 }
 
-void PlayerControlSystem::KeyDown(unsigned char key)
+void FPSControlSystem::PostUpdate(double deltaTime)
+{
+	//zero out rotation for next update
+	rotation = PxQuat(PxIDENTITY::PxIdentity);
+
+	//zero out move direction for next update
+	MoveDirection *= 0;
+
+
+}
+
+void FPSControlSystem::KeyDown(unsigned char key)
 {
 	switch (key)
 	{
 	case 'W':
-		XForce.z = 0.3f;
+		MoveDirection.z -= 0.3f;
 		break;
 	case 'A':
-		ZForce.x = -0.3f;
+		MoveDirection.x -= 0.3f;
 		break;
 	case 'S':
-		XForce.z = -0.3f;
+		MoveDirection.z += 0.3f;
 		break;
 	case'D':
-		ZForce.x = 0.3f;
+		MoveDirection.x += 0.3f;
 		break;
-
 	}
 }
 
-void PlayerControlSystem::KeyUp(unsigned char key)
+void FPSControlSystem::KeyUp(unsigned char key)
 {
-	switch (key)
-	{
-	case 'W':
-		XForce.z = 0.0f;
-		break;
-	case 'A':
-		ZForce.x = 0.0f;
-		break;
-	case 'S':
-		XForce.z = 0.0f;
-		break;
-	case'D':
-		ZForce.x = 0.0f;
-		break;
+	//switch (key)
+	//{
+	//case 'W':
+	//	XForce.z = 0.0f;
+	//	break;
+	//case 'A':
+	//	ZForce.x = 0.0f;
+	//	break;
+	//case 'S':
+	//	XForce.z = 0.0f;
+	//	break;
+	//case'D':
+	//	ZForce.x = 0.0f;
+	//	break;
 
-	}
+	//}
+}
+
+// If the Mouse is moved, Rotate the Camera's View Matrix 
+// and change the foreward direction used for movement
+// 
+void FPSControlSystem::MouseMoved(float xVelocity, float yVelocity)
+{
+	rotations.x += xVelocity;
+	rotations.y += yVelocity;
+
+	//rotation = PxQuat(xVelocity, PxVec3(0, 1, 0));
+	//rotation *= PxQuat(yVelocity, PxVec3(1, 0, 0));
+	//rotation *= PxQuat(0, PxVec3(0, 0, 1));
 }

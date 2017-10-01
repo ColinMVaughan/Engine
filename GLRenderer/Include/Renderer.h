@@ -4,53 +4,11 @@
 #include "ShaderProgram.h"
 #include "Timer.h"
 #include "FrameBuffer.h"
+#include "Material.h"
+
 #include <glm/mat4x4.hpp>
 #include <SDL\SDL.h>
 
-//-----------------------------
-// Material represents the look and feel of an object.
-// use a combination of texture maps to achieve this.
-//----------------------------
-struct Material
-{
-	Material(){}
-	~Material(){}
-
-	void SetTexturesFromFolder(std::string FolderPath)
-	{
-		Albedo.Load(FolderPath + "/Albedo.png", GL_NEAREST);
-		Normal.Load(FolderPath + "/Normal.png", GL_NEAREST);
-		AO.Load(FolderPath + "/AO.png", GL_NEAREST);
-		Metallic.Load(FolderPath + "/Metallic.png", GL_NEAREST);
-		Roughness.Load(FolderPath + "/Roughness.png", GL_NEAREST);
-	}
-
-	void SetAlbedo(){}
-	void SetNormal(){}
-	void SetAO(){}
-
-	void SetRoughness(){}
-	void SetMetallic(){}
-
-
-	Texture Albedo;
-	Texture Normal;
-	Texture AO;
-
-	Texture Metallic;
-	Texture Roughness;
-
-	static Texture defaultTex;
-};
-
-struct PointLight
-{
-public:
-	PointLight();
-private:
-	glm::vec3 LightPosition;
-	glm::vec3 LightColor;
-};
 
 class Camera
 {

@@ -98,17 +98,21 @@ PxControllerManager* PhysicsSystem::GetControllerManager()
 void PhysicsSystem::StepPhysics(double deltaTime)
 {
 	PX_UNUSED(false); 
-
-	//if less time has passed than needed to simulate a physics step
-	//then return immediatly
 	m_Accumulator += deltaTime;
-	if (m_Accumulator < (1.0 / 30.0))
-		return;
 
-	//Otherwise subtract the step size from the accumulator and simulate
-	m_Accumulator -= (1.0/30.0);
-	m_Scene->simulate(1.0f / 30.0f);
-	m_Scene->fetchResults(true);
+	while (true)
+	{
+		//if less time has passed than needed to simulate a physics step
+		//then return immediatly
+		if (m_Accumulator < (1.0 / 30.0))
+			break;
+
+		//Otherwise subtract the step size from the accumulator and simulate
+		m_Accumulator -= (1.0 / 30.0);
+		m_Scene->simulate(1.0f / 30.0f);
+		m_Scene->fetchResults(true);
+	}
+
 	return;
 }
 

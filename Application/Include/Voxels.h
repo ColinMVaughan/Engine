@@ -58,12 +58,15 @@ class VoxelContainer
 public:
 
 	void ReadQubicBinaryFile(std::string file, Mesh* mesh);
+	
 	std::vector<glm::mat4> m_Matricies;
+	std::vector<glm::vec2> m_UVs;
+
 	bool dynamic = false;
 
 private:
 	void ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
-
+	void ConstructVoxelMaterial();
 	Material m_Material;
 	Mesh m_Mesh;
 
@@ -91,7 +94,6 @@ public:
 	{
 		PxMaterial* shapeMaterial = m_PhysicsSystem->GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 		m_CollisionShape = m_PhysicsSystem->GetPhysics()->createShape(PxBoxGeometry(0.5f, 0.5f, 0.5f), *shapeMaterial, false);
-
 		//Generate collection of Rigidbodies and Assign them Pointers
 		for (int i = 0; i< 350; ++i)
 		{
@@ -99,7 +101,7 @@ public:
 			m_RigidbodyPool[i] = m_PhysicsSystem->GetPhysics()->createRigidDynamic(PxTransform((float)i,(float)i,(float)i));
 			m_PhysicsSystem->GetScene()->addActor(*m_RigidbodyPool[i]);
 			m_RigidbodyPool[i]->attachShape(*m_CollisionShape);
-			m_RigidbodyPool[i]->setMass(10.0f);
+			m_RigidbodyPool[i]->setMass(100.0f);
 			m_RigidbodyPool[i]->putToSleep();
 
 

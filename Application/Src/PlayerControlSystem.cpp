@@ -74,16 +74,22 @@ void FPSControlSystem::KeyDown(unsigned char key)
 	switch (key)
 	{
 	case 'W':
-		MoveDirection.z -= 0.3f;
+		MoveDirection.z -= 0.5f;
 		break;
 	case 'A':
-		MoveDirection.x -= 0.3f;
+		MoveDirection.x -= 0.5f;
 		break;
 	case 'S':
-		MoveDirection.z += 0.3f;
+		MoveDirection.z += 0.5f;
 		break;
 	case'D':
-		MoveDirection.x += 0.3f;
+		MoveDirection.x += 0.5f;
+		break;
+	case 'E':
+		MoveDirection.y += 0.5f;
+		break;
+	case 'Q':
+		MoveDirection.y -= 0.5f;
 		break;
 	}
 }

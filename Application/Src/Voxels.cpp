@@ -103,7 +103,9 @@ void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t 
 
 	size_t blockNumber = 0;
 
-	//iterate through each potential block in the matrix
+	//-------------------------------------------------------------------------
+	// iterate through each potential block in the matrix
+	//--------------------------------------------------------------------------
 	for (int z = 0; z < sizeZ; ++z)
 	{
 		for (int y = 0; y < sizeY; ++y)
@@ -127,7 +129,42 @@ void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t 
 		}
 	}
 
+	//---------------------------------------------------------------------------
+
+	//---------------------------------------------------------------------------
+	// For each voxel, search it's surrounding neighbours and chech their 
+	//---------------------------------------------------------------------------
+	//for (int z = 0; z < sizeZ; ++z)
+	//{
+	//	for (int y = 0; y < sizeY; ++y)
+	//	{
+	//		for (int x = 0; x < sizeX; ++x)
+	//		{
+	//			//get the RGBA value of the block and extract the alpha value
+	//			Uint32 temp = VoxelMatrix[x + y*sizeX + z*sizeX*sizeY];
+	//			Uint8* tempPtr = (Uint8*)&temp;
+
+	//			//if the block is visible, add its offset to the vector
+	//			if ((int)tempPtr[3] != 0)
+	//			{
+	//				glm::mat4 tempMat;
+	//				tempMat = glm::translate(tempMat, glm::fvec3(x, y, z));
+	//				m_Matricies.push_back(tempMat);
+
+	//				blockNumber++;
+	//			}
+	//		}
+	//	}
+	//}
+
+
 	//push the positions from all visible blocks to the instance buffer
+	if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
+	{
+		std::cout << "\nSomething went wrong with the instancing";
+	}
+
+	//Push Material Data to instance buffer
 	if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
 	{
 		std::cout << "\nSomething went wrong with the instancing";

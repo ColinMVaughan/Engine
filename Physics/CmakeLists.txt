@@ -37,13 +37,12 @@ install(TARGETS Physics
 install(FILES ${HEADERS} DESTINATION Include/Physics)
 
 set(PhysDLLPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/${PhysLibType}${PhysLibPlatform}")
-set(PhysDLLType "CHECKED_x86.dll")
 
 install(FILES 
-${PhysDLLPath}/PhysX3${PhysLibType}${PhysLibPlatform}
-${PhysDLLPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}
-${PhysDLLPath}/PxFoundation${PhysLibType}${PhysLibPlatform}
-${PhysDLLPath}/PxPvdSDK${PhysLibType}${PhysLibPlatform}
+${PhysDLLPath}/PhysX3${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/PxFoundation${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/PxPvdSDK${PhysLibType}${PhysLibPlatform}.dll
 ${PhysDLLPath}/nvToolsExt32_1.dll
-${PhysDLLPath}/PhysX3CharacterKinematic${PhysLibType}${PhysLibPlatform}
+${PhysDLLPath}/PhysX3CharacterKinematic${PhysLibType}${PhysLibPlatform}.dll
 DESTINATION bin)

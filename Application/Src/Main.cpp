@@ -38,8 +38,6 @@ class Demo : public Application
 		m_Renderer->Initalize();
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
-		
-
 		//---------------------------------------------------------------
 		//	Camera Setup
 		//--------------------------------------------------------------
@@ -91,18 +89,12 @@ class Demo : public Application
 		light->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
 		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 
-		//ConnectCamera
-		//CameraPos.SetParentTransform(m_ECS->GetComponent<Transform>(Player));
-		//CameraPos.GetTransform()->p = PxVec3(-25, 50, 0);
-
 
 		//--------------------------------------------------------------------------------------------
 		//Ground Setup
 		//--------------------------------------------------------------------------------------------
-		
 		//Create entity
 		Entity Plane = m_ECS->CreateEntity();
-
 
 		//Add Physics / rigidBody
 		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
@@ -110,58 +102,10 @@ class Demo : public Application
 
 		m_ECS->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
 
-
-		//------------------------------------------------------------------------------------------------
-		// Tiny Cubes Setup
-		//-------------------------------------------------------------------------------------------------
-		//Mesh* cubeMesh = new Mesh();
-		//Material* cubeMat = new Material();
-		//
-		//cubeMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		//cubeMat->SetTexturesFromFolder("./Assets/Textures/Cobblestone");
-		//
-		//PxMaterial* cubePhysMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
-		//PxShape* cubeShape = m_Physics.GetPhysics()->createShape(PxBoxGeometry(0.5f, 0.5f, 0.5f), *cubePhysMat, false);
-		//
-		//
-		////Create a 3d grid of dynamic cubes
-		//for (float y = 100.0f; y < 105.0f; y += 1.1f)
-		//{
-		//	for (float x = 0.0f; x < 5.0f; x += 1.1f)
-		//	{
-		//		for (float z = 0.0f; z < 5.0f; z += 1.1f)
-		//		{
-		//
-		//			Entity cube = m_ECS->CreateEntity();
-		//			
-		//			//sharing mesh and material to avoid needlessly wasting video memory 
-		//			//(Cpu mem still wasted but I want SOME accuracy :p)
-		//			*m_ECS->AddComponent<Mesh>(cube) = *cubeMesh;
-		//			*m_ECS->AddComponent<Material>(cube) = *cubeMat;
-		//
-		//			//Add rigidbody / rigidActor
-		//			PxRigidBody* cubeBody = m_Physics.GetPhysics()->createRigidDynamic(PxTransform(x, y, z));
-		//			m_Physics.GetScene()->addActor(*cubeBody);
-		//			m_ECS->AddComponent<Transform>(cube)->SetActor(cubeBody); //Attach rigidbody to Transform component
-		//
-		//			//Add Shape
-		//			cubeBody->attachShape(*cubeShape);
-		//			cubeBody->setMass(10.0f);
-		//
-		//			//Add light
-		//
-		//			//auto cubelight = m_ECS->AddComponent<PointLightComponent>(cube);
-		//			//cubelight->Color = GMath::vec3f({ 10.0f, 10.0f, 10.0f });
-		//			//m_Renderer->AddPointLight(&cubelight->Color, &cubelight->position, false);
-		//		}
-		//	}
-		//}
-
 		shape->release();
 
 		//World Setup
 		//-------------------------------------------
-
 		Entity World = m_ECS->CreateEntity();
 		m_ECS->AddComponent<Transform>(World);
 		auto worldMesh = m_ECS->AddComponent<Mesh>(World);
@@ -174,7 +118,6 @@ class Demo : public Application
 		PointLightComponent* Wlight = m_ECS->AddComponent<PointLightComponent>(World);
 		Wlight->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
 		m_Renderer->AddPointLight(&Wlight->Color, &Wlight->position, false);
-
 		//----------------------------------------------
 
 		return;
@@ -184,8 +127,6 @@ class Demo : public Application
 	{
 		return;
 	}
-
-
 
 private:
 

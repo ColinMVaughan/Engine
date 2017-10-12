@@ -20,7 +20,7 @@ public:
 private:
 	PxController* m_Controller;
 	PxControllerFilters filters;
-	PxQuat ForeWard;
+	PxQuat Forward;
 };
 
 //------------------------------------------------------------------------------------------

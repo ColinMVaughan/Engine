@@ -53,7 +53,7 @@ class Demo : public Application
 		//Player Setup
 		//--------------------------------------------------------------------------------------------
 		//Create entity
-		Entity Player = m_ECS->CreateEntity();
+		ECS::Entity Player = m_ECS->CreateEntity();
 
 		//Add Mesh and Material
 		auto characterMesh = m_ECS->AddComponent<Mesh>(Player);
@@ -94,7 +94,7 @@ class Demo : public Application
 		//Ground Setup
 		//--------------------------------------------------------------------------------------------
 		//Create entity
-		Entity Plane = m_ECS->CreateEntity();
+		ECS::Entity Plane = m_ECS->CreateEntity();
 
 		//Add Physics / rigidBody
 		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
@@ -106,7 +106,7 @@ class Demo : public Application
 
 		//World Setup
 		//-------------------------------------------
-		Entity World = m_ECS->CreateEntity();
+		ECS::Entity World = m_ECS->CreateEntity();
 		m_ECS->AddComponent<Transform>(World);
 		auto worldMesh = m_ECS->AddComponent<Mesh>(World);
 		m_ECS->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/RedBrick");

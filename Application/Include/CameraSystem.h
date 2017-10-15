@@ -10,9 +10,9 @@
 
 
 
-class CameraSystem : public System<Camera, Transform>
+class CameraSystem : public ECS::System<Camera, Transform>
 {
-	CameraSystem(ComponentManager* a_CompManager)
+	CameraSystem(ECS::ComponentManager* a_CompManager)
 		:System(a_CompManager) {}
 
 	// This Updates the Camera Component's transform menmber to the Entities global transform.

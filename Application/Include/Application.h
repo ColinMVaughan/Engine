@@ -37,7 +37,7 @@ protected:
 	virtual void DoUpdate(double deltaTime) = 0;
 	void PostUpdate(double deltaTime);
 
-	void RegisterKeyboardCallback(BaseSystem* system);
+	void RegisterKeyboardCallback(ECS::BaseSystem* system);
 
 
 public:
@@ -45,15 +45,15 @@ public:
 	SDL_Window* m_Window;
 protected:
 
-	ComponentManager* m_ComponentManager;
-	SystemManager* m_SystemManager;
-	ECS* m_ECS;
+	ECS::ComponentManager* m_ComponentManager;
+	ECS::SystemManager* m_SystemManager;
+	ECS::ECS* m_ECS;
 
 	Renderer* m_Renderer;
 	PhysicsSystem m_Physics;
 
 	Timer* m_Timer;
-	std::vector<BaseSystem*> InputCallbackList;
+	std::vector<ECS::BaseSystem*> InputCallbackList;
 	SDL_Event InputEvent;
 
 	//Take this out later -----------------

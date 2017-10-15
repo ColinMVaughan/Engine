@@ -5,9 +5,9 @@
 
 Application::Application()
 {
-	m_ComponentManager = new ComponentManager;
-	m_SystemManager = new SystemManager(m_ComponentManager);
-	m_ECS = new ECS(m_SystemManager, m_ComponentManager);
+	m_ComponentManager = new ECS::ComponentManager;
+	m_SystemManager = new ECS::SystemManager(m_ComponentManager);
+	m_ECS = new ECS::ECS(m_SystemManager, m_ComponentManager);
 	m_Timer = new Timer();
 }
 
@@ -85,7 +85,7 @@ void Application::PostUpdate(double deltaTime)
 	m_ECS->UpdateSystems(deltaTime);
 }
 
-void Application::RegisterKeyboardCallback(BaseSystem* system)
+void Application::RegisterKeyboardCallback(ECS::BaseSystem* system)
 {
 	InputCallbackList.push_back(system);
 }

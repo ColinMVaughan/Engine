@@ -12,13 +12,13 @@
 //	Add system to system Manager, and send avalid Renderer pointer.
 //-----------------------------------------------------
 
-class RenderSystem : public System<Mesh, Material, Transform>
+class RenderSystem : public ECS::System<Mesh, Material, Transform>
 {
 private:
 	Renderer* m_Renderer;
 public:
 
-	RenderSystem(ComponentManager* a_Cmanager)
+	RenderSystem(ECS::ComponentManager* a_Cmanager)
 	:System(a_Cmanager){}
 
 	Renderer* GetRenderer()
@@ -64,11 +64,11 @@ public:
 	glm::fvec3 Color;
 };
 
-class PointLightSystem : public System<PointLightComponent, Transform>
+class PointLightSystem : public ECS::System<PointLightComponent, Transform>
 {
 public:
 
-	PointLightSystem(ComponentManager* a_Cmanager)
+	PointLightSystem(ECS::ComponentManager* a_Cmanager)
 		:System(a_Cmanager) {}
 
 	void Update(double deltaTime, unsigned int entity) override

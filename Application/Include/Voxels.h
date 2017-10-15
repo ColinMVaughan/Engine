@@ -84,10 +84,10 @@ private:
 //	
 //--------------------------------------------------------------------------------------
 
-class VoxelDestructionSystem: public System<VoxelContainer, Mesh, Transform>
+class VoxelDestructionSystem: public ECS::System<VoxelContainer, Mesh, Transform>
 {
 public:
-	VoxelDestructionSystem(ComponentManager* a_CompManager)
+	VoxelDestructionSystem(ECS::ComponentManager* a_CompManager)
 		:System(a_CompManager) {}
 
 	void Initalize(PhysicsSystem* m_PhysicsSystem)

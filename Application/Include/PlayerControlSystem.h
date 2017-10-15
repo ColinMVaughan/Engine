@@ -26,11 +26,11 @@ private:
 //------------------------------------------------------------------------------------------
 
 
-class FPSControlSystem : public System<Transform, Camera>
+class FPSControlSystem : public ECS::System<Transform, Camera>
 {
 public:
 
-	FPSControlSystem(ComponentManager* a_cmanager);
+	FPSControlSystem(ECS::ComponentManager* a_cmanager);
 
 	void PreUpdate(double deltaTime) override;
 	void Update(double deltaTime, unsigned int entity) override;

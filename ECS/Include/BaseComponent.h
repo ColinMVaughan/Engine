@@ -12,4 +12,4 @@ public:
 private:
 
 	bool m_IsActve;
-}
+};

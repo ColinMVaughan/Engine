@@ -18,7 +18,7 @@ PxRigidDynamic* PlayerControl::GetActor()
 
 //--------------------------------------------------------------------------------------------------
 
-FPSControlSystem::FPSControlSystem(ComponentManager* a_cmanager)
+FPSControlSystem::FPSControlSystem(ECS::ComponentManager* a_cmanager)
 	:System(a_cmanager)
 {
 	MoveDirection = PxVec3(0);

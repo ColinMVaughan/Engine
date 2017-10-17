@@ -30,10 +30,8 @@ class Demo : public Application
 		auto vds = m_Scene->AddSystem<VoxelDestructionSystem>();
 		vds->Initalize(&m_Physics);
 
-
 		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
 		RegisterKeyboardCallback(vds);
-
 
 		m_Renderer->Initalize();
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");

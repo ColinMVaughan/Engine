@@ -5,9 +5,11 @@
 #include <PhysicsSystem.h>
 #include <Renderer.h>
 
+//----------------------------------------------------------------------------------------
 // PlayerControl is used to take input and control the player's movement.
 // Note: Each Playercontrol component will be moved in the same direction defined by the 
 //       System.
+//----------------------------------------------------------------------------------------
 
 class PlayerControl
 {
@@ -24,7 +26,8 @@ private:
 };
 
 //------------------------------------------------------------------------------------------
-
+//
+//------------------------------------------------------------------------------------------
 
 class FPSControlSystem : public ECS::System<Transform, Camera>
 {

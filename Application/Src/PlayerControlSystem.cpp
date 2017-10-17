@@ -30,9 +30,9 @@ void FPSControlSystem::PreUpdate(double deltaTime)
 
 }
 
+
 void FPSControlSystem::Update(double deltaTime, unsigned int entity)
 {
-	
 	//Get Transform and camera components of entity
 	auto transform = m_CManager->GetComponent<Transform>(entity);
 	auto camera    = m_CManager->GetComponent<Camera>(entity);

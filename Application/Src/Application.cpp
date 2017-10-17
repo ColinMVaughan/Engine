@@ -7,13 +7,13 @@ Application::Application()
 {
 	m_ComponentManager = new ECS::ComponentManager;
 	m_SystemManager = new ECS::SystemManager(m_ComponentManager);
-	m_ECS = new ECS::ECS(m_SystemManager, m_ComponentManager);
+	m_Scene = new ECS::Scene(m_SystemManager, m_ComponentManager);
 	m_Timer = new Timer();
 }
 
 Application::~Application()
 {
-	delete m_ECS;
+	delete m_Scene;
 	delete m_SystemManager;
 	delete m_ComponentManager;
 }
@@ -52,7 +52,6 @@ void Application::PostInitalize()
 {
 	m_SystemManager->AddSystem<RenderSystem>()->SetRenderer(m_Renderer);
 	CameraPos.GetTransform()->p = PxVec3(10.0f,50.0f,70.0f);
-	//CameraPos.GetTransform()->q *= PxQuat(0.5, PxVec3(1, 0, 0));
 	std::cout << "Block";
 }
 
@@ -82,7 +81,7 @@ void Application::PreUpdate(double deltaTime)
 void Application::PostUpdate(double deltaTime)
 {
 
-	m_ECS->UpdateSystems(deltaTime);
+	m_Scene->UpdateSystems(deltaTime);
 }
 
 void Application::RegisterKeyboardCallback(ECS::BaseSystem* system)

@@ -30,15 +30,9 @@ void FPSControlSystem::PreUpdate(double deltaTime)
 
 }
 
-
 void FPSControlSystem::Update(double deltaTime, unsigned int entity)
 {
-	//m_CManager->GetComponent<PlayerControl>(entity)->Move(MoveDirection, deltaTime);
-	//glm::mat4* viewMatrix = &m_CManager->GetComponent<Camera>(entity)->m_Transform;
 	
-	//*viewMatrix = glm::make_mat4(PxMat44(rotation).front());
-
-
 	//Get Transform and camera components of entity
 	auto transform = m_CManager->GetComponent<Transform>(entity);
 	auto camera    = m_CManager->GetComponent<Camera>(entity);
@@ -96,22 +90,7 @@ void FPSControlSystem::KeyDown(unsigned char key)
 
 void FPSControlSystem::KeyUp(unsigned char key)
 {
-	//switch (key)
-	//{
-	//case 'W':
-	//	XForce.z = 0.0f;
-	//	break;
-	//case 'A':
-	//	ZForce.x = 0.0f;
-	//	break;
-	//case 'S':
-	//	XForce.z = 0.0f;
-	//	break;
-	//case'D':
-	//	ZForce.x = 0.0f;
-	//	break;
 
-	//}
 }
 
 // If the Mouse is moved, Rotate the Camera's View Matrix 
@@ -122,7 +101,4 @@ void FPSControlSystem::MouseMoved(float xVelocity, float yVelocity)
 	rotations.x += xVelocity;
 	rotations.y += yVelocity;
 
-	//rotation = PxQuat(xVelocity, PxVec3(0, 1, 0));
-	//rotation *= PxQuat(yVelocity, PxVec3(1, 0, 0));
-	//rotation *= PxQuat(0, PxVec3(0, 0, 1));
 }

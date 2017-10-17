@@ -1,8 +1,6 @@
 #ifndef ECS_H
 #define ECS_H
 
-
-
 #include <memory>
 #include "SystemManager.h"
 #include "ComponentManager.h"
@@ -11,28 +9,42 @@
 namespace ECS
 {
 
-	//-------------------------------------------------
-	//					ECS				Colin Vaughan
+	//-------------------------------------------------------------------------------
+	//					Entity
 	//
-	// ECS class is used to create entities and connect
-	// the system and component managers.
-	//--------------------------------------------------
+	//	Entity class Holds a Unique ID that can be used to retrieve its accosciated
+	//	Components.
+	//
+	//-------------------------------------------------------------------------------
 	struct Entity
 	{
 	public:
 		Entity(unsigned int a_id) :m_ID(a_id) {}
+
 		unsigned int GetID() { return m_ID; }
+		
+		template<typename T>
+		T* GetComponent();
+
+		template<typename T>
+		void AddComponent();
 
 	private:
 		unsigned int m_ID;
 	};
 
 
-	class ECS
+	//-------------------------------------------------
+	//					Scene			Colin Vaughan
+	//
+	// Scene class is used to create entities and connect
+	// the system and component managers.
+	//--------------------------------------------------
+	class Scene
 	{
 
 	public:
-		ECS(SystemManager* a_systemMgr, ComponentManager* a_compMgr)
+		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr)
 			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr) {}
 
 		Entity CreateEntity();
@@ -65,33 +77,33 @@ namespace ECS
 
 	//TODO: Optimize getting component after adding. currenty pretty Inelegant
 	template <typename T>
-	T* ECS::AddComponent(Entity a_entity)
+	T* Scene::AddComponent(Entity a_entity)
 	{
 		m_ComponentManager->AddComponent<T>(a_entity.GetID());
 		return m_ComponentManager->GetComponent<T>(a_entity.GetID());
 	}
 
 	template <typename T>
-	T* ECS::AddSystem()
+	T* Scene::AddSystem()
 	{
 		return m_SystemManager->AddSystem<T>();
 	}
 
 	template <typename T>
-	T* ECS::GetComponent(Entity a_entity)
+	T* Scene::GetComponent(Entity a_entity)
 	{
 		return m_ComponentManager->GetComponent<T>(a_entity.GetID());
 	}
 
 
-	inline Entity ECS::CreateEntity()
+	inline Entity Scene::CreateEntity()
 	{
 		EntityCounter++;
 		m_EntityList.push_back(EntityCounter);
 		return Entity(EntityCounter);
 	}
 
-	inline void ECS::UpdateSystems(double deltaTime)
+	inline void Scene::UpdateSystems(double deltaTime)
 	{
 		m_SystemManager->UpdateSystems(deltaTime, m_EntityList.data(), m_EntityList.size());
 	}

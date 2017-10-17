@@ -47,7 +47,7 @@ protected:
 
 	ECS::ComponentManager* m_ComponentManager;
 	ECS::SystemManager* m_SystemManager;
-	ECS::ECS* m_ECS;
+	ECS::Scene* m_Scene;
 
 	Renderer* m_Renderer;
 	PhysicsSystem m_Physics;

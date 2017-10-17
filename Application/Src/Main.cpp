@@ -26,12 +26,12 @@ class Demo : public Application
 		//---------------------------------------------------
 		//  Rendering Setup
 		//-------------------------------------------------
-		m_ECS->AddSystem<PointLightSystem>();
-		auto vds = m_ECS->AddSystem<VoxelDestructionSystem>();
+		m_Scene->AddSystem<PointLightSystem>();
+		auto vds = m_Scene->AddSystem<VoxelDestructionSystem>();
 		vds->Initalize(&m_Physics);
 
 
-		RegisterKeyboardCallback(m_ECS->AddSystem<FPSControlSystem>());
+		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
 		RegisterKeyboardCallback(vds);
 
 
@@ -42,9 +42,9 @@ class Demo : public Application
 		//	Camera Setup
 		//--------------------------------------------------------------
 
-		auto cameraEntity = m_ECS->CreateEntity();
-		auto camera = m_ECS->AddComponent<Camera>(cameraEntity);
-		m_ECS->AddComponent<Transform>(cameraEntity);
+		auto cameraEntity = m_Scene->CreateEntity();
+		auto camera = m_Scene->AddComponent<Camera>(cameraEntity);
+		m_Scene->AddComponent<Transform>(cameraEntity);
 
 		m_Renderer->SetCamera(camera);
 		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
@@ -53,18 +53,18 @@ class Demo : public Application
 		//Player Setup
 		//--------------------------------------------------------------------------------------------
 		//Create entity
-		ECS::Entity Player = m_ECS->CreateEntity();
+		ECS::Entity Player = m_Scene->CreateEntity();
 
 		//Add Mesh and Material
-		auto characterMesh = m_ECS->AddComponent<Mesh>(Player);
+		auto characterMesh = m_Scene->AddComponent<Mesh>(Player);
 		characterMesh->LoadFromFile("./Assets/Models/Cube.obj");
 
-		auto m_Test = m_ECS->AddComponent<VoxelContainer>(Player);
+		auto m_Test = m_Scene->AddComponent<VoxelContainer>(Player);
 		m_Test->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
 		vds->AddTestCase(m_Test);
 
 
-		m_ECS->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
+		m_Scene->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
 
 		//create shape and physics material
 		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
@@ -78,14 +78,14 @@ class Demo : public Application
 		description.material = myMat;
 		description.upDirection = PxVec3(1, 0, 0);
 		
-		auto pc = m_ECS->AddComponent<PlayerControl>(Player);
+		auto pc = m_Scene->AddComponent<PlayerControl>(Player);
 		auto characterController = m_Physics.GetControllerManager()->createController(description);
 		pc->Initalize(characterController);
-		m_ECS->AddComponent<Transform>(Player)->SetActor(pc->GetActor());
+		m_Scene->AddComponent<Transform>(Player)->SetActor(pc->GetActor());
 		
 
 		//Add Light
-		PointLightComponent* light = m_ECS->AddComponent<PointLightComponent>(Player);
+		PointLightComponent* light = m_Scene->AddComponent<PointLightComponent>(Player);
 		light->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
 		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 
@@ -94,28 +94,28 @@ class Demo : public Application
 		//Ground Setup
 		//--------------------------------------------------------------------------------------------
 		//Create entity
-		ECS::Entity Plane = m_ECS->CreateEntity();
+		ECS::Entity Plane = m_Scene->CreateEntity();
 
 		//Add Physics / rigidBody
 		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
 		m_Physics.GetScene()->addActor(*groundPlane);
 
-		m_ECS->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
+		m_Scene->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
 
 		shape->release();
 
 		//World Setup
 		//-------------------------------------------
-		ECS::Entity World = m_ECS->CreateEntity();
-		m_ECS->AddComponent<Transform>(World);
-		auto worldMesh = m_ECS->AddComponent<Mesh>(World);
-		m_ECS->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/RedBrick");
+		ECS::Entity World = m_Scene->CreateEntity();
+		m_Scene->AddComponent<Transform>(World);
+		auto worldMesh = m_Scene->AddComponent<Mesh>(World);
+		m_Scene->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/RedBrick");
 
 		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		m_ECS->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
+		m_Scene->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
 
 		//add light
-		PointLightComponent* Wlight = m_ECS->AddComponent<PointLightComponent>(World);
+		PointLightComponent* Wlight = m_Scene->AddComponent<PointLightComponent>(World);
 		Wlight->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
 		m_Renderer->AddPointLight(&Wlight->Color, &Wlight->position, false);
 		//----------------------------------------------

@@ -3,10 +3,10 @@
 //								  Colin Vaughan 
 //
 //
-//	Demo App includes selection of different lighting and material scenareos with a
-//	single point light. The demo showcases the ECS pattern design and a component / memory manager
-//	The renderer is wrapped in a dedicated system class that fully integrates into the system
-//	and component managers.
+//	Demo App includes selection of different lighting and material scenareos with
+//	multiple point lights, voxel destruction, and physics. The demo showcases the ECS pattern design 
+//  and a component / memory manager
+//	
 //---------------------------------------------------------------------------------------------------
 
 #include <GL/glew.h>
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 
 	demo->m_Window = SDL_CreateWindow("Ocean Engine", 100, 100, 1280, 720, WindowFlags);
 	SDL_GL_CreateContext(demo->m_Window);
-
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	//---------------------------------------------------------
 
 	glewExperimental = true;
@@ -171,8 +171,6 @@ int main(int argc, char **argv)
 		system("pause");
 		return 0;
 	}
-
-
 
 	demo->Initalize();
 	while (demo->Running)

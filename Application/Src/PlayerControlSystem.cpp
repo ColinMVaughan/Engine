@@ -48,7 +48,7 @@ void FPSControlSystem::Update(double deltaTime, unsigned int entity)
 	dir *= PxQuat(rotations.x, PxVec3(0, 1, 0));
 	
 	//move the player by this rotated direction vector
-	playercontrol->Move(dir.rotate(MoveDirection), deltaTime);
+	playercontrol->Move(dir.rotate(MoveDirection * deltaTime), deltaTime);
 	
 	//Add other rotation component and add rotation to transform
 	//NOTE: We rotate the transform because the playerController's PhysX Actor 
@@ -78,6 +78,7 @@ void FPSControlSystem::PostUpdate(double deltaTime)
 
 	//zero out move direction for next update
 	MoveDirection *= 0;
+	MoveDirection.y = -9.8f;
 }
 
 
@@ -86,22 +87,22 @@ void FPSControlSystem::KeyDown(unsigned char key)
 	switch (key)
 	{
 	case 'W':
-		MoveDirection.z -= 0.5f;
+		MoveDirection.z -= 5.5f;
 		break;
 	case 'A':
-		MoveDirection.x -= 0.5f;
+		MoveDirection.x -= 5.5f;
 		break;
 	case 'S':
-		MoveDirection.z += 0.5f;
+		MoveDirection.z += 5.5f;
 		break;
 	case'D':
-		MoveDirection.x += 0.5f;
+		MoveDirection.x += 5.5f;
 		break;
 	case 'E':
-		MoveDirection.y += 0.5f;
+		MoveDirection.y += 5.5f;
 		break;
 	case 'Q':
-		MoveDirection.y -= 0.5f;
+		MoveDirection.y -= 5.5f;
 		break;
 	}
 }

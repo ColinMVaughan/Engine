@@ -30,25 +30,44 @@ void FPSControlSystem::PreUpdate(double deltaTime)
 
 }
 
-
+//Moves the playercontroller in the accumulated direction 
 void FPSControlSystem::Update(double deltaTime, unsigned int entity)
 {
 	//Get Transform and camera components of entity
-	auto transform = m_CManager->GetComponent<Transform>(entity);
-	auto camera    = m_CManager->GetComponent<Camera>(entity);
+	auto transform	   = m_CManager->GetComponent<Transform>(entity);
+	auto camera		   = m_CManager->GetComponent<Camera>(entity);
+	auto playercontrol = m_CManager->GetComponent<PlayerControl>(entity);
 
 	//Rotate camera by whatever ammout
-	transform->GetTransform()->q = PxQuat(PxIdentity);
-	transform->GetTransform()->q *= PxQuat(rotations.x, PxVec3(0, 1, 0));
-	transform->GetTransform()->q *= PxQuat(rotations.y, PxVec3(1, 0, 0));
+	//transform->GetTransform()->q = PxQuat(PxIdentity);
+	//transform->GetTransform()->q *= PxQuat(rotations.x, PxVec3(0, 1, 0));
+	//transform->GetTransform()->q *= PxQuat(rotations.y, PxVec3(1, 0, 0));
 
-	//Translate camera in orientation corrected movement direction
-	transform->GetTransform()->p += transform->GetTransform()->rotate(MoveDirection);
+	//Get Rotation Quaternion to orient the move direction along the Y axis.
+	PxQuat dir = PxQuat(PxIdentity);
+	dir *= PxQuat(rotations.x, PxVec3(0, 1, 0));
+	
+	//move the player by this rotated direction vector
+	playercontrol->Move(dir.rotate(MoveDirection), deltaTime);
+	
+	//Add other rotation component and add rotation to transform
+	//NOTE: We rotate the transform because the playerController's PhysX Actor 
+	//doesn't store a rotation, so we need to add it manually.
+	dir *= PxQuat(rotations.y, PxVec3(1, 0, 0));
+	auto tempTransform = transform->GetTransform();
 
+	tempTransform->q = dir;
+	
+	//Convert new transform to a translation matrix.
+	camera->m_Transform = glm::make_mat4(PxMat44(*tempTransform).front());
+
+
+	//Move Playercontroller to the desired direction
+	//transform->GetTransform()->p += transform->GetTransform()->rotate(MoveDirection);
 
 	// Convert physx::PxMat44 to glm::mat4 and send updated transform to camera component
 	// (I would like to change this in the fututre)
-	camera->m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
+	//camera->m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
 	return;
 }
 
@@ -59,9 +78,8 @@ void FPSControlSystem::PostUpdate(double deltaTime)
 
 	//zero out move direction for next update
 	MoveDirection *= 0;
-
-
 }
+
 
 void FPSControlSystem::KeyDown(unsigned char key)
 {

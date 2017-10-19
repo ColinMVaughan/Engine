@@ -33,36 +33,40 @@ class Demo : public Application
 		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
 		RegisterKeyboardCallback(vds);
 
-		m_Renderer->Initalize();
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
 		//---------------------------------------------------------------
 		//	Camera Setup
 		//--------------------------------------------------------------
 
-		auto cameraEntity = m_Scene->CreateEntity();
-		auto camera = m_Scene->AddComponent<Camera>(cameraEntity);
-		m_Scene->AddComponent<Transform>(cameraEntity);
+		//auto cameraEntity = m_Scene->CreateEntity();
+		//auto camera = m_Scene->AddComponent<Camera>(cameraEntity);
+		//m_Scene->AddComponent<Transform>(cameraEntity);
 
-		m_Renderer->SetCamera(camera);
-		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+		//m_Renderer->SetCamera(camera);
+		//camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
 
 		//--------------------------------------------------------------------------------------------
 		//Player Setup
 		//--------------------------------------------------------------------------------------------
-		//Create entity
+		//Create entity & add Camera
 		ECS::Entity Player = m_Scene->CreateEntity();
+		auto camera = m_Scene->AddComponent<Camera>(Player);
+		m_Scene->AddComponent<Transform>(Player);
 
+		m_Renderer->SetCamera(camera);
+		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+		
 		//Add Mesh and Material
-		auto characterMesh = m_Scene->AddComponent<Mesh>(Player);
-		characterMesh->LoadFromFile("./Assets/Models/Cube.obj");
+		//auto characterMesh = m_Scene->AddComponent<Mesh>(Player);
+		//characterMesh->LoadFromFile("./Assets/Models/Cube.obj");
 
-		auto m_Test = m_Scene->AddComponent<VoxelContainer>(Player);
-		m_Test->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
-		vds->AddTestCase(m_Test);
+		//auto m_Test = m_Scene->AddComponent<VoxelContainer>(Player);
+		//m_Test->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
+		//vds->AddTestCase(m_Test);
 
 
-		m_Scene->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
+		//m_Scene->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
 
 		//create shape and physics material
 		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
@@ -79,6 +83,7 @@ class Demo : public Application
 		auto pc = m_Scene->AddComponent<PlayerControl>(Player);
 		auto characterController = m_Physics.GetControllerManager()->createController(description);
 		pc->Initalize(characterController);
+
 		m_Scene->AddComponent<Transform>(Player)->SetActor(pc->GetActor());
 		
 
@@ -133,15 +138,11 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-//This Section is going to be replaced with a new window handler, most likely SDL
-// 
-//first I would like to make sure tha there is no issue with the original rendering 
+//
 ////////////////////////////////////////////////////////////////////////////////////////////
 const int FRAME_DELAY_SPRITE = 1000 / 60;
 
-
 Demo *demo = new Demo();
-
 
 int main(int argc, char **argv)
 {

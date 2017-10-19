@@ -29,7 +29,7 @@ private:
 //
 //------------------------------------------------------------------------------------------
 
-class FPSControlSystem : public ECS::System<Transform, Camera>
+class FPSControlSystem : public ECS::System<Transform, Camera, PlayerControl>
 {
 public:
 

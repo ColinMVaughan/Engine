@@ -14,6 +14,8 @@
 //
 //	CameraSystem sends the entitie's transform matrix to the Camera component
 //	once per frame.
+//	
+//	Required Components: Camera, Transform
 //-----------------------------------------------------------------------------
 
 class CameraSystem : public ECS::System<Camera, Transform>
@@ -40,7 +42,10 @@ class CameraSystem : public ECS::System<Camera, Transform>
 //
 //	Debug Camera Control is used for controlling the camera without being connected to the player
 //	or gravity & collisions.
+//
+//	Required Components: DebugControl, Transform, Camera
 //---------------------------------------------------------------------------------------
+
 struct DebugControl
 {
 

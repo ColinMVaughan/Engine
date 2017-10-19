@@ -39,9 +39,12 @@ void Application::Update()
 
 void Application::PreInitalize()
 {
-	Camera cam;
+	
+	Camera cam; // ???
 	
 	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
+	m_Renderer->Initalize();
+
 
 	PhysicsSettings PSettings;
 	m_Physics.Initalize(PSettings);
@@ -51,8 +54,6 @@ void Application::PreInitalize()
 void Application::PostInitalize()
 {
 	m_SystemManager->AddSystem<RenderSystem>()->SetRenderer(m_Renderer);
-	CameraPos.GetTransform()->p = PxVec3(10.0f,50.0f,70.0f);
-	std::cout << "Block";
 }
 
 void Application::PreUpdate(double deltaTime)

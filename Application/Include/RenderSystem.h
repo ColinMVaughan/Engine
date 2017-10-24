@@ -40,10 +40,10 @@ public:
 		m_Renderer->PreRender();
 	}
 
-	void Update(double deltaTime, unsigned int entity) override
+	void Update(double deltaTime, ECS::Entity& entity) override
 	{
-		auto mat = m_CManager->GetComponent<Transform>(entity)->GetGlobalTransformMatrix();
-		m_Renderer->Render(m_CManager->GetComponent<Mesh>(entity), m_CManager->GetComponent<Material>(entity), mat.front());
+		auto mat =entity.GetComponent<Transform>()->GetGlobalTransformMatrix();
+		m_Renderer->Render(entity.GetComponent<Mesh>(), entity.GetComponent<Material>(), mat.front());
 	}
 	void PostUpdate(double deltaTime) override
 	{
@@ -71,10 +71,10 @@ public:
 	PointLightSystem(ECS::ComponentManager* a_Cmanager)
 		:System(a_Cmanager) {}
 
-	void Update(double deltaTime, unsigned int entity) override
+	void Update(double deltaTime, ECS::Entity& entity) override
 	{
-		PxVec3 Pos = m_CManager->GetComponent<Transform>(entity)->GetTransform()->p;
-		PointLightComponent* light = m_CManager->GetComponent<PointLightComponent>(entity);
+		PxVec3 Pos =entity.GetComponent<Transform>()->GetTransform()->p;
+		PointLightComponent* light = entity.GetComponent<PointLightComponent>();
 
 		light->position[0] = Pos.x;
 		light->position[1] = Pos.y;

@@ -1,7 +1,8 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include<ECS.h>
+#include <Entity.h>
+#include <ECS.h>
 #include <Renderer.h>
 #include <BaseSystem.h>
 #include <PhysicsSystem.h>

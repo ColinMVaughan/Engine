@@ -13,11 +13,11 @@ void DebugCameraControlSystem::PreUpdate(double deltaTime)
 }
 
 
-void DebugCameraControlSystem::Update(double deltaTime, unsigned int entity)
+void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 {
 	//Get Transform and camera components of entity
-	auto transform = m_CManager->GetComponent<Transform>(entity);
-	auto camera = m_CManager->GetComponent<Camera>(entity);
+	auto transform = entity.GetComponent<Transform>();
+	auto camera = entity.GetComponent<Camera>();
 
 	//Rotate camera by whatever ammout
 	transform->GetTransform()->q = PxQuat(PxIdentity);

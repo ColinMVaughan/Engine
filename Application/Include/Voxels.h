@@ -2,7 +2,9 @@
 #define VOXEL_CONTAINTER_H
 
 #include <PhysicsSystem.h>
+#include <Entity.h>
 #include <ECS.h>
+
 #include <Renderer.h>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -129,11 +131,11 @@ public:
 		}
 	}
 
-	void Update(double deltaTime, unsigned int entity) override
+	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		//Collect entity's mesh and voxelContainer components
-		auto mesh   = m_CManager->GetComponent<Mesh>(entity);
-		auto voxels = m_CManager->GetComponent<VoxelContainer>(entity);
+		auto mesh   = entity.GetComponent<Mesh>();
+		auto voxels = entity.GetComponent<VoxelContainer>();
 
 		//Submit the new Voxel matricies to the gpu.
 		//Currently the entire instance buffer will have to be resubmitted

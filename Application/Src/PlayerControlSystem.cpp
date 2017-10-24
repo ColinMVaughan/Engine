@@ -31,12 +31,12 @@ void FPSControlSystem::PreUpdate(double deltaTime)
 }
 
 //Moves the playercontroller in the accumulated direction 
-void FPSControlSystem::Update(double deltaTime, unsigned int entity)
+void FPSControlSystem::Update(double deltaTime, ECS::Entity& entity)
 {
 	//Get Transform and camera components of entity
-	auto transform	   = m_CManager->GetComponent<Transform>(entity);
-	auto camera		   = m_CManager->GetComponent<Camera>(entity);
-	auto playercontrol = m_CManager->GetComponent<PlayerControl>(entity);
+	auto transform	   = entity.GetComponent<Transform>();
+	auto camera		   = entity.GetComponent<Camera>();
+	auto playercontrol = entity.GetComponent<PlayerControl>();
 
 	//Rotate camera by whatever ammout
 	//transform->GetTransform()->q = PxQuat(PxIdentity);

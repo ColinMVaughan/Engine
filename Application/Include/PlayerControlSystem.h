@@ -36,7 +36,7 @@ public:
 	FPSControlSystem(ECS::ComponentManager* a_cmanager);
 
 	void PreUpdate(double deltaTime) override;
-	void Update(double deltaTime, unsigned int entity) override;
+	void Update(double deltaTime, ECS::Entity& entity) override;
 	void PostUpdate(double deltaTime) override;
 
 	void KeyDown(unsigned char key) override;

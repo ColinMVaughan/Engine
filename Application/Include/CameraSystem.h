@@ -25,11 +25,11 @@ class CameraSystem : public ECS::System<Camera, Transform>
 
 	// This Updates the Camera Component's transform menmber to the Entities global transform.
 	// This Will most likley be refactored later.
-	void Update(double deltaTime, unsigned int Entity) override
+	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		//Get Required Components
-		auto camera		= m_CManager->GetComponent<Camera>(Entity);
-		auto transform  = m_CManager->GetComponent<Transform>(Entity);
+		auto camera		= entity.GetComponent<Camera>();
+		auto transform  = entity.GetComponent<Transform>();
 
 		//Set the Camera's Transform Component to the Transform of the Entity
 		camera->m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
@@ -58,7 +58,7 @@ public:
 	DebugCameraControlSystem(ECS::ComponentManager* a_cmanager);
 
 	void PreUpdate(double deltaTime) override;
-	void Update(double deltaTime, unsigned int entity) override;
+	void Update(double deltaTime, ECS::Entity& entity) override;
 	void PostUpdate(double deltaTime) override;
 
 	void KeyDown(unsigned char key) override;

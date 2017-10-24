@@ -4,42 +4,17 @@
 #include <memory>
 #include "SystemManager.h"
 #include "ComponentManager.h"
-
+#include "Entity.h"
 
 namespace ECS
 {
-
-	//-------------------------------------------------------------------------------
-	//					Entity
-	//
-	//	Entity class Holds a Unique ID that can be used to retrieve its accosciated
-	//	Components.
-	//
-	//-------------------------------------------------------------------------------
-	struct Entity
-	{
-	public:
-		Entity(unsigned int a_id) :m_ID(a_id) {}
-
-		unsigned int GetID() { return m_ID; }
-		
-		template<typename T>
-		T* GetComponent();
-
-		template<typename T>
-		void AddComponent();
-
-	private:
-		unsigned int m_ID;
-	};
-
-
-	//-------------------------------------------------
-	//					Scene			Colin Vaughan
-	//
-	// Scene class is used to create entities and connect
-	// the system and component managers.
-	//--------------------------------------------------
+//-------------------------------------------------
+//					Scene			Colin Vaughan
+//
+// Scene class is used to create entities and connect
+// the system and component managers.
+// All entities created are tied to it's scene.
+//--------------------------------------------------
 	class Scene
 	{
 
@@ -66,14 +41,22 @@ namespace ECS
 		ComponentManager* m_ComponentManager;
 
 		unsigned int EntityCounter = 0;
-		std::vector<unsigned int> m_EntityList;
+		std::vector<Entity> m_EntityList;
 	};
 
+//---------------------------------------------------------
+//						ENTITY
+//	
+//
+//----------------------------------------------------------
+#include "Entity.h"
 
 
 
-	//					IMPLEMENTATION
-	//------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------
+//				SCENE IMPLEMENTATION
+//------------------------------------------------------------------------------
 
 	//TODO: Optimize getting component after adding. currenty pretty Inelegant
 	template <typename T>
@@ -125,6 +108,13 @@ namespace ECS
 	//	return m_SystemManager->AddSystem<T>();
 	//}
 
-}
 
+
+//-----------------------------------------------------------
+//				ENTITY IMPLEMENTATION
+//-----------------------------------------------------------
+
+
+
+}
 #endif //ECS_H

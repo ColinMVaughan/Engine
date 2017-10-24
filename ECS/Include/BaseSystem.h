@@ -3,6 +3,7 @@
 //Colin Vaughan		June 5th, 2017
 
 #include "ComponentManager.h"
+#include "Entity.h"
 #include <iostream>
 
 namespace ECS
@@ -23,13 +24,13 @@ namespace ECS
 		// PostUpdate: runs once per frame
 
 		virtual void PreUpdate(double deltaTime) {};
-		virtual void Update(double deltaTime, unsigned int entity) = 0;
+		virtual void Update(double deltaTime, Entity& entity) = 0;
 		virtual void PostUpdate(double deltaTime) {};
 
 		virtual void UnInitalize() {};
 
 		// returns true if the entity is registered with all the required components.
-		virtual bool HasComponents(unsigned int entity)
+		virtual bool HasComponents(unsigned int entityID)
 		{
 			std::cout << "\nThis function (BaseSystem::HasComponent) should never be called.";
 			return false;
@@ -63,7 +64,7 @@ namespace ECS
 		// PostUpdate: runs once per frame
 
 		virtual void PreUpdate(double deltaTime) {};
-		virtual void Update(double deltaTime, unsigned int entity) {};
+		virtual void Update(double deltaTime, Entity& entity) {};
 		virtual void PostUpdate(double deltaTime) {};
 
 		virtual void UnInitalize() {};
@@ -71,11 +72,10 @@ namespace ECS
 
 		// Returns true if the entity is registered with all the required components.
 		// Marked final to prevent definition by derrived classes.
-		virtual bool HasComponents(unsigned int entity) final
+		virtual bool HasComponents(unsigned int entityID) final
 		{
-			return m_CManager->HasComponents<C, RequiredComponents...>(entity);
+			return m_CManager->HasComponents<C, RequiredComponents...>(entityID);
 		}
-
 
 		ComponentManager* m_CManager;
 	};
@@ -91,7 +91,7 @@ namespace ECS
 	//-----------------------------------------------------
 	class ExampleDerrivedSystem : public System<int, bool>
 	{
-		void Update(double deltaTime, unsigned int entity) override
+		void Update(double deltaTime, Entity& entity) override
 		{
 			return;
 		}

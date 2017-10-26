@@ -2,12 +2,44 @@
 #define ECS_H
 
 #include <memory>
+#include <vector>
 #include "SystemManager.h"
 #include "ComponentManager.h"
-#include "Entity.h"
 
 namespace ECS
 {
+	class Scene;
+//---------------------------------------------------------
+//						ENTITY
+//	
+//
+//----------------------------------------------------------
+	class Entity
+	{
+	public:
+		//Entity requires a unique ID and a pointer to the scene it belongs to
+		Entity(unsigned int a_id, Scene* a_scene) :m_ID(a_id), m_Scene(a_scene) {}
+
+		unsigned int GetID() { return m_ID; }
+
+		template<typename T>
+		T* GetComponent();
+
+		template<typename T>
+		T* AddComponent();
+
+		template<typename T>
+		void RemoveComponent();
+
+		void DestroyEntity();
+		void DisableEntity();
+		void EnableEntity();
+
+	private:
+		unsigned int m_ID;
+		Scene* m_Scene;
+	};
+
 //-------------------------------------------------
 //					Scene			Colin Vaughan
 //
@@ -44,12 +76,7 @@ namespace ECS
 		std::vector<Entity> m_EntityList;
 	};
 
-//---------------------------------------------------------
-//						ENTITY
-//	
-//
-//----------------------------------------------------------
-#include "Entity.h"
+
 
 
 
@@ -82,8 +109,8 @@ namespace ECS
 	inline Entity Scene::CreateEntity()
 	{
 		EntityCounter++;
-		m_EntityList.push_back(EntityCounter);
-		return Entity(EntityCounter);
+		m_EntityList.push_back(Entity(EntityCounter, this));
+		return Entity(EntityCounter, this);
 	}
 
 	inline void Scene::UpdateSystems(double deltaTime)
@@ -113,7 +140,17 @@ namespace ECS
 //-----------------------------------------------------------
 //				ENTITY IMPLEMENTATION
 //-----------------------------------------------------------
+	template<typename T>
+	T* Entity::AddComponent()
+	{
+		return m_Scene->AddComponent<T>(*this);
+	}
 
+	template<typename T>
+	T* Entity::GetComponent()
+	{
+		return m_Scene->GetComponent<T>(*this);
+	}
 
 
 }

@@ -3,11 +3,11 @@
 //Colin Vaughan		June 5th, 2017
 
 #include "ComponentManager.h"
-#include "Entity.h"
 #include <iostream>
 
 namespace ECS
 {
+	class Entity;
 	//-----------------------------------------
 	//				BASE SYSTEM
 	// Derrive your system from this class to be able to submit it to the system manager.

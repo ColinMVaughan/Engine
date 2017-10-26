@@ -2,13 +2,14 @@
 #define SYSTEM_MANAGER_H
 
 #include <vector>
+
 #include "ComponentManager.h"
 #include "BaseSystem.h"
-#include "Entity.h"
+
 
 namespace ECS
 {
-
+	class Entity;
 	//--------------------------------------------------------------
 	//					Colin Vaughan 
 	//					June 5th, 2017
@@ -39,21 +40,8 @@ namespace ECS
 		// Loop through each system and update its corrisponding entities.
 		//We need to figure out how to efficiently register systems with componets
 		//------------------------------
-		void UpdateSystems(double deltaTime, Entity entityList[], size_t entityCount)
-		{
-			for (unsigned int i = 0; i < SystemList.size(); ++i)
-			{
-				SystemList[i]->PreUpdate(deltaTime);
+		void UpdateSystems(double deltaTime, Entity entityList[], size_t entityCount);
 
-				for (unsigned int count = 0; count < entityCount; ++count)
-				{
-					if (SystemList[i]->HasComponents(entityList[count].GetID()))
-						SystemList[i]->Update(deltaTime, entityList[count]);
-				}
-
-				SystemList[i]->PostUpdate(deltaTime);
-			}
-		}
 
 		ComponentManager* m_ComponentManager;
 	private:

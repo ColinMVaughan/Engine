@@ -24,32 +24,24 @@ class Demo : public Application
 {
 	void DoInitalize() override
 	{
-		//---------------------------------------------------
-		//  Rendering Setup
-		//-------------------------------------------------
+		//-----------------------------------------------------------
+		//	Add Desired Systems & Callbacks
+		//-----------------------------------------------------------
 		m_Scene->AddSystem<PointLightSystem>();
 		auto vds = m_Scene->AddSystem<VoxelDestructionSystem>();
 		vds->Initalize(&m_Physics);
-
+		
 		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
 		RegisterKeyboardCallback(vds);
+		//---------------------------------------------------
+		//  Rendering Setup
+		//-------------------------------------------------
 
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
 		//---------------------------------------------------------------
 		//	Camera Setup
 		//--------------------------------------------------------------
-
-		//auto cameraEntity = m_Scene->CreateEntity();
-		//auto camera = m_Scene->AddComponent<Camera>(cameraEntity);
-		//m_Scene->AddComponent<Transform>(cameraEntity);
-
-		//m_Renderer->SetCamera(camera);
-		//camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
-
-		//--------------------------------------------------------------------------------------------
-		//Player Setup
-		//--------------------------------------------------------------------------------------------
 		//Create entity & add Camera
 		ECS::Entity Player = m_Scene->CreateEntity();
 		auto camera = m_Scene->AddComponent<Camera>(Player);
@@ -57,6 +49,10 @@ class Demo : public Application
 
 		m_Renderer->SetCamera(camera);
 		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+		//--------------------------------------------------------------------------------------------
+		//Player Constrol Setup
+		//--------------------------------------------------------------------------------------------
+
 		
 		//Add Mesh and Material
 		//auto characterMesh = m_Scene->AddComponent<Mesh>(Player);

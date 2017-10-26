@@ -18,6 +18,7 @@
 #include <RenderSystem.h>
 #include "PlayerControlSystem.h"
 #include "Voxels.h"
+#include "VoxelDestructionSystem.h"
 
 class Demo : public Application
 {

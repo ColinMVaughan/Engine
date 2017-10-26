@@ -100,6 +100,9 @@ void Application::KeyUp(SDL_KeyboardEvent key)
 
 void Application::KeyDown(SDL_KeyboardEvent key)
 {
+	if (key.keysym.sym == SDLK_ESCAPE)
+		Running = false;
+
 	for each (auto callback in InputCallbackList)
 	{
 		callback->KeyDown(*SDL_GetKeyName(key.keysym.sym));

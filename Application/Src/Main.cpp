@@ -33,10 +33,10 @@ class Demo : public Application
 		
 		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
 		RegisterKeyboardCallback(vds);
+
 		//---------------------------------------------------
 		//  Rendering Setup
 		//-------------------------------------------------
-
 		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
 		//---------------------------------------------------------------
@@ -44,27 +44,15 @@ class Demo : public Application
 		//--------------------------------------------------------------
 		//Create entity & add Camera
 		ECS::Entity Player = m_Scene->CreateEntity();
-		auto camera = m_Scene->AddComponent<Camera>(Player);
-		m_Scene->AddComponent<Transform>(Player);
+		auto camera = Player.AddComponent<Camera>();
+		Player.AddComponent<Transform>();
 
 		m_Renderer->SetCamera(camera);
 		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+
 		//--------------------------------------------------------------------------------------------
 		//Player Constrol Setup
-		//--------------------------------------------------------------------------------------------
-
-		
-		//Add Mesh and Material
-		//auto characterMesh = m_Scene->AddComponent<Mesh>(Player);
-		//characterMesh->LoadFromFile("./Assets/Models/Cube.obj");
-
-		//auto m_Test = m_Scene->AddComponent<VoxelContainer>(Player);
-		//m_Test->ReadQubicBinaryFile("./Assets/Voxels/character.qb", characterMesh);
-		//vds->AddTestCase(m_Test);
-
-
-		//m_Scene->AddComponent<Material>(Player)->SetTexturesFromFolder("./Assets/Textures/Gold");
-
+		//-------------------------------------------------------------------------------------------
 		//create shape and physics material
 		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 		PxShape* shape = m_Physics.GetPhysics()->createShape(PxSphereGeometry(3.0f), *myMat, true);
@@ -77,15 +65,14 @@ class Demo : public Application
 		description.material = myMat;
 		description.upDirection = PxVec3(1, 0, 0);
 		
-		auto pc = m_Scene->AddComponent<PlayerControl>(Player);
+		auto pc = Player.AddComponent<PlayerControl>();
 		auto characterController = m_Physics.GetControllerManager()->createController(description);
 		pc->Initalize(characterController);
 
-		m_Scene->AddComponent<Transform>(Player)->SetActor(pc->GetActor());
+		Player.AddComponent<Transform>()->SetActor(pc->GetActor());
 		
-
 		//Add Light
-		PointLightComponent* light = m_Scene->AddComponent<PointLightComponent>(Player);
+		PointLightComponent* light = Player.AddComponent<PointLightComponent>();
 		light->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
 		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 
@@ -100,19 +87,19 @@ class Demo : public Application
 		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
 		m_Physics.GetScene()->addActor(*groundPlane);
 
-		m_Scene->AddComponent<Transform>(Plane)->SetActor(groundPlane); // Attach rigidbody to Transform Component
+		Plane.AddComponent<Transform>()->SetActor(groundPlane); // Attach rigidbody to Transform Component
 
 		shape->release();
 
 		//World Setup
 		//-------------------------------------------
 		ECS::Entity World = m_Scene->CreateEntity();
-		m_Scene->AddComponent<Transform>(World);
-		auto worldMesh = m_Scene->AddComponent<Mesh>(World);
-		m_Scene->AddComponent<Material>(World)->SetTexturesFromFolder("./Assets/Textures/RedBrick");
+		World.AddComponent<Transform>();
+		auto worldMesh = World.AddComponent<Mesh>();
+		World.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/RedBrick");
 
 		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		m_Scene->AddComponent<VoxelContainer>(World)->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
+		World.AddComponent<VoxelContainer>()->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
 
 		//add light
 		PointLightComponent* Wlight = m_Scene->AddComponent<PointLightComponent>(World);

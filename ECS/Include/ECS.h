@@ -11,7 +11,10 @@ namespace ECS
 	class Scene;
 //---------------------------------------------------------
 //						ENTITY
-//	
+//	Entities act as the Game Objects within a scene.
+//	Entities must allways be created and destroyed by a Scene
+//	An Entity that is not created with a scene is considered
+//	invalid and will produce undefined behaviour.
 //
 //----------------------------------------------------------
 	class Entity

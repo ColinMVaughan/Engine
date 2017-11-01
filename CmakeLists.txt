@@ -1,27 +1,23 @@
 cmake_minimum_required(VERSION 3.0)
-project(Application)
+project(Editor)
 
-add_subdirectory(Events)
-add_subdirectory(ECS)
-add_subdirectory(GLRenderer)
-add_subdirectory(Physics)
+add_subdirectory(Engine)
 
-file(GLOB HEADERS "Application/Include/*.h")
-file(GLOB SOURCES "Application/Src/*.cpp")
+file(GLOB HEADERS "Editor/Include/*.h")
+file(GLOB SOURCES "Editor/Src/*.cpp")
 		
-#add_library(Application STATIC ${HEADERS} ${SOURCES})
-add_executable(Application ${SOURCES} ${HEADERS})
-target_link_libraries(Application Physics GLRenderer ECS Events)
+add_executable(Editor ${SOURCES} ${HEADERS})
+target_link_libraries(Editor Application Physics GLRenderer ECS Events)
 
-target_include_directories(Application PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Application/Include>
+target_include_directories(Editor PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Editor/Include>
 		$<INSTALL_INTERFACE:Include>
 		)
 		
-install(TARGETS Application 
+install(TARGETS Editor 
 		RUNTIME DESTINATION bin
 		ARCHIVE DESTINATION Lib
 		LIBRARY DESTINATION Lib
 		INCLUDES DESTINATION Include)
 		
-install(FILES ${HEADERS} DESTINATION Include/Application)
+install(FILES ${HEADERS} DESTINATION Include/Editor)

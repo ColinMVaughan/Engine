@@ -58,8 +58,10 @@ void Application::PostInitalize()
 
 void Application::PreUpdate(double deltaTime)
 {
+	NewEvent = false;
 	while (SDL_PollEvent(&InputEvent))
 	{
+		NewEvent = true;
 		switch (InputEvent.type)
 		{
 		case SDL_KEYDOWN:

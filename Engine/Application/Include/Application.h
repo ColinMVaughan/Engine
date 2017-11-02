@@ -44,7 +44,6 @@ protected:
 public:
 	bool Running = true;
 	SDL_Window* m_Window;
-
 protected:
 
 	ECS::ComponentManager* m_ComponentManager;
@@ -57,6 +56,7 @@ protected:
 	Timer* m_Timer;
 	std::vector<ECS::BaseSystem*> InputCallbackList;
 	SDL_Event InputEvent;
+	bool NewEvent = false;
 };
 
 #endif

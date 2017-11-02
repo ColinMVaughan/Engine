@@ -20,6 +20,11 @@
 #include <Voxels.h>
 #include <VoxelDestructionSystem.h>
 
+#include <imgui.h>
+#include "imgui_SDL.h"
+
+#include <EditorUI.h>
+
 class Demo : public Application
 {
 	void DoInitalize() override
@@ -112,6 +117,16 @@ class Demo : public Application
 
 	void DoUpdate(double deltaTime) override
 	{
+		ImGui_ImplSdlGL3_ProcessEvent(&InputEvent);
+		ImGui_ImplSdlGL3_NewFrame(m_Window);
+
+
+
+		m_Renderer->UIBuffer.Bind();
+		glClear(GL_COLOR_BUFFER_BIT);
+		ImGui::Render();
+		m_Renderer->UIBuffer.UnBind();
+
 		return;
 	}
 
@@ -126,11 +141,13 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 const int FRAME_DELAY_SPRITE = 1000 / 60;
 
-Demo *demo = new Demo();
+Editor *demo = new Editor();
 
 int main(int argc, char **argv)
 {
-
+	//-------------------------------------------------------------------------
+	//		Init SDL
+	//-------------------------------------------------------------------------
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
 		std::cout << "SDL was not Initalized.";
@@ -145,9 +162,11 @@ int main(int argc, char **argv)
 
 	demo->m_Window = SDL_CreateWindow("Ocean Engine", 100, 100, 1280, 720, WindowFlags);
 	SDL_GL_CreateContext(demo->m_Window);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-	//---------------------------------------------------------
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
+	//-----------------------------------------------------------
+	//		Init GLEW
+	//---------------------------------------------------------
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK)
 	{
@@ -156,6 +175,14 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	//-----------------------------------------------------------
+	//	Init IMGUI
+	//-----------------------------------------------------------
+	ImGui_ImplSdlGL3_Init(demo->m_Window);
+
+	//-----------------------------------------------------------
+	//	Init & Run Application
+	//------------------------------------------------------------
 	demo->Initalize();
 	while (demo->Running)
 	{
@@ -163,6 +190,8 @@ int main(int argc, char **argv)
 	}
 	demo->Unload();
 
+
+	ImGui_ImplSdlGL3_Shutdown();
 	return 0;
 
 }

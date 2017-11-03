@@ -70,7 +70,10 @@ namespace ECS
 		T* GetComponent(Entity a_entity);
 
 		void UpdateSystems(double deltaTime);
+		unsigned int GetNumEntities();
 
+
+		std::vector<std::string> m_EntityNames;
 	private:
 		SystemManager*    m_SystemManager;
 		ComponentManager* m_ComponentManager;
@@ -121,6 +124,10 @@ namespace ECS
 		m_SystemManager->UpdateSystems(deltaTime, m_EntityList.data(), m_EntityList.size());
 	}
 
+	inline unsigned int Scene::GetNumEntities()
+	{
+		return m_EntityList.size();
+	}
 	////Destroys all components associated with the entity and remove it from the list
 	//inline void ECS::DestroyEntity(Entity a_entity)
 	//{

@@ -2,20 +2,19 @@
 #include "imgui.h"
 #include "imgui_SDL.h"
 #include <ECS.h>
+#include<TestComponent.h>
 
-Editor::Editor():EI(m_Scene)
+Editor::Editor()
 {
 }
 
 void Editor::DoInitalize()
 {
-	auto ent = m_Scene->CreateEntity();
 	//---------------------------------------------------
 	//  Rendering Setup
 	//-------------------------------------------------
 	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
-	EI.RegisterComponent<int>();
 }
 
 void Editor::DoUpdate(double deltaTime)
@@ -28,8 +27,8 @@ void Editor::DoUpdate(double deltaTime)
 
 
 	//Draw Optional Windows
-	if(IsEntityListActive)
-		DrawEntityList();
+	//if(IsEntityListActive)
+	//	DrawEntityList();
 	if (IsEntityInspectorActive)
 		DrawEntityInspector();
 
@@ -71,7 +70,8 @@ void Editor::DrawMenuBar(double deltaTime)
 	//View Menu Item
 	if (ImGui::BeginMenu("View"))
 	{
-		if (ImGui::MenuItem("EntityList", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
+		if (ImGui::MenuItem("SystemList", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
+		if (ImGui::MenuItem("Resource Manager", NULL, IsEntityInspectorActive)) {}
 		if (ImGui::MenuItem("EntityInspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
 		ImGui::EndMenu();
 	}
@@ -114,15 +114,44 @@ void Editor::DrawEntityList()
 //This Is A Mockup for an entity inspector
 void Editor::DrawEntityInspector()
 {
-	ImGui::Begin("Entity Inspector");
-	ImGui::Text("Entity: Player");
+	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("Entity Inspector", &p_open, ImGuiWindowFlags_MenuBar))
+	{
+		if (ImGui::BeginMenuBar())
+		{
+			ImGui::EndMenuBar();
+		}
 
-	if (ImGui::CollapsingHeader("Transform")) {}
-	if (ImGui::CollapsingHeader("Mesh")) {}
-	if (ImGui::CollapsingHeader("Material")) {}
+		//left
+		static int selected = 0;
+		ImGui::BeginChild("Left Pane", ImVec2(150, 0), true);
+		//**************
+		// This is where you list the entities
+		if (ImGui::Selectable("", selected == 0))
+			selected = 0;
+		//**************
+		ImGui::EndChild();
+		ImGui::SameLine();
 
-	if (ImGui::Button("Add Component")) {}
 
+		//right
+		ImGui::BeginGroup();
 
+		ImGui::BeginChild("Item View", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()));
+		ImGui::Text("MyObject %d", selected);
+		ImGui::Separator();
+		ImGui::TextWrapped("COMPONETNS WILL GO HERE");
+		ImGui::CollapsingHeader("Component 1");
+		ImGui::CollapsingHeader("Component 2");
+		ImGui::CollapsingHeader("Component 3");
+		ImGui::EndChild();
+
+		ImGui::BeginChild("Buttons");
+		if (ImGui::Button("Add Component")) {}
+		ImGui::SameLine();
+		if (ImGui::Button("Remove Component")) {}
+		ImGui::EndChild();
+		ImGui::EndGroup();
+	}
 	ImGui::End();
 }

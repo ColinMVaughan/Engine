@@ -1,6 +1,5 @@
 #pragma once
 #include <Application.h>
-#include <EntityInspector.h>
 
 
 class Editor : public Application
@@ -19,6 +18,5 @@ private:
 	bool IsEntityListActive = false;
 	bool IsEntityInspectorActive = false;
 	int SelectedEntity = 0;
-
-	EntityInspector EI;
+	bool p_open = true;
 };

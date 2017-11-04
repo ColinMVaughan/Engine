@@ -71,7 +71,7 @@ namespace ECS
 
 		void UpdateSystems(double deltaTime);
 		unsigned int GetNumEntities();
-
+		Entity GetEntity(unsigned int index);
 
 		std::vector<std::string> m_EntityNames;
 	private:
@@ -127,6 +127,10 @@ namespace ECS
 	inline unsigned int Scene::GetNumEntities()
 	{
 		return m_EntityList.size();
+	}
+	inline Entity Scene::GetEntity(unsigned int index)
+	{
+		return m_EntityList[index];
 	}
 	////Destroys all components associated with the entity and remove it from the list
 	//inline void ECS::DestroyEntity(Entity a_entity)

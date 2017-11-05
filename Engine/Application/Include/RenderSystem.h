@@ -50,6 +50,8 @@ public:
 		m_Renderer->PointLightPass();
 		m_Renderer->SSAOPass();
 		m_Renderer->CombineLighting();
+		m_Renderer->CombineUI();
+		m_Renderer->SubmitFrame();
 	}
 
 };

@@ -46,9 +46,12 @@ public:
 
 	void CombineLighting();
 	void PointLightPass();
+	void CombineUI();
 
 	void InitalizeSSAO();
 	void SSAOPass();
+
+	void SubmitFrame();
 
 	void InitalizeShadowMapping();
 	void DirectionalLightPass();
@@ -90,6 +93,7 @@ private:
 	ShaderProgram PointLightPassShader;
 	ShaderProgram DirectionalLightPassShader;
 
+	ShaderProgram UICombinedShader;
 	ShaderProgram LightingCombinedShader;
 	ShaderProgram SSAO;
 	

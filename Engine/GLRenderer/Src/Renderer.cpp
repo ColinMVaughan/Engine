@@ -72,6 +72,13 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
+	if (!UICombinedShader.Load("./Assets/Shaders/PassThorugh.vert", "./Assets/Shaders/Basic.frag"))
+	{
+		std::cout << "Shaders failed to initalize.\n";
+		system("pause");
+		exit(0);
+	}
+
 	//Initalize Gbuffer
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
 	GBuffer.InitDepthTexture(m_WindowWidth, m_WindowHeight);
@@ -332,6 +339,25 @@ void Renderer::PointLightPass()
 
 }
 
+void Renderer::CombineUI()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	UICombinedShader.Bind();
+	UICombinedShader.SendUniform("uTex", 0);
+
+	CombinedLighingBuffer.Bind();
+	glBindTexture(GL_TEXTURE_2D, UIBuffer.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	CombinedLighingBuffer.UnBind();
+
+	UICombinedShader.Bind();
+
+	glDisable(GL_BLEND);
+}
+
 //--------------------------------------------------------
 //			Deffered Directional Lighting Pass
 //--------------------------------------------------------
@@ -457,12 +483,6 @@ void Renderer::CombineLighting()
 	LightingCombinedShader.UnBind();
 	CombinedLighingBuffer.UnBind();
 
-	//CombinedLighingBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
-	UIBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
-	//SSAOBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
-	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
-	//glutSwapBuffers();
-	SDL_GL_SwapWindow(m_Window);
 	//------------------------------------------------------------------------------
 }
 
@@ -555,4 +575,14 @@ void Renderer::SSAOPass()
 
 	SSAO.UnBind();
 	SSAOBuffer.UnBind();
+}
+
+void Renderer::SubmitFrame()
+{
+	CombinedLighingBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	//UIBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	//SSAOBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	//glutSwapBuffers();
+	SDL_GL_SwapWindow(m_Window);
 }

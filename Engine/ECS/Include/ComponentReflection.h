@@ -12,6 +12,10 @@ class Component
 namespace ECS
 {
 	void AddComponentFromString(const std::string& name, Scene* scene, Entity entity);
+	unsigned int GetRegisteredComponentNumber();
+	std::string GetComponentName(unsigned int index);
+
+
 	void destroy(const Component* comp);
 }
 

@@ -14,6 +14,19 @@ void ECS::AddComponentFromString(const std::string& name, Scene* scene, Entity e
 	return func(scene, entity);
 }
 
+unsigned int ECS::GetRegisteredComponentNumber()
+{
+	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
+	return reg.size();
+}
+
+std::string ECS::GetComponentName(unsigned int index)
+{
+	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
+	detail::ComponentRegistry::iterator it = reg.begin();
+	return std::string();
+}
+
 void ECS::destroy(const Component* comp)
 {
 	detail::ComponentRegistry& reg = detail::GetComponentRegistry();

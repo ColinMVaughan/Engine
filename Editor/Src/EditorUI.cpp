@@ -3,6 +3,8 @@
 #include "imgui_SDL.h"
 #include <ECS.h>
 #include<TestComponent.h>
+#include <CameraSystem.h>
+#include <CoreComponentRegistration.h>
 
 Editor::Editor()
 {
@@ -11,10 +13,21 @@ Editor::Editor()
 void Editor::DoInitalize()
 {
 	//---------------------------------------------------
-	//  Rendering Setup
+	//  Some Manditory Scene Setup
 	//-------------------------------------------------
+	//Set Skybox for Scene
 	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
+	//Allows the user to move the camera in debug mode.
+	m_Scene->AddSystem<DebugCameraControlSystem>();
+	
+	//Create Entity that will act as the editor camera
+	auto EditorCamera = m_Scene->CreateEntity(); //create entity
+	m_Renderer->SetCamera(EditorCamera.AddComponent<Camera>()); //add camera component and register it with the renderer
+	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
+
+	//set the style to the daek theme
+	ImGui::StyleColorsDark();
 }
 
 void Editor::DoUpdate(double deltaTime)
@@ -27,8 +40,6 @@ void Editor::DoUpdate(double deltaTime)
 
 
 	//Draw Optional Windows
-	//if(IsEntityListActive)
-	//	DrawEntityList();
 	if (IsEntityInspectorActive)
 		DrawEntityInspector();
 
@@ -70,9 +81,9 @@ void Editor::DrawMenuBar(double deltaTime)
 	//View Menu Item
 	if (ImGui::BeginMenu("View"))
 	{
+		if (ImGui::MenuItem("EntityInspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
 		if (ImGui::MenuItem("SystemList", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
 		if (ImGui::MenuItem("Resource Manager", NULL, IsEntityInspectorActive)) {}
-		if (ImGui::MenuItem("EntityInspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
 		ImGui::EndMenu();
 	}
 
@@ -84,74 +95,89 @@ void Editor::DrawMenuBar(double deltaTime)
 	
 }
 
-void Editor::DrawEntityList()
-{
-	//Start Window
-	ImGui::Begin("Entity List");
 
-	//Button Creates entity
-	if (ImGui::Button("Add Entity"))
-	{
-		m_Scene->CreateEntity();
-		m_Scene->m_EntityNames.push_back("Entity");
-	}
-
-	//Convert Entity Names to const char* to be read by List
-	std::vector<const char *> nameArray;
-	nameArray.reserve(m_Scene->m_EntityNames.size());
-	for (int i = 0; i < m_Scene->m_EntityNames.size(); ++i)
-	{
-		nameArray.push_back(m_Scene->m_EntityNames[i].c_str());
-	}
-	
-	//Create Listbox containing the Entities belonging to current Scene.
-	ImGui::ListBox("", &SelectedEntity, nameArray.data(), m_Scene->GetNumEntities(), 4);
-
-	//End Window
-	ImGui::End();
-}
-
-//This Is A Mockup for an entity inspector
+//------------------------------------------------------
+//					ENTITY INSPECTOR
+//------------------------------------------------------
 void Editor::DrawEntityInspector()
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-	if (ImGui::Begin("Entity Inspector", &p_open, ImGuiWindowFlags_MenuBar))
+	if (ImGui::Begin("Entity Inspector", &IsEntityInspectorActive, ImGuiWindowFlags_MenuBar))
 	{
 		if (ImGui::BeginMenuBar())
 		{
+			if (ImGui::BeginMenu("Add"))
+			{
+				if (ImGui::MenuItem("Entity"))
+				{
+					m_Scene->CreateEntity();
+				}
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenuBar();
 		}
 
-		//left
+		//Enity View
 		static int selected = 0;
 		ImGui::BeginChild("Left Pane", ImVec2(150, 0), true);
 		//**************
 		// This is where you list the entities
-		if (ImGui::Selectable("", selected == 0))
-			selected = 0;
+		for (int i = 0; i < m_Scene->GetNumEntities(); ++i)
+		{
+			char label[128];
+			sprintf(label, "Entity %d", i);
+			if (ImGui::Selectable(label, selected == i))
+				selected = i;
+		}
 		//**************
 		ImGui::EndChild();
 		ImGui::SameLine();
 
 
-		//right
+		//Component View
 		ImGui::BeginGroup();
 
 		ImGui::BeginChild("Item View", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()));
 		ImGui::Text("MyObject %d", selected);
 		ImGui::Separator();
 		ImGui::TextWrapped("COMPONETNS WILL GO HERE");
-		ImGui::CollapsingHeader("Component 1");
-		ImGui::CollapsingHeader("Component 2");
-		ImGui::CollapsingHeader("Component 3");
+		
+		for (int i = 0; i < 10; i++)
+		{
+			ImGui::CollapsingHeader("Component 1"); 
+		}
+
 		ImGui::EndChild();
 
 		ImGui::BeginChild("Buttons");
-		if (ImGui::Button("Add Component")) {}
+		if (ImGui::Button("Add Component")) { ImGui::OpenPopup("ComponentList"); std::cout<<"Bla"; }
+		if (ImGui::BeginPopup("ComponentList"))
+		{
+			ImGui::Text("Components");
+			ImGui::Separator();
+
+			auto registry = ECS::detail::GetComponentRegistry();
+			for (auto it = registry.begin(); it != registry.end(); ++it)
+			{
+				if (ImGui::Selectable(it->first.c_str()))
+				{
+					auto AddComponentFunc = it->second;
+					AddComponentFunc(m_Scene, m_Scene->GetEntity(selected));
+				}
+
+			}
+
+			ImGui::EndPopup();
+		}
+
+
 		ImGui::SameLine();
 		if (ImGui::Button("Remove Component")) {}
 		ImGui::EndChild();
 		ImGui::EndGroup();
+
+
+
 	}
 	ImGui::End();
 }

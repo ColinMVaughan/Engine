@@ -11,12 +11,10 @@ public:
 
 private:
 	void DrawMenuBar(double deltaTime);
-	void DrawEntityList();
 	void DrawEntityInspector();
 
 
 	bool IsEntityListActive = false;
 	bool IsEntityInspectorActive = false;
 	int SelectedEntity = 0;
-	bool p_open = true;
 };

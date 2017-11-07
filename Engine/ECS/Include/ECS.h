@@ -69,6 +69,9 @@ namespace ECS
 		template<typename T>
 		T* GetComponent(Entity a_entity);
 
+		template<typename T>
+		bool HasComponent(Entity a_entity);
+
 		void UpdateSystems(double deltaTime);
 		unsigned int GetNumEntities();
 		Entity GetEntity(unsigned int index);
@@ -109,6 +112,12 @@ namespace ECS
 	T* Scene::GetComponent(Entity a_entity)
 	{
 		return m_ComponentManager->GetComponent<T>(a_entity.GetID());
+	}
+
+	template<typename T>
+	inline bool Scene::HasComponent(Entity a_entity)
+	{
+		return m_ComponentManager->HasComponents<T>(a_entity.GetID());
 	}
 
 

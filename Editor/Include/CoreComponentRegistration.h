@@ -10,6 +10,8 @@
 COMPONENT_REGISTER(Transform, "Transform")
 COMPONENT_REGISTER(Mesh, "Mesh")
 COMPONENT_REGISTER(Material, "Material")
+COMPONENT_REGISTER(DebugControl, "DebugControl")
+COMPONENT_REGISTER(Camera, "Camera")
 
 
 

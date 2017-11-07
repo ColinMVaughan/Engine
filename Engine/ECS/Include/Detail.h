@@ -12,7 +12,12 @@ namespace ECS
 {
 	namespace detail
 	{
-		typedef void (*CreateComponentFunc)(Scene*,Entity);
+		enum ComponentAction
+		{
+			Add = 0, Check, Remove
+		};
+
+		typedef bool (*CreateComponentFunc)(Scene*,Entity, ComponentAction);
 		typedef std::map<std::string, CreateComponentFunc> ComponentRegistry;
 
 		inline ComponentRegistry& GetComponentRegistry()
@@ -22,9 +27,19 @@ namespace ECS
 		}
 
 		template<class T>
-		void createComponent(Scene* scene, Entity entity)
+		bool createComponent(Scene* scene, Entity entity, ComponentAction action)
 		{
-			scene->AddComponent<T>(entity);
+			switch (action)
+			{
+			case Add:
+				scene->AddComponent<T>(entity);
+				break;
+			case Check:
+				return scene->HasComponent<T>(entity);
+				break;
+			}
+
+			return true;
 		}
 
 		template<class T>

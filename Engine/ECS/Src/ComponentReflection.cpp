@@ -2,6 +2,9 @@
 #include <string>
 #include "Detail.h"
 
+//---------------------------------------------------------
+//
+//----------------------------------------------------------
 void ECS::AddComponentFromString(const std::string& name, Scene* scene, Entity entity)
 {
 	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
@@ -11,7 +14,23 @@ void ECS::AddComponentFromString(const std::string& name, Scene* scene, Entity e
 		return;
 
 	detail::CreateComponentFunc func = it->second;
-	return func(scene, entity);
+	func(scene, entity, detail::ComponentAction::Add);
+	return;
+}
+
+//-----------------------------------------------------------
+//
+//-----------------------------------------------------------
+bool ECS::CheckComponentFromString(const std::string & name, Scene * scene, Entity entity)
+{
+	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
+	detail::ComponentRegistry::iterator it = reg.find(name);
+
+	if (it == reg.end())
+		return false;
+
+	detail::CreateComponentFunc func = it->second;
+	return func(scene, entity, detail::ComponentAction::Check);
 }
 
 unsigned int ECS::GetRegisteredComponentNumber()

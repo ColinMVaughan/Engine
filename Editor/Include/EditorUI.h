@@ -12,6 +12,7 @@ public:
 private:
 	void DrawMenuBar(double deltaTime);
 	void DrawEntityInspector();
+	void DrawResourceManager();
 
 
 	bool IsEntityListActive = false;

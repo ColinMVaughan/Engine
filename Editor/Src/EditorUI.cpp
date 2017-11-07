@@ -5,6 +5,7 @@
 #include<TestComponent.h>
 #include <CameraSystem.h>
 #include <CoreComponentRegistration.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 Editor::Editor()
 {
@@ -19,12 +20,24 @@ void Editor::DoInitalize()
 	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
 
 	//Allows the user to move the camera in debug mode.
-	m_Scene->AddSystem<DebugCameraControlSystem>();
-	
+	RegisterKeyboardCallback(m_Scene->AddSystem<DebugCameraControlSystem>());
+
 	//Create Entity that will act as the editor camera
 	auto EditorCamera = m_Scene->CreateEntity(); //create entity
-	m_Renderer->SetCamera(EditorCamera.AddComponent<Camera>()); //add camera component and register it with the renderer
+
+	//add camera component and register it with the renderer
+	auto cam = EditorCamera.AddComponent<Camera>();
+	cam->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+	m_Renderer->SetCamera(cam); 
+
 	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
+
+
+	//=====================
+	auto testEnt = m_Scene->CreateEntity();
+	testEnt.AddComponent<Mesh>()->LoadFromFile("./Assets/Models/SampleSphere.obj");
+	testEnt.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/Blood_Wood");
+	//======================
 
 	//set the style to the daek theme
 	ImGui::StyleColorsDark();
@@ -88,7 +101,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	}
 
 	//Display FPS
-	ImGui::Text("%i FPS (%f ms)", int(1 / deltaTime), deltaTime);
+	ImGui::Text("%f FPS (%f ms)", ceil(1.0f / deltaTime), deltaTime);
 
 	//End Menu Bar
 	ImGui::EndMainMenuBar();
@@ -135,6 +148,8 @@ void Editor::DrawEntityInspector()
 
 
 		//Component View
+		auto registry = ECS::detail::GetComponentRegistry();
+
 		ImGui::BeginGroup();
 
 		ImGui::BeginChild("Item View", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()));
@@ -142,9 +157,15 @@ void Editor::DrawEntityInspector()
 		ImGui::Separator();
 		ImGui::TextWrapped("COMPONETNS WILL GO HERE");
 		
-		for (int i = 0; i < 10; i++)
+
+		for (auto it = registry.begin(); it != registry.end(); ++it)
 		{
-			ImGui::CollapsingHeader("Component 1"); 
+			auto AddComponentFunc = it->second;
+			if (AddComponentFunc(m_Scene, m_Scene->GetEntity(selected), ECS::detail::ComponentAction::Check))
+			{
+				ImGui::CollapsingHeader(it->first.c_str());
+			}
+
 		}
 
 		ImGui::EndChild();
@@ -156,13 +177,12 @@ void Editor::DrawEntityInspector()
 			ImGui::Text("Components");
 			ImGui::Separator();
 
-			auto registry = ECS::detail::GetComponentRegistry();
 			for (auto it = registry.begin(); it != registry.end(); ++it)
 			{
 				if (ImGui::Selectable(it->first.c_str()))
 				{
 					auto AddComponentFunc = it->second;
-					AddComponentFunc(m_Scene, m_Scene->GetEntity(selected));
+					AddComponentFunc(m_Scene, m_Scene->GetEntity(selected), ECS::detail::ComponentAction::Add);
 				}
 
 			}
@@ -180,4 +200,8 @@ void Editor::DrawEntityInspector()
 
 	}
 	ImGui::End();
+}
+
+void Editor::DrawResourceManager()
+{
 }

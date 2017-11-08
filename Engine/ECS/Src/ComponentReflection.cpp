@@ -33,6 +33,18 @@ bool ECS::CheckComponentFromString(const std::string & name, Scene * scene, Enti
 	return func(scene, entity, detail::ComponentAction::Check);
 }
 
+bool ECS::DisplayComponentParameters(const std::string& name, Scene* scene, Entity entity)
+{
+	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
+	detail::ComponentRegistry::iterator it = reg.find(name);
+
+	if (it == reg.end())
+		return false;
+
+	detail::CreateComponentFunc func = it->second;
+	return func(scene, entity, detail::ComponentAction::Display);
+}
+
 unsigned int ECS::GetRegisteredComponentNumber()
 {
 	detail::ComponentRegistry& reg = detail::GetComponentRegistry();

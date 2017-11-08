@@ -13,6 +13,7 @@ namespace ECS
 {
 	void AddComponentFromString(const std::string& name, Scene* scene, Entity entity);
 	bool CheckComponentFromString(const std::string& name, Scene* scene, Entity entity);
+	bool DisplayComponentParameters(const std::string& name, Scene* scene, Entity entity);
 
 	unsigned int GetRegisteredComponentNumber();
 	std::string GetComponentName(unsigned int index);

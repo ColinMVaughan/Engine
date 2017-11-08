@@ -4,9 +4,36 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <type_traits>
 #include "ECS.h"
 
 class Component;
+
+
+namespace has_detail
+{
+	template<template<typename> typename Op, typename T, typename = void>
+	struct is_detected : std::false_type {};
+
+	template<template<typename> typename Op, typename T>
+	struct is_detected<Op, T, std::void_t<Op<T>>> : std::true_type {};
+}
+
+template<template<typename> typename Op, typename T>
+static constexpr bool is_detected_v = has_detail::is_detected<Op, T>::value;
+
+namespace has_detail
+{
+	template<class U>
+	using has_init = decltype(std::declval<U>().Initalize());
+
+	template <class U>
+	using has_display = decltype(std::declval<U>().Display());
+}
+
+
+
+
 
 namespace ECS
 {
@@ -14,7 +41,7 @@ namespace ECS
 	{
 		enum ComponentAction
 		{
-			Add = 0, Check, Remove
+			Add = 0, Check, Remove, Display
 		};
 
 		typedef bool (*CreateComponentFunc)(Scene*,Entity, ComponentAction);
@@ -36,6 +63,12 @@ namespace ECS
 				break;
 			case Check:
 				return scene->HasComponent<T>(entity);
+				break;
+			case Display:
+				if constexpr(is_detected_v<has_detail::has_display, T>)
+				{
+					scene->GetComponent<T>(entity)->Display();
+				}
 				break;
 			}
 

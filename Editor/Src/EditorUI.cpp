@@ -164,6 +164,7 @@ void Editor::DrawEntityInspector()
 			if (AddComponentFunc(m_Scene, m_Scene->GetEntity(selected), ECS::detail::ComponentAction::Check))
 			{
 				ImGui::CollapsingHeader(it->first.c_str());
+				ECS::DisplayComponentParameters(it->first, m_Scene, m_Scene->GetEntity(selected));
 			}
 
 		}

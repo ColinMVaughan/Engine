@@ -1,4 +1,5 @@
 #include "PhysicsSystem.h"
+#include <imgui.h>
 
 bool PhysicsSystem::Initalize(PhysicsSettings a_physicsSettings)
 {
@@ -167,4 +168,9 @@ PxTransform* Transform::GetTransform()
 		m_Transform = m_Actor->getGlobalPose();
 
 	return &m_Transform;
+}
+
+void Transform::Display()
+{
+	ImGui::DragFloat3("Position", &m_Transform.p.x, 0.1f, -100.0f, 100.0f);
 }

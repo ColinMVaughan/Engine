@@ -2,6 +2,7 @@
 #define PHYSICS_SYSTEM_H
 
 #include "PxPhysicsAPI.h"
+#include <imgui.h>
 using namespace physx;
 
 //Note: probably should inline these member functions
@@ -17,7 +18,7 @@ public:
 	void SetParentTransform(Transform* parent);
 
 	PxTransform* GetTransform();
-
+	void Display();
 
 private:
 	PxRigidActor* m_Actor = nullptr;

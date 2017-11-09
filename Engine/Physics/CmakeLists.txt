@@ -11,7 +11,7 @@ set(PhysLibPlatform "_x86")
 set(PhysLibraryPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/${PhysLibType}${PhysLibPlatform}")
 
 
-target_link_libraries(Physics 
+target_link_libraries(Physics ImGUI
 ${PhysLibraryPath}/PhysX3${PhysLibType}${PhysLibPlatform}.lib
 ${PhysLibraryPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}.lib
 ${PhysLibraryPath}/PxFoundation${PhysLibType}${PhysLibPlatform}.lib

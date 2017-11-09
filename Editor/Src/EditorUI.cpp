@@ -7,6 +7,7 @@
 #include <CoreComponentRegistration.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+
 Editor::Editor()
 {
 }
@@ -163,8 +164,10 @@ void Editor::DrawEntityInspector()
 			auto AddComponentFunc = it->second;
 			if (AddComponentFunc(m_Scene, m_Scene->GetEntity(selected), ECS::detail::ComponentAction::Check))
 			{
-				ImGui::CollapsingHeader(it->first.c_str());
-				ECS::DisplayComponentParameters(it->first, m_Scene, m_Scene->GetEntity(selected));
+				if(ImGui::CollapsingHeader(it->first.c_str()))
+				{
+					ECS::DisplayComponentParameters(it->first, m_Scene, m_Scene->GetEntity(selected));
+				}
 			}
 
 		}

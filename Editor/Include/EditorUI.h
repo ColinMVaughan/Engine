@@ -17,5 +17,6 @@ private:
 
 	bool IsEntityListActive = false;
 	bool IsEntityInspectorActive = false;
+	bool IsResourceManagerActive = false;
 	int SelectedEntity = 0;
 };

@@ -28,7 +28,7 @@ namespace has_detail
 	using has_init = decltype(std::declval<U>().Initalize());
 
 	template <class U>
-	using has_display = decltype(std::declval<U>().Display());
+	using has_expose = decltype(std::declval<U>().ExposeToEditor());
 }
 
 
@@ -65,9 +65,9 @@ namespace ECS
 				return scene->HasComponent<T>(entity);
 				break;
 			case Display:
-				if constexpr(is_detected_v<has_detail::has_display, T>)
+				if constexpr(is_detected_v<has_detail::has_expose, T>)
 				{
-					scene->GetComponent<T>(entity)->Display();
+					scene->GetComponent<T>(entity)->ExposeToEditor();
 				}
 				break;
 			}

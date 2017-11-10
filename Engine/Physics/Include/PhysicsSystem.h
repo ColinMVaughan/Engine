@@ -18,12 +18,13 @@ public:
 	void SetParentTransform(Transform* parent);
 
 	PxTransform* GetTransform();
-	void Display();
+	void ExposeToEditor();
 
 private:
 	PxRigidActor* m_Actor = nullptr;
 	Transform* m_Parent = nullptr;
 	PxTransform m_Transform;
+	PxVec3 m_EulerRotations;
 };
 
 

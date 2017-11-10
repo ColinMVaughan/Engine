@@ -18,7 +18,7 @@ void Editor::DoInitalize()
 	//  Some Manditory Scene Setup
 	//-------------------------------------------------
 	//Set Skybox for Scene
-	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
+	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Test.hdr");
 
 	//Allows the user to move the camera in debug mode.
 	RegisterKeyboardCallback(m_Scene->AddSystem<DebugCameraControlSystem>());
@@ -208,4 +208,6 @@ void Editor::DrawEntityInspector()
 
 void Editor::DrawResourceManager()
 {
+	ImGui::Begin("Resource Manager", &IsResourceManagerActive);
+	ImGui::End();
 }

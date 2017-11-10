@@ -130,6 +130,7 @@ void  PhysicsSystem::FetchResults()
 Transform::Transform()
 {
 	m_Transform = PxTransform(0, 0, 0);
+	m_EulerRotations = PxVec3(0, 0, 0);
 }
 
 PxMat44 Transform::GetGlobalTransformMatrix()
@@ -170,7 +171,13 @@ PxTransform* Transform::GetTransform()
 	return &m_Transform;
 }
 
-void Transform::Display()
+void Transform::ExposeToEditor()
 {
 	ImGui::DragFloat3("Position", &m_Transform.p.x, 0.1f, -100.0f, 100.0f);
+	ImGui::DragFloat3("Rotation", &m_EulerRotations.x, 0.01f, -6.28319f, 6.28319f);
+
+	m_Transform.q = PxQuat(PxIdentity);
+	m_Transform.q *= PxQuat(m_EulerRotations.x, PxVec3(1, 0, 0));
+	m_Transform.q *= PxQuat(m_EulerRotations.y, PxVec3(0, 1, 0));
+	m_Transform.q *= PxQuat(m_EulerRotations.z, PxVec3(0, 0, 1));
 }

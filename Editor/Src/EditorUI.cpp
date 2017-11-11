@@ -56,7 +56,8 @@ void Editor::DoUpdate(double deltaTime)
 	//Draw Optional Windows
 	if (IsEntityInspectorActive)
 		DrawEntityInspector();
-
+	if (IsResourceManagerActive)
+		DrawResourceManager();
 
 	m_Renderer->UIBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -97,7 +98,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	{
 		if (ImGui::MenuItem("EntityInspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
 		if (ImGui::MenuItem("SystemList", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
-		if (ImGui::MenuItem("Resource Manager", NULL, IsEntityInspectorActive)) {}
+		if (ImGui::MenuItem("Resource Manager", NULL, IsResourceManagerActive)) { IsResourceManagerActive = !IsResourceManagerActive; }
 		ImGui::EndMenu();
 	}
 
@@ -209,5 +210,26 @@ void Editor::DrawEntityInspector()
 void Editor::DrawResourceManager()
 {
 	ImGui::Begin("Resource Manager", &IsResourceManagerActive);
+	
+
+
+	ImGui::Text("Resources");
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
+	ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
+	for (int i = 0; i < 10; ++i)
+	{
+		ImGui::CollapsingHeader("Resource Type");
+	}
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+
+	ImGui::BeginChild("Info", ImVec2(0, 300),true);
+	ImGui::Text("Resource Type: ");
+	ImGui::Text("Path: ");
+	ImGui::Text("Size: ");
+	ImGui::EndChild();
+
+	ImGui::PopStyleVar();
 	ImGui::End();
 }

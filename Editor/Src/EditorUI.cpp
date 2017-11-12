@@ -18,7 +18,7 @@ void Editor::DoInitalize()
 	//  Some Manditory Scene Setup
 	//-------------------------------------------------
 	//Set Skybox for Scene
-	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Test.hdr");
+	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/GCanyon_C_YumaPoint_3k.hdr");
 
 	//Allows the user to move the camera in debug mode.
 	RegisterKeyboardCallback(m_Scene->AddSystem<DebugCameraControlSystem>());
@@ -40,7 +40,9 @@ void Editor::DoInitalize()
 	testEnt.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/Blood_Wood");
 	//======================
 
-	//set the style to the daek theme
+	m_AssetManager.AddResourceType<Mesh>("Mesh");
+
+	//set the style to the dark theme
 	ImGui::StyleColorsDark();
 }
 
@@ -209,27 +211,41 @@ void Editor::DrawEntityInspector()
 
 void Editor::DrawResourceManager()
 {
-	ImGui::Begin("Resource Manager", &IsResourceManagerActive);
-	
-
-
-	ImGui::Text("Resources");
-	ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
-	ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
-	for (int i = 0; i < 10; ++i)
+	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("Resource Manager", &IsResourceManagerActive, ImGuiWindowFlags_MenuBar))
 	{
-		ImGui::CollapsingHeader("Resource Type");
+
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("Add Resource"))
+				{
+
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		ImGui::Text("Resources");
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
+		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
+		for (int i = 0; i < 10; ++i)
+		{
+			ImGui::CollapsingHeader("Resource Type");
+		}
+		ImGui::EndChild();
+
+		ImGui::SameLine();
+
+		ImGui::BeginChild("Info", ImVec2(0, 300), true);
+		ImGui::Text("Resource Type: ");
+		ImGui::Text("Path: ");
+		ImGui::Text("Size: ");
+		ImGui::EndChild();
+
+		ImGui::PopStyleVar();
 	}
-	ImGui::EndChild();
-
-	ImGui::SameLine();
-
-	ImGui::BeginChild("Info", ImVec2(0, 300),true);
-	ImGui::Text("Resource Type: ");
-	ImGui::Text("Path: ");
-	ImGui::Text("Size: ");
-	ImGui::EndChild();
-
-	ImGui::PopStyleVar();
 	ImGui::End();
 }

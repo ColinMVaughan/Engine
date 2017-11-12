@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include <fstream>
 #include <iostream>
+#include <imgui.h>
 
 #define CHAR_BUFFER_SIZE 128
 #define BUFFER_OFFSET(i) ((char *)0 + (i))
@@ -269,4 +270,14 @@ bool Mesh::SetInstancing(mat4* dataBuffer, size_t bufferSize)
 	IsInstanced = true;
 	InstanceNumber = bufferSize;
 	return true;
+}
+
+void Mesh::ExposeToEditor()
+{
+	char buff[128];
+	ImGui::InputText("Mesh File Path", buff, 128);
+	if (ImGui::Button("Load Mesh"))
+	{
+		
+	}
 }

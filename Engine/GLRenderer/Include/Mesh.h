@@ -35,6 +35,8 @@ public:
 		glBindVertexArray(0);
 	}
 
+	void ExposeToEditor();
+
 	GLuint VBO_Verticies = 0;
 	GLuint VBO_UVs		 = 0;
 	GLuint VBO_Normals	 = 0;

@@ -69,7 +69,7 @@ public:
 	{
 		
 		ImGui::ColorEdit3("Light Colour", &BaseColour.x);
-		ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
+		ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 1000.0f);
 
 		Color = BaseColour * Intensity;
 	}

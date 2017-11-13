@@ -32,7 +32,7 @@ void Editor::DoInitalize()
 	m_Renderer->SetCamera(cam); 
 
 	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
-
+	EditorCamera.AddComponent<DebugControl>();
 
 	//=====================
 	auto testEnt = m_Scene->CreateEntity();
@@ -55,14 +55,26 @@ void Editor::PreUpdate(double deltaTime)
 		ImGui_ImplSdlGL3_ProcessEvent(&InputEvent);
 		switch (InputEvent.type)
 		{
+		case SDL_MOUSEBUTTONDOWN:
+			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
+				LookMode = true;
+			break;
+		case SDL_MOUSEBUTTONUP:
+			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
+				LookMode = false;
+			break;
+
 		case SDL_KEYDOWN:
-			KeyDown(InputEvent.key);
+			if(LookMode)
+				KeyDown(InputEvent.key);
 			break;
 		case SDL_KEYUP:
-			KeyUp(InputEvent.key);
+			if(LookMode)
+				KeyUp(InputEvent.key);
 			break;
 		case SDL_MOUSEMOTION:
-			MouseMoved(InputEvent.motion);
+			if(LookMode)
+				MouseMoved(InputEvent.motion);
 			break;
 		case SDL_QUIT:
 			Running = false;

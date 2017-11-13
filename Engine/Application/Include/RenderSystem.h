@@ -3,6 +3,8 @@
 #include "Renderer.h"
 #include "BaseSystem.h"
 #include <PxPhysicsAPI.h>
+#include <imgui.h>
+#include <ComponentReflection.h>
 
 //-----------------------------------------------------
 //	RenderSystem is used in conjunction with ECS to fit old code into
@@ -62,9 +64,26 @@ public:
 class PointLightComponent
 {
 public:
+
+	void ExposeToEditor()
+	{
+		
+		ImGui::ColorEdit3("Light Colour", &BaseColour.x);
+		ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
+
+		Color = BaseColour * Intensity;
+	}
+
 	glm::fvec3 position;
 	glm::fvec3 Color;
+	bool Registered = false;
+
+private:
+	glm::vec3 BaseColour;
+	float Intensity = 0;
 };
+COMPONENT_REGISTER(PointLightComponent, "PointLightComponent")
+
 
 class PointLightSystem : public ECS::System<PointLightComponent, Transform>
 {
@@ -73,10 +92,22 @@ public:
 	PointLightSystem(ECS::ComponentManager* a_Cmanager)
 		:System(a_Cmanager) {}
 
+	void SetRenderer(Renderer* a_Renderer)
+	{
+		m_Renderer = a_Renderer;
+	}
+
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
+
 		PxVec3 Pos =entity.GetComponent<Transform>()->GetTransform()->p;
 		PointLightComponent* light = entity.GetComponent<PointLightComponent>();
+
+		if (!light->Registered)
+		{
+			m_Renderer->AddPointLight(&light->Color, &light->position, false);
+			light->Registered = true;
+		}
 
 		light->position[0] = Pos.x;
 		light->position[1] = Pos.y;
@@ -84,6 +115,8 @@ public:
 
 	}
 
+private:
+	Renderer* m_Renderer;
 };
 
 //-------------------------------------------------------------------------------------------------

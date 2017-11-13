@@ -49,10 +49,13 @@ void Application::PreInitalize()
 	PhysicsSettings PSettings;
 	m_Physics.Initalize(PSettings);
 
+	
+
 }
 
 void Application::PostInitalize()
 {
+	m_SystemManager->AddSystem<PointLightSystem>()->SetRenderer(m_Renderer);
 	m_SystemManager->AddSystem<RenderSystem>()->SetRenderer(m_Renderer);
 }
 

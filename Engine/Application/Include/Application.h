@@ -35,7 +35,7 @@ protected:
 	virtual void DoInitalize() = 0;
 	void PostInitalize();
 
-	void PreUpdate(double deltaTime);
+	virtual void PreUpdate(double deltaTime);
 	virtual void DoUpdate(double deltaTime) = 0;
 	void PostUpdate(double deltaTime);
 

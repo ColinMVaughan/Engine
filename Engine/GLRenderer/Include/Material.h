@@ -30,6 +30,9 @@ struct Material
 
 		return true;
 	}
+
+	void ExposeToEditor();
+
 	//Colour
 	Texture Albedo;
 	glm::vec3 AlbedoScale;

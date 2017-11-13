@@ -1,6 +1,6 @@
 #include "Material.h"
 #include <iostream>
-
+#include <imgui.h>
 
 void Material::SetTexturesFromFolder(std::string FolderPath)
 {
@@ -9,4 +9,13 @@ void Material::SetTexturesFromFolder(std::string FolderPath)
 	AO.Load(FolderPath + "/AO.png", GL_NEAREST);
 	Metallic.Load(FolderPath + "/Metallic.png", GL_NEAREST);
 	Roughness.Load(FolderPath + "/Roughness.png", GL_NEAREST);
+}
+
+void Material::ExposeToEditor()
+{
+	char buff[128] = "";
+	if(ImGui::InputText("Material File Path", buff, 128, ImGuiInputTextFlags_EnterReturnsTrue))
+	{
+		SetTexturesFromFolder(std::string(buff));
+	}
 }

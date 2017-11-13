@@ -46,9 +46,33 @@ void Editor::DoInitalize()
 	ImGui::StyleColorsDark();
 }
 
+void Editor::PreUpdate(double deltaTime)
+{
+	NewEvent = false;
+	while (SDL_PollEvent(&InputEvent))
+	{
+		NewEvent = true;
+		ImGui_ImplSdlGL3_ProcessEvent(&InputEvent);
+		switch (InputEvent.type)
+		{
+		case SDL_KEYDOWN:
+			KeyDown(InputEvent.key);
+			break;
+		case SDL_KEYUP:
+			KeyUp(InputEvent.key);
+			break;
+		case SDL_MOUSEMOTION:
+			MouseMoved(InputEvent.motion);
+			break;
+		case SDL_QUIT:
+			Running = false;
+			break;
+		}
+	}
+}
+
 void Editor::DoUpdate(double deltaTime)
 {
-	ImGui_ImplSdlGL3_ProcessEvent(&InputEvent);
 	ImGui_ImplSdlGL3_NewFrame(m_Window);
 	
 	//Draw Menu Bar

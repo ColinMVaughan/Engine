@@ -274,10 +274,9 @@ bool Mesh::SetInstancing(mat4* dataBuffer, size_t bufferSize)
 
 void Mesh::ExposeToEditor()
 {
-	char buff[128];
-	ImGui::InputText("Mesh File Path", buff, 128);
-	if (ImGui::Button("Load Mesh"))
+	char buff[128] = "";
+	if (ImGui::InputText("Mesh File Path", buff, 128, ImGuiInputTextFlags_EnterReturnsTrue))
 	{
-		
+		LoadFromFile(std::string(buff));
 	}
 }

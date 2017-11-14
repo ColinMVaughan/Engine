@@ -34,14 +34,6 @@ void Editor::DoInitalize()
 	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
 	EditorCamera.AddComponent<DebugControl>();
 
-	//=====================
-	auto testEnt = m_Scene->CreateEntity();
-	testEnt.AddComponent<Mesh>()->LoadFromFile("./Assets/Models/SampleSphere.obj");
-	testEnt.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/Blood_Wood");
-	//======================
-
-	m_AssetManager.AddResourceType<Mesh>("Mesh");
-
 	//set the style to the dark theme
 	ImGui::StyleColorsDark();
 }
@@ -141,7 +133,9 @@ void Editor::DrawMenuBar(double deltaTime)
 	}
 
 	//Display FPS
-	ImGui::Text("%f FPS (%f ms)", ceil(1.0f / deltaTime), deltaTime);
+	ImGui::Button("Start");
+	ImGui::Button("Stop");
+	ImGui::Text("%f FPS (%f ms)", ceil(1.0 / deltaTime), deltaTime);
 
 	//End Menu Bar
 	ImGui::EndMainMenuBar();

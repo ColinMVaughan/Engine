@@ -274,7 +274,7 @@ bool Mesh::SetInstancing(mat4* dataBuffer, size_t bufferSize)
 
 void Mesh::ExposeToEditor()
 {
-	char buff[128] = "";
+	char buff[128] = "./Assets/Models/";
 	if (ImGui::InputText("Mesh File Path", buff, 128, ImGuiInputTextFlags_EnterReturnsTrue))
 	{
 		LoadFromFile(std::string(buff));

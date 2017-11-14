@@ -13,7 +13,7 @@ void Material::SetTexturesFromFolder(std::string FolderPath)
 
 void Material::ExposeToEditor()
 {
-	char buff[128] = "";
+	char buff[128] = "./Assets/Textures/";
 	if(ImGui::InputText("Material File Path", buff, 128, ImGuiInputTextFlags_EnterReturnsTrue))
 	{
 		SetTexturesFromFolder(std::string(buff));

@@ -40,16 +40,18 @@ void Application::Update()
 void Application::PreInitalize()
 {
 	
-	Camera cam; // ???
-	
-	m_Renderer = new Renderer(720, 1280, m_Window, &cam);
+	Camera cam; // renderer requires some default camera so we send it a dummy
+
+	//Get the resolution of the screen
+	int width, height;
+	SDL_GetWindowSize(m_Window, &width, &height);
+
+	m_Renderer = new Renderer(height, width, m_Window, &cam);
 	m_Renderer->Initalize();
 
 
 	PhysicsSettings PSettings;
 	m_Physics.Initalize(PSettings);
-
-	
 
 }
 

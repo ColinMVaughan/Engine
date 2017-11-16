@@ -34,6 +34,8 @@ namespace ECS
 		template<typename T>
 		void RemoveComponent();
 
+		unsigned int GetNumComponents();
+
 		void DestroyEntity();
 		void DisableEntity();
 		void EnableEntity();
@@ -73,9 +75,7 @@ namespace ECS
 		bool HasComponent(Entity a_entity);
 
 		void UpdateSystems(double deltaTime);
-
 		unsigned int GetNumEntities();
-
 		Entity GetEntity(unsigned int index);
 
 		std::vector<std::string> m_EntityNames;

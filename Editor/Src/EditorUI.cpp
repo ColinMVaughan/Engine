@@ -6,7 +6,7 @@
 #include <CameraSystem.h>
 #include <CoreComponentRegistration.h>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <SceneLoader.h>
 
 Editor::Editor()
 {
@@ -106,8 +106,8 @@ void Editor::DrawMenuBar(double deltaTime)
 	//File Menu Item
 	if (ImGui::BeginMenu("File"))
 	{
-		if (ImGui::MenuItem("New Scene")) {}
-		if (ImGui::MenuItem("Open Scene")) {}
+		if (ImGui::MenuItem("Save Scene")) { SaveSceneToFile("./Assets/DemoScene.Scene", *m_Scene); }
+		if (ImGui::MenuItem("Open Scene")) { LoadSceneFromFile("./Assets/DemoScene.Scene", *m_Scene); }
 		ImGui::EndMenu();
 	}
 

@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.0)
+project(Serialization)
+
+file(GLOB HEADERS "cereal/*.h")
+add_library(Serialization INTERFACE)
+
+target_include_directories(Serialization INTERFACE 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+			$<INSTALL_INTERFACE:Include>)
+			
+install(FILES ${HEADERS} DESTINATION Include/Physics)

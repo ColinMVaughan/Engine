@@ -7,7 +7,7 @@ file(GLOB HEADERS "Editor/Include/*.h")
 file(GLOB SOURCES "Editor/Src/*.cpp")
 		
 add_executable(Editor ${SOURCES} ${HEADERS})
-target_link_libraries(Editor Application Physics GLRenderer ECS Events)
+target_link_libraries(Editor Application Physics GLRenderer ECS Events Serialization)
 
 target_include_directories(Editor PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Editor/Include>

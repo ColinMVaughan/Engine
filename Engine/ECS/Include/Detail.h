@@ -29,6 +29,9 @@ namespace has_detail
 
 	template <class U>
 	using has_expose = decltype(std::declval<U>().ExposeToEditor());
+
+	template <class U>
+	using has_serialization = decltype(std::declval<U>().serialization(std::declval<U&>()));
 }
 
 
@@ -41,7 +44,7 @@ namespace ECS
 	{
 		enum ComponentAction
 		{
-			Add = 0, Check, Remove, Display
+			Add = 0, Check, Remove, Display, Save, Load
 		};
 
 		typedef bool (*CreateComponentFunc)(Scene*,Entity, ComponentAction);
@@ -61,13 +64,29 @@ namespace ECS
 			case Add:
 				scene->AddComponent<T>(entity);
 				break;
+
 			case Check:
 				return scene->HasComponent<T>(entity);
 				break;
+
 			case Display:
 				if constexpr(is_detected_v<has_detail::has_expose, T>)
 				{
 					scene->GetComponent<T>(entity)->ExposeToEditor();
+				}
+				break;
+
+			case Save:
+				if constexpr(is_detected_v<has_detail::has_serialization, T>)
+				{
+					scene->SerializeComponent<T>(entity);
+				}
+				break;
+
+			case Load:
+				if constexpr(is_detected_v<has_detail::has_serialization, T>)
+				{
+					scene->UnserializeComponent<T>(entity);
 				}
 				break;
 			}

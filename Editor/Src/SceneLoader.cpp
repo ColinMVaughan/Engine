@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <ComponentReflection.h>
+#include <Detail.h>
 
 
 //--------------------------------------------------------
@@ -121,22 +122,35 @@ void SaveSceneToFile(std::string filePath, ECS::Scene & a_scene)
 	{
 		uint32_t compIndex = 0;
 		std::vector<uint32_t> components;
+		
 		//Get Number of Components registered to the entity
+		//--------------------------------------------------------------------------------
 		for (auto it = registry.begin(); it != registry.end(); ++it)
 		{
-			//If the ectity has the component type, write its index to the file
+			//If the ectity has the component type, add it's index to the vector
 			if (ECS::CheckComponentFromString(it->first, &a_scene, a_scene.GetEntity(i)))
 				components.push_back(compIndex);
 
 			compIndex++;
 		}
+		//Write number of components attached to entity
 		uint32_t numcomp = components.size();
 		File.write((char*)&numcomp, sizeof(uint32_t));
+		//---------------------------------------------------------------------------------
+
+		//Write the index of the component and add the serialized component data if applicable
 		for (int num = 0; num < components.size(); ++num)
 		{
+			//Write component index
 			File.write((char*)&components[num], sizeof(uint32_t));
+			
+			//Serialize Component Data if Applicable
+			ECS::SerializeComponent();
 		}
+
+
 	}
+
 
 	File.close();
 }

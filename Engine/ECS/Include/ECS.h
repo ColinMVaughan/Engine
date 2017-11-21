@@ -56,7 +56,7 @@ namespace ECS
 	{
 
 	public:
-		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr)
+		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr, std::string a_sceneName)
 			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr) {}
 
 		Entity CreateEntity();
@@ -74,6 +74,12 @@ namespace ECS
 		template<typename T>
 		bool HasComponent(Entity a_entity);
 
+		template<typename T>
+		bool SerializeComponent(Entity a_entity);
+
+		template <typename T>
+		bool UnserializeComponent(Entity a_entity);
+
 		void UpdateSystems(double deltaTime);
 		unsigned int GetNumEntities();
 		Entity GetEntity(unsigned int index);
@@ -85,6 +91,7 @@ namespace ECS
 
 		unsigned int EntityCounter = 0;
 		std::vector<Entity> m_EntityList;
+		std::string m_SceneName;
 	};
 
 
@@ -120,6 +127,19 @@ namespace ECS
 	inline bool Scene::HasComponent(Entity a_entity)
 	{
 		return m_ComponentManager->HasComponents<T>(a_entity.GetID());
+	}
+
+	template<typename T>
+	inline bool Scene::SerializeComponent(Entity a_entity)
+	{
+
+		return false;
+	}
+
+	template<typename T>
+	inline bool Scene::UnserializeComponent(Entity a_entity)
+	{
+		return false;
 	}
 
 

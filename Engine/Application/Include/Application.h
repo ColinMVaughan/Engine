@@ -6,8 +6,6 @@
 #include <Renderer.h>
 #include <BaseSystem.h>
 #include <PhysicsSystem.h>
-#include <AssetManager.h>
-
 //------------------------------------------------
 //				Application
 //
@@ -50,7 +48,7 @@ protected:
 	ECS::ComponentManager* m_ComponentManager;
 	ECS::SystemManager* m_SystemManager;
 	ECS::Scene* m_Scene;
-	AssetManager m_AssetManager;
+
 
 	Renderer* m_Renderer;
 	PhysicsSystem m_Physics;

@@ -106,8 +106,8 @@ void Editor::DrawMenuBar(double deltaTime)
 	//File Menu Item
 	if (ImGui::BeginMenu("File"))
 	{
-		if (ImGui::MenuItem("Save Scene")) { SaveSceneToFile("./Assets/DemoScene.Scene", *m_Scene); }
-		if (ImGui::MenuItem("Open Scene")) { LoadSceneFromFile("./Assets/DemoScene.Scene", *m_Scene); }
+		if (ImGui::MenuItem("Save Scene")) { m_Scene->SaveScene("./Assets/DemoScene.Scene"); }
+		if (ImGui::MenuItem("Open Scene")) { m_Scene->LoadScene("./Assets/DemoScene.Scene"); }
 		ImGui::EndMenu();
 	}
 

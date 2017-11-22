@@ -5,6 +5,8 @@
 #include <vector>
 #include "SystemManager.h"
 #include "ComponentManager.h"
+#include <cereal\cereal.hpp>
+#include <cereal\archives\binary.hpp>
 
 namespace ECS
 {
@@ -56,7 +58,7 @@ namespace ECS
 	{
 
 	public:
-		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr, std::string a_sceneName)
+		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr)
 			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr) {}
 
 		Entity CreateEntity();
@@ -80,11 +82,18 @@ namespace ECS
 		template <typename T>
 		bool UnserializeComponent(Entity a_entity);
 
+		bool SaveScene(std::string filePath);
+		bool LoadScene(std::string filePath);
+
 		void UpdateSystems(double deltaTime);
 		unsigned int GetNumEntities();
 		Entity GetEntity(unsigned int index);
 
+
 		std::vector<std::string> m_EntityNames;
+		cereal::BinaryOutputArchive* m_BinaryOutput;
+		cereal::BinaryInputArchive* m_BinaryInput;
+
 	private:
 		SystemManager*    m_SystemManager;
 		ComponentManager* m_ComponentManager;
@@ -92,6 +101,7 @@ namespace ECS
 		unsigned int EntityCounter = 0;
 		std::vector<Entity> m_EntityList;
 		std::string m_SceneName;
+
 	};
 
 
@@ -132,6 +142,15 @@ namespace ECS
 	template<typename T>
 	inline bool Scene::SerializeComponent(Entity a_entity)
 	{
+		//Get Component
+		T* component = GetComponent<T>(a_entity);
+
+		//if the component exists, and the binary output exists
+		if (component && m_BinaryOutput)
+		{
+			*m_BinaryOutput(component);
+			return true;
+		}
 
 		return false;
 	}
@@ -139,6 +158,16 @@ namespace ECS
 	template<typename T>
 	inline bool Scene::UnserializeComponent(Entity a_entity)
 	{
+		//Get Component
+		T* component = GetComponent<T>(a_entity);
+
+		//if the component exists, and the binary output exists
+		if (component && m_BinaryInput)
+		{
+			*m_BinaryInput(component);
+			return true;
+		}
+
 		return false;
 	}
 
@@ -164,24 +193,6 @@ namespace ECS
 	{
 		return m_EntityList[index];
 	}
-
-	////Destroys all components associated with the entity and remove it from the list
-	//inline void ECS::DestroyEntity(Entity a_entity)
-	//{
-	//}
-	//
-	//template <typename T>
-	//std::shared_ptr<T> ECS::AddComponent(Entity a_entity)
-	//{
-	//	return 0;
-	//}
-	//
-	//template <typename T>
-	//std::shared_ptr<T> ECS::AddSystem()
-	//{
-	//	return m_SystemManager->AddSystem<T>();
-	//}
-
 
 
 //-----------------------------------------------------------

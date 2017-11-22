@@ -65,6 +65,20 @@ bool ECS::SerializeComponent(const std::string & name, Scene * scene, Entity ent
 	return func(scene, entity, detail::ComponentAction::Save);
 }
 
+bool ECS::UnSerializeComponent(const std::string & name, Scene * scene, Entity entity)
+{
+	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
+	detail::ComponentRegistry::iterator it = reg.find(name);
+
+	if (it == reg.end())
+		return false;
+
+
+	detail::CreateComponentFunc func = it->second;
+
+	return func(scene, entity, detail::ComponentAction::Load);
+}
+
 unsigned int ECS::GetRegisteredComponentNumber()
 {
 	detail::ComponentRegistry& reg = detail::GetComponentRegistry();

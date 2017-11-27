@@ -1,13 +1,20 @@
 #pragma once
 #include <ComponentReflection.h>
 #include <iostream>
+#include <imgui.h>
 class TestComp
 {
 public:
-	int Number = 0;
-	void Display()
+	float Number = 0;
+	void ExposeToEditor()
 	{
-		std::cout << "\nWHAT!";
+		ImGui::DragFloat("Serialization Test", &Number, 0.1f);
+	}
+
+	template<typename Archive>
+	void serialize(Archive & arc)
+	{
+		arc(Number);
 	}
 };
 

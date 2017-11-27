@@ -20,6 +20,7 @@ public:
 	PxTransform* GetTransform();
 	void ExposeToEditor();
 
+
 private:
 	PxRigidActor* m_Actor = nullptr;
 	Transform* m_Parent = nullptr;

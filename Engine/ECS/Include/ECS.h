@@ -148,7 +148,8 @@ namespace ECS
 		//if the component exists, and the binary output exists
 		if (component && m_BinaryOutput)
 		{
-			*m_BinaryOutput(component);
+			//m_BinaryOutput(component);
+			m_BinaryOutput->operator()(*component);
 			return true;
 		}
 
@@ -164,7 +165,8 @@ namespace ECS
 		//if the component exists, and the binary output exists
 		if (component && m_BinaryInput)
 		{
-			*m_BinaryInput(component);
+			//m_BinaryInput(component);
+			m_BinaryInput->operator()(*component);
 			return true;
 		}
 

@@ -31,7 +31,7 @@ namespace has_detail
 	using has_expose = decltype(std::declval<U>().ExposeToEditor());
 
 	template <class U>
-	using has_serialization = decltype(std::declval<U>().serialization(std::declval<U&>()));
+	using has_serialization = decltype(std::declval<U>().serialize(std::declval<U&>()));
 }
 
 

@@ -158,7 +158,7 @@ bool ECS::Scene::LoadScene(std::string filePath)
 			//Add Component to entity based on its name
 			ECS::AddComponentFromString(componentNames[componentIndex], this, entity);
 			/*ADD SOME SORT OF COMPONENT SERIALIZATION HERE*/
-			ECS::UnSerializeComponent("", this, entity);
+			ECS::UnSerializeComponent(componentNames[componentIndex], this, entity);
 		}
 
 	}

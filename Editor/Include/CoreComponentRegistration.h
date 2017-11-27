@@ -14,5 +14,4 @@ COMPONENT_REGISTER(DebugControl, "DebugControl")
 COMPONENT_REGISTER(Camera, "Camera")
 
 
-
 #endif

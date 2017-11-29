@@ -33,6 +33,13 @@ struct Material
 
 	void ExposeToEditor();
 
+	template<typename Archive>
+	void serialize(Archive & arc)
+	{
+		arc(m_folderPath);
+		SetTexturesFromFolder(m_folderPath);
+	}
+
 	//Colour
 	Texture Albedo;
 	glm::vec3 AlbedoScale;
@@ -45,6 +52,8 @@ struct Material
 
 	Texture Roughness;
 	float RoughnessScale = 1.0f;
+
+	std::string m_folderPath;
 
 private:
 

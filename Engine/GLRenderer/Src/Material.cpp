@@ -9,6 +9,8 @@ void Material::SetTexturesFromFolder(std::string FolderPath)
 	AO.Load(FolderPath + "/AO.png", GL_NEAREST);
 	Metallic.Load(FolderPath + "/Metallic.png", GL_NEAREST);
 	Roughness.Load(FolderPath + "/Roughness.png", GL_NEAREST);
+
+	m_folderPath = FolderPath;
 }
 
 void Material::ExposeToEditor()

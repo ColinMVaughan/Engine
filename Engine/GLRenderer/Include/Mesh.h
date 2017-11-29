@@ -37,6 +37,13 @@ public:
 
 	void ExposeToEditor();
 
+	template<typename Archive>
+	void serialize(Archive & arc)
+	{
+		arc(Filepath);
+		LoadFromFile(Filepath);
+	}
+
 	GLuint VBO_Verticies = 0;
 	GLuint VBO_UVs		 = 0;
 	GLuint VBO_Normals	 = 0;
@@ -45,6 +52,7 @@ public:
 
 	bool IsInstanced = false;
 	unsigned int InstanceNumber = 0;
+	std::string Filepath;
 
 private:
 	unsigned int _NumFaces = 0;

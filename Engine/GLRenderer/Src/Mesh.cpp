@@ -180,6 +180,7 @@ bool Mesh::LoadFromFile(const std::string &file)
 	unPackedTextureData.clear();
 	unPackedNormalData.clear();
 
+	Filepath = file;
 	return true;
 }
 

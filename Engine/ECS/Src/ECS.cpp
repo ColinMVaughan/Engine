@@ -5,6 +5,20 @@
 #include <Detail.h>
 
 
+//----------------------------------------
+//Converts data buffer into a stream for the 
+//----------------------------------------
+struct serialBuf : std::streambuf
+{
+	serialBuf(char* begin, char* end)
+	{
+		this->setg(begin, begin, end);
+	}
+};
+
+
+
+
 //--------------------------------------------------------------------
 // Saves the scene to a file
 //
@@ -136,8 +150,7 @@ bool ECS::Scene::LoadScene(std::string filePath)
 		offset += (strlen(name) + 1);
 	}
 	//--------------------------------------------------------
-	cereal::BinaryInputArchive archive(File);
-	m_BinaryInput = &archive;
+
 
 
 	for (int i = 1; i < numEntities; ++i)
@@ -152,17 +165,36 @@ bool ECS::Scene::LoadScene(std::string filePath)
 		//Loop through and get the name of its registered components based on an index value
 		for (int c = 0; c < registeredComps; ++c)
 		{
+			//Get the index refering to a registered component
 			uint32_t componentIndex = *reinterpret_cast<uint32_t*>(fileData + offset);
 			offset += 4;
-
 			//Add Component to entity based on its name
 			ECS::AddComponentFromString(componentNames[componentIndex], this, entity);
-			/*ADD SOME SORT OF COMPONENT SERIALIZATION HERE*/
-			ECS::UnSerializeComponent(componentNames[componentIndex], this, entity);
-		}
 
+
+			//Get the length of the data from the component.
+			//bool componentIsSerializable = *reinterpret_cast<bool*>(fileData + offset);
+			//offset += 4;
+			//If the length is greater than zero: serialize the component.
+			if (true)
+			{
+				//create an istream from the pointer to the component binary data
+				serialBuf data(&fileData[offset], &fileData[offset + size]);
+				std::istream stream(&data);
+
+				//Pass the stream to the serialization archive
+				cereal::BinaryInputArchive archive(stream);
+				m_BinaryInput = &archive;
+
+				//Set the component data from serialization data
+				ECS::UnSerializeComponent(componentNames[componentIndex], this, entity);
+			}
+
+		}
+		//End Component Loop
 	}
-	
+	//End Entity Loop
+
 	m_BinaryInput = nullptr;
 	File.close();
 }

@@ -14,7 +14,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2main.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2test.lib
 ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/glew32.lib
-ImGUI)
+ImGUI
+Serialization)
 
 
 target_include_directories(GLRenderer PUBLIC 

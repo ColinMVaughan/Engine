@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include <glm\mat4x4.hpp>
 #include <iostream>
+#include<cereal\types\string.hpp>
 //-----------------------------
 // Material represents the look and feel of an object.
 // use a combination of texture maps to achieve this.

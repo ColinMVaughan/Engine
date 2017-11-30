@@ -2,6 +2,8 @@
 #include <vector>
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
+#include <cereal\types\string.hpp>
+
 class Mesh
 {
 public:

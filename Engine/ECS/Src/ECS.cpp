@@ -8,12 +8,31 @@
 //----------------------------------------
 //Converts data buffer into a stream for the 
 //----------------------------------------
-struct serialBuf : std::streambuf
+struct serialBuf : public std::streambuf
 {
 	serialBuf(char* begin, char* end)
 	{
 		this->setg(begin, begin, end);
 	}
+
+	serialBuf()
+	{
+
+	}
+
+	size_t Size() const
+	{
+		return m_Size;
+	}
+
+private:
+	int_type overflow(int_type C)
+	{
+		return m_Size++;
+	}
+
+private:
+	size_t m_Size = 0;
 };
 
 
@@ -81,8 +100,23 @@ bool ECS::Scene::SaveScene(std::string filePath)
 			//Write component index
 			File.write((char*)&components[num], sizeof(uint32_t));
 
-			//Serialize Component Data if Applicable
+			//Create a new archive to test the size of the serialized component
+			serialBuf Buffer;
+			std::basic_ostream<char> sizeStream(&Buffer);
+			cereal::BinaryOutputArchive sizeTest(sizeStream);
+
+			//Test the size of the component and write it to the file.
+			//The reason we do this instead of sizeof(component), is because we can't garentee
+			//that all the component's member data will be serialized.
+			m_BinaryOutput = &sizeTest;
 			ECS::SerializeComponent(componentNames[components[num]], this, GetEntity(i));
+			size_t dataSize = Buffer.Size();
+			File.write((char*)&dataSize, sizeof(size_t));
+
+			//Serialize Component Data if Applicable
+			m_BinaryOutput = &archive;
+			ECS::SerializeComponent(componentNames[components[num]], this, GetEntity(i));
+
 		}
 
 
@@ -168,6 +202,11 @@ bool ECS::Scene::LoadScene(std::string filePath)
 			//Get the index refering to a registered component
 			uint32_t componentIndex = *reinterpret_cast<uint32_t*>(fileData + offset);
 			offset += 4;
+
+			//Get the size of the component
+			size_t componentSize = *reinterpret_cast<size_t*>(fileData + offset);
+			offset += sizeof(size_t);
+
 			//Add Component to entity based on its name
 			ECS::AddComponentFromString(componentNames[componentIndex], this, entity);
 
@@ -176,11 +215,12 @@ bool ECS::Scene::LoadScene(std::string filePath)
 			//bool componentIsSerializable = *reinterpret_cast<bool*>(fileData + offset);
 			//offset += 4;
 			//If the length is greater than zero: serialize the component.
-			if (true)
+			if (componentSize > 0)
 			{
 				//create an istream from the pointer to the component binary data
-				serialBuf data(&fileData[offset], &fileData[offset + size]);
+				serialBuf data(&fileData[offset], &fileData[offset + componentSize]);
 				std::istream stream(&data);
+
 
 				//Pass the stream to the serialization archive
 				cereal::BinaryInputArchive archive(stream);
@@ -188,6 +228,9 @@ bool ECS::Scene::LoadScene(std::string filePath)
 
 				//Set the component data from serialization data
 				ECS::UnSerializeComponent(componentNames[componentIndex], this, entity);
+
+				offset += componentSize;
+				std::cout << "Bla\n";
 			}
 
 		}

@@ -186,7 +186,7 @@ bool ECS::Scene::LoadScene(std::string filePath)
 	//--------------------------------------------------------
 
 
-
+	//Start with one to skip over the default user camera, which will have no effect on the game/scene.
 	for (int i = 1; i < numEntities; ++i)
 	{
 		//create new entity

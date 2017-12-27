@@ -208,7 +208,7 @@ void Editor::DrawEntityInspector()
 		ImGui::EndChild();
 
 		ImGui::BeginChild("Buttons");
-		if (ImGui::Button("Add Component")) { ImGui::OpenPopup("ComponentList"); std::cout<<"Bla"; }
+		if (ImGui::Button("Add Component")) { ImGui::OpenPopup("ComponentList"); }
 		if (ImGui::BeginPopup("ComponentList"))
 		{
 			ImGui::Text("Components");

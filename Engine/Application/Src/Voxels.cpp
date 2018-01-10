@@ -98,6 +98,60 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
 	delete[] data;
 }
 
+//Reads the VOX file format to load in voxel data from magicavoxel
+void VoxelContainer::ReadVoxFile(std::string file, Mesh * mesh)
+{
+	if (!mesh)
+	{
+		std::cout << "Could not read Vox file: Invalid mesh pointer";
+		return;
+	}
+
+	//pointer to binary data and pointer offset
+	char* data;
+	Uint32 offset;
+	
+
+	//Open the file and allocate a buffer large enough to accomodate it
+	std::ifstream MyFile;
+	std::streampos size;
+	MyFile.open(file, std::ios::binary | std::ios::ate);
+	if (MyFile.is_open())
+	{
+		size = MyFile.tellg();
+		data = new char[size];
+
+		MyFile.seekg(0, std::ios::beg);
+		MyFile.read(data, size);
+		MyFile.close();
+	}
+	else
+	{
+		std::cout << "\nCould Not open Vox File.";
+		return;
+	}
+
+	//Get Header Data
+	//collect size of matrix
+	char ID[4];
+	for (int i = 0; i < 3; ++i)
+	{
+		ID[i] = data[i];
+	}
+	offset += 4;
+
+}
+
+
+void VoxelContainer::ExposeToEditor()
+{
+	char buff[128] = "./Assets/Models/";
+	if (ImGui::InputText("Mesh File Path", buff, 128, ImGuiInputTextFlags_EnterReturnsTrue))
+	{
+		
+	}
+}
+
 void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
 {
 

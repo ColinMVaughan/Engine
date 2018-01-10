@@ -54,11 +54,12 @@ namespace ECS
 																		\
 	}																	\
 } }									
-	
+
 
 // Allows the engine to serialize the data of the component during saving / loading.
 // The Component Must also Register with the engine through the COMPONENT_REGISTER macro.
 
+//Meant for when you want default serialization behaviour
 //PARAMETERS:
 // "..." = Names of variables you want to serialize
 #define COMPONENT_SERIALIZE(...)					\
@@ -67,6 +68,25 @@ namespace ECS
 	{												\
 		arc(__VA_ARGS__);							\
 	}
+
+
+//PARAMETERS:
+// "..." = Names of variables you want to serialize
+#define COMPONENT_SAVE(...)		\
+	template<typename Archive>	\
+	void save(archive & arc)	\
+	{							\
+		arc(__VA_ARGS__);		\
+	}							
+
+//PARAMETERS:
+// "..." = Names of variables you want to serialize
+#define COMPONENT_LOAD(...)		\
+	template<typename Archive>	\
+	void save(archive & arc)	\
+	{							\
+		arc(__VA_ARGS__);		\
+	}	
 
 
 #endif

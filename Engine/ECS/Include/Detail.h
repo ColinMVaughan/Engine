@@ -1,6 +1,18 @@
 #ifndef ECS_DETAIL_H
 #define ECS_DETAIL_H
 
+//--------------------------------------------------------------
+//					DETAIL.h
+//					Colin Vaughan
+//
+// The detail file includes template functionality for registering
+// and modifying components.
+//
+// This allows components to be added, removed, checked, and
+// modified arbitrarily inside the editor, while still working 
+// with my heavily templated ECS library.
+//----------------------------------------------------------------
+
 #include <map>
 #include <string>
 #include <utility>
@@ -9,7 +21,7 @@
 
 class Component;
 
-
+//Template detection boilerplate
 namespace has_detail
 {
 	template<template<typename> typename Op, typename T, typename = void>
@@ -22,19 +34,21 @@ namespace has_detail
 template<template<typename> typename Op, typename T>
 static constexpr bool is_detected_v = has_detail::is_detected<Op, T>::value;
 
+//Here is where we define possible compile time function checks
 namespace has_detail
 {
+	//Registered component has an Initalize() function?
 	template<class U>
 	using has_init = decltype(std::declval<U>().Initalize());
 
+	//Registered component has an ExposeToEditor() function?
 	template <class U>
 	using has_expose = decltype(std::declval<U>().ExposeToEditor());
 
+	//Registered component has a Serialize() function?
 	template <class U>
 	using has_serialization = decltype(std::declval<U>().serialize(std::declval<U&>()));
 }
-
-
 
 
 
@@ -42,6 +56,7 @@ namespace ECS
 {
 	namespace detail
 	{
+		//Posible component actions from the editor
 		enum ComponentAction
 		{
 			Add = 0, Check, Remove, Display, Save, Load
@@ -94,6 +109,7 @@ namespace ECS
 			return true;
 		}
 
+		//Registry entry stores a string mapped with a component
 		template<class T>
 		struct RegistryEntry
 		{

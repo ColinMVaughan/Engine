@@ -34,7 +34,9 @@ namespace has_detail
 template<template<typename> typename Op, typename T>
 static constexpr bool is_detected_v = has_detail::is_detected<Op, T>::value;
 
-//Here is where we define possible compile time function checks
+//	Here is where we define possible compile time function checks.
+//	If a registered component defines any of these functions it will be called,
+//	otherwise it will not. Without the added complexity and performance of virtual functions and inheritance.
 namespace has_detail
 {
 	//Registered component has an Initalize() function?

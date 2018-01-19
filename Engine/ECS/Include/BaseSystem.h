@@ -3,6 +3,7 @@
 //Colin Vaughan		June 5th, 2017
 
 #include "ComponentManager.h"
+#include "EventManager.h"
 #include <iostream>
 
 namespace ECS
@@ -56,7 +57,7 @@ namespace ECS
 	{
 	public:
 
-		System(ComponentManager* a_cmanager) : m_CManager(a_cmanager) {}
+		System(ComponentManager* a_cmanager, EventManager* a_eManager) : m_CManager(a_cmanager) {}
 		virtual void Initalize() {};
 
 		// PreUpdate:  runs one once per frame

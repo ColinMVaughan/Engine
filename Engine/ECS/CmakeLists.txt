@@ -4,7 +4,7 @@ Project(ECS)
 file(GLOB SOURCES "Src/*.cpp")
 file(GLOB HEADERS "Include/*.h")
 add_library(ECS STATIC ${SOURCES} ${HEADERS})
-target_link_libraries(ECS Serialization)
+target_link_libraries(ECS Serialization Events)
 
 target_include_directories(ECS PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>

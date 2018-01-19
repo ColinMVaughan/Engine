@@ -5,7 +5,7 @@
 
 #include "ComponentManager.h"
 #include "BaseSystem.h"
-
+#include "EventManager.h"
 
 namespace ECS
 {
@@ -22,13 +22,13 @@ namespace ECS
 	class SystemManager
 	{
 	public:
-		SystemManager(ComponentManager* cManager) : m_ComponentManager(cManager) {}
+		SystemManager(ComponentManager* cManager, EventManager* eManager) : m_ComponentManager(cManager) {}
 
 		template<typename T>
 		T* AddSystem()
 		{
 			//static_assert(std::is_base_of<BaseSystem, T>::value, "");
-			T* returnPtr = new T(m_ComponentManager);
+			T* returnPtr = new T(m_ComponentManager, m_EventManager);
 
 			BaseSystem* tempPtr = returnPtr;
 			SystemList.push_back(tempPtr);
@@ -44,6 +44,7 @@ namespace ECS
 
 
 		ComponentManager* m_ComponentManager;
+		EventManager* m_EventManager;
 	private:
 
 		std::vector<BaseSystem*> SystemList;

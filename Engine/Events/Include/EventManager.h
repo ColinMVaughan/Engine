@@ -18,13 +18,21 @@ private:
 };
 
 	
-//----------------------------------------------
-//				Event Manager
-//				Colin Vaughan
+//------------------------------------------------------------------------------
+//								Event Manager
+//								Colin Vaughan
 //
-// 
+// The Event Manager allows communication between otherwise decoupled systems.
+// All Systems use the
 //
-//----------------------------------------------
+// Systems are responsible for registering an event handling function against the events they want
+// to recieve, durning construction.
+//
+// Once an event has been registered, the system's registered function will be
+// called and passed the required event object.
+//
+// Systems are NOT responsible for managing memory of triggered events
+//-----------------------------------------------------------------------------
 class EventManager
 {
 public:

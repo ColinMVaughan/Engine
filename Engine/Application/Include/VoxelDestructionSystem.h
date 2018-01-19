@@ -20,7 +20,7 @@
 class VoxelDestructionSystem : public ECS::System<VoxelContainer, Mesh, Transform>
 {
 public:
-	VoxelDestructionSystem(ECS::ComponentManager* a_CompManager);
+	VoxelDestructionSystem(ECS::ComponentManager* a_CompManager, EventManager* a_eManager);
 
 	void Initalize(PhysicsSystem* m_PhysicsSystem);
 

@@ -5,8 +5,9 @@
 
 Application::Application()
 {
+	m_EventManager = new EventManager;
 	m_ComponentManager = new ECS::ComponentManager;
-	m_SystemManager = new ECS::SystemManager(m_ComponentManager);
+	m_SystemManager = new ECS::SystemManager(m_ComponentManager, m_EventManager);
 	m_Scene = new ECS::Scene(m_SystemManager, m_ComponentManager);
 	m_Timer = new Timer();
 }

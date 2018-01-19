@@ -19,8 +19,8 @@ PxRigidDynamic* PlayerControl::GetActor()
 
 //--------------------------------------------------------------------------------------------------
 
-FPSControlSystem::FPSControlSystem(ECS::ComponentManager* a_cmanager)
-	:System(a_cmanager)
+FPSControlSystem::FPSControlSystem(ECS::ComponentManager* a_cmanager, EventManager* a_eManager)
+	:System(a_cmanager, a_eManager)
 {
 	MoveDirection = PxVec3(0);
 	rotations = PxVec2(0);

@@ -1,7 +1,7 @@
 #include "VoxelDestructionSystem.h"
 
-VoxelDestructionSystem::VoxelDestructionSystem(ECS::ComponentManager* a_CompManager)
-	:System(a_CompManager) {}
+VoxelDestructionSystem::VoxelDestructionSystem(ECS::ComponentManager* a_CompManager, EventManager* a_eManager)
+	:System(a_CompManager, a_eManager) {}
 
 
 

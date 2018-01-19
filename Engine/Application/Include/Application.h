@@ -6,6 +6,7 @@
 #include <Renderer.h>
 #include <BaseSystem.h>
 #include <PhysicsSystem.h>
+#include <EventManager.h>
 //------------------------------------------------
 //				Application
 //
@@ -45,6 +46,7 @@ public:
 	SDL_Window* m_Window;
 protected:
 
+	EventManager * m_EventManager;
 	ECS::ComponentManager* m_ComponentManager;
 	ECS::SystemManager* m_SystemManager;
 	ECS::Scene* m_Scene;

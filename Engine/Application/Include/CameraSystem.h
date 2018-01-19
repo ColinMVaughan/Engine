@@ -19,8 +19,8 @@
 
 class CameraSystem : public ECS::System<Camera, Transform>
 {
-	CameraSystem(ECS::ComponentManager* a_CompManager)
-		:System(a_CompManager) {}
+	CameraSystem(ECS::ComponentManager* a_CompManager, EventManager* a_EveManager)
+		:System(a_CompManager, a_EveManager) {}
 
 	// This Updates the Camera Component's transform menmber to the Entities global transform.
 	// This Will most likley be refactored later.
@@ -54,7 +54,7 @@ class DebugCameraControlSystem : public ECS::System<DebugControl, Transform, Cam
 {
 public:
 
-	DebugCameraControlSystem(ECS::ComponentManager* a_cmanager);
+	DebugCameraControlSystem(ECS::ComponentManager* a_cmanager, EventManager* a_eManager);
 
 	void PreUpdate(double deltaTime) override;
 	void Update(double deltaTime, ECS::Entity& entity) override;

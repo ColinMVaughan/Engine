@@ -57,7 +57,7 @@ namespace ECS
 	{
 	public:
 
-		System(ComponentManager* a_cmanager, EventManager* a_eManager) : m_CManager(a_cmanager) {}
+		System(ComponentManager* a_cmanager, EventManager* a_eManager) : m_CManager(a_cmanager), m_EventManager(a_eManager) {}
 		virtual void Initalize() {};
 
 		// PreUpdate:  runs one once per frame
@@ -79,6 +79,7 @@ namespace ECS
 		}
 
 		ComponentManager* m_CManager;
+		EventManager* m_EventManager;
 	};
 
 

@@ -39,7 +39,7 @@ public:
 	using FunctionType = std::function<void(const IEvent&)>;
 
 	template<typename EventType>
-	void AddListner(EventType a_event, FunctionType&& a_func);
+	void AddListner(std::function<void(const EventType&)>&& a_func);
 
 	void RemoveListner();
 
@@ -56,25 +56,29 @@ private:
 //			IMPLEMENTATION
 //----------------------------------------------
 
+//Registers a System's function against an Event. When that event is dispatched,
+//All resgistered functions will be called.
 template<typename EventType>
-void EventManager::AddListner(EventType a_event, FunctionType&& a_func)
+void EventManager::AddListner(std::function<void(const EventType&)>&& a_func)
 {
 	auto ID = typeid(EventType).hash_code();
 	Listners[ID].push_back(a_func);
 }
 
-
+//Dispatches an Event of type EventType, All corrisponding event handling
+//functions are called.
 template<typename EventType>
 void EventManager::DispatchEvent(EventType& a_event)
 {
-
+	//Get the ID of the current event
 	int type = a_event.ID;
 	if (Listners.find(type) == Listners.end())
 		return;
 
+	//Iterate through the vector of Registered functions corrisponding to the Event
 	auto&& ListnerList = Listners.at(type);
 	for (auto&& listner : ListnerList)
-		listner(a_event);
+		listner(a_event); //Call the function and pass the event.
 }
 
 #endif

@@ -22,6 +22,7 @@ void Editor::DoInitalize()
 
 	//Allows the user to move the camera in debug mode.
 	RegisterKeyboardCallback(m_Scene->AddSystem<DebugCameraControlSystem>());
+	m_Scene->AddSystem<EventSystemTest>();
 
 	//Create Entity that will act as the editor camera
 	auto EditorCamera = m_Scene->CreateEntity(); //create entity
@@ -50,6 +51,8 @@ void Editor::PreUpdate(double deltaTime)
 		case SDL_MOUSEBUTTONDOWN:
 			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
 				LookMode = true;
+			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
+				m_EventManager->DispatchEvent<TestEvent>(TestEvent());
 			break;
 		case SDL_MOUSEBUTTONUP:
 			if (InputEvent.button.button == SDL_BUTTON_RIGHT)

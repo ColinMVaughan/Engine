@@ -1,0 +1,9 @@
+
+file(GLOB SRCS *.cpp)
+add_executable(testEvents ${SRCS})
+
+target_link_libraries(testEvents
+	libtest
+	libmock)
+	
+install(TARGETS testEvents DESTINATION bin)

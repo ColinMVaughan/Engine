@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(Editor)
 
+set_property( GLOBAL PROPERTY USE_FOLDERS ON)
+
 add_subdirectory(Engine)
+add_subdirectory(Testing)
 
 file(GLOB HEADERS "Editor/Include/*.h")
 file(GLOB SOURCES "Editor/Src/*.cpp")

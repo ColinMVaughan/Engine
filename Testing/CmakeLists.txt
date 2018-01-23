@@ -1,28 +1,22 @@
-find_package(Threads REQUIRED)
-include(ExternalProject)
+cmake_minimum_required(VERSION 3.5)
 
-ExternalProject_Add(
-	gtest
-	URL https://github.com/google/googletest/archive/master.zip
-	PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
-	INSTALL_COMMAND "")
-	
-ExternalProject_Get_Property(gtest source_dir binary_dir)
+enable_testing()
 
-add_library(libgtest IMPORTED STATIC GLOBAL)
-add_dependencies(libgtest gtest)
+add_subdirectory(googletest)
+add_subdirectory(Test_Events)
 
-set_target_properties(libgtest PROPERTIES
-		"IMPORTED_LOCATION" "${binary_dir}/googlemock/gtest/libgtest.a"
-		"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}")
-		
-add_library(libgmock IMPORTED STATIC GLOBAL)
-add_dependencies(libgmock gtest)
+#GOOGLE TEST
+#this is very bad, turn these warnings back on plz
+target_compile_options(gtest PRIVATE -W0 -MDd)
+target_compile_options(gtest_main PRIVATE -W0 -MDd)
+target_compile_options(gmock PRIVATE -W0 -MDd)
+target_compile_options(gmock_main PRIVATE -W0 -MDd)
 
-set_target_properties(libgmock PROPERTIES
-		"IMPORTED_LOCATION" "${binary_dir}/googlemock/libgmock.a"
-		"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}")
-		
-include_directories("${source_dir}/googletest/include"
-					"${source_dir}/googlemock/include")
-	
+set_target_properties(gtest PROPERTIES FOLDER "Testing/Googletest")
+set_target_properties(gtest_main PROPERTIES FOLDER "Testing/Googletest")
+
+set_target_properties(gmock PROPERTIES FOLDER "Testing/Googletest")
+set_target_properties(gmock_main PROPERTIES FOLDER "Testing/Googletest")
+
+#TESTS
+set_target_properties(Test_Events PROPERTIES FOLDER "Testing")

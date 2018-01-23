@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.5)
+project(Test_Events)
+
+file(GLOB SRCS *.cpp)
+add_executable(Test_Events ${SRCS})
+
+target_link_libraries(Test_Events
+	gtest)
+	
+install(TARGETS Test_Events DESTINATION bin)

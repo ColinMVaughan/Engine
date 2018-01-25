@@ -6,3 +6,7 @@ file(GLOB HEADERS Include/*.h)
 
 add_executable(Test_ECS ${HEADERS} ${SRCS})
 target_link_libraries(Test_ECS gtest ECS Events)
+
+target_include_directories(Test_ECS PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+			$<INSTALL_INTERFACE:Include>)

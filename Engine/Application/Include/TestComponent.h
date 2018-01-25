@@ -45,7 +45,7 @@ public:
 
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
-
+		
 	}
 
 	void EventReciever(const TestEvent& test)

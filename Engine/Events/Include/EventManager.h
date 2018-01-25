@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 #include <map>
-
+#include <type_traits>
 
 //Event Interface: All other events must inherit from IEvent.
 class IEvent
@@ -61,8 +61,12 @@ private:
 template<typename EventType>
 void EventManager::AddListner(std::function<void(const EventType&)>&& a_func)
 {
-	auto ID = typeid(EventType).hash_code();
-	Listners[ID].push_back(a_func);
+	if constexpr(std::is_base_of<IEvent, EventType>::value)
+	{
+		auto ID = typeid(EventType).hash_code();
+		Listners[ID].push_back(a_func);
+	}
+
 }
 
 //Dispatches an Event of type EventType, All corrisponding event handling
@@ -80,5 +84,7 @@ void EventManager::DispatchEvent(EventType& a_event)
 	for (auto&& listner : ListnerList)
 		listner(a_event); //Call the function and pass the event.
 }
+
+
 
 #endif

@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.5)
 project(Test_Events)
 
-file(GLOB SRCS *.cpp)
-add_executable(Test_Events ${SRCS})
+file(GLOB SRCS Src/*.cpp)
+file(GLOB HEADERS Include/*.h)
+
+add_executable(Test_Events ${SRCS} ${HEADERS})
 
 target_link_libraries(Test_Events
+	Events
 	gtest)
-	
+		
+target_include_directories(Test_Events PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+			$<INSTALL_INTERFACE:Include>)
+			
 install(TARGETS Test_Events DESTINATION bin)

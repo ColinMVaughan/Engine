@@ -64,7 +64,7 @@ TEST(EventManagerTest, EventDispatch)
 //Test that Events are cleaned up after dispatching to lisners.
 TEST(EventManagerTest, EventMemoryManagement)
 {
-
+	EXPECT_TRUE(true);
 }
 
 #endif

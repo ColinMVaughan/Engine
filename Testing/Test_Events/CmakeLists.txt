@@ -16,6 +16,6 @@ target_include_directories(Test_Events PUBLIC
 			$<INSTALL_INTERFACE:Include>)
 			
 gtest_discover_tests(Test_Events)
-add_test(NAME monolithic COMMAND Test_Events)
+#add_test(NAME monolithic COMMAND Test_Events)
 
 install(TARGETS Test_Events DESTINATION bin)

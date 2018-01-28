@@ -13,4 +13,4 @@ target_include_directories(Test_ECS PUBLIC
 			$<INSTALL_INTERFACE:Include>)
 
 gtest_discover_tests(Test_ECS)
-add_test(NAME monolithic COMMAND Test_ECS)
+#add_test(NAME monolithic COMMAND Test_ECS)

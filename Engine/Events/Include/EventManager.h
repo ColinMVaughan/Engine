@@ -10,8 +10,8 @@
 class IEvent
 {
 public:
-	IEvent();
-	virtual ~IEvent();
+	IEvent() {}
+	virtual ~IEvent() {}
 
 	int ID = 0;
 private:
@@ -63,8 +63,8 @@ void EventManager::AddListner(std::function<void(const EventType&)>&& a_func)
 {
 	if constexpr(std::is_base_of<IEvent, EventType>::value)
 	{
-		auto ID = typeid(EventType).hash_code();
-		Listners[ID].push_back(a_func);
+		//auto ID = typeid(EventType).hash_code();
+		//Listners[ID].push_back(a_func);
 	}
 
 }

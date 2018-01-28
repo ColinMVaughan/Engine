@@ -4,6 +4,7 @@ Project(Events)
 file(GLOB SOURCES "Src/*.cpp")
 file(GLOB HEADERS "Include/*.h")
 add_library(Events STATIC ${SOURCES} ${HEADERS})
+target_compile_features(Events PUBLIC cxx_std_17)
 
 target_include_directories(Events PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>

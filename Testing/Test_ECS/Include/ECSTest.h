@@ -3,39 +3,26 @@
 
 #include <gtest/gtest.h>
 #include "ECS.h"
+#include "Fixtures.h"
 
 
-TEST(ECSTest, CreateEntity)
+TEST_F(SceneTest, CreateEntity)
 {
-	//ComponentManager* CompMgr = new ComponentManager;
-	//SystemManager* SysMgr     = new SystemManager(CompMgr);
-	//
-	//ECS Master(SysMgr, CompMgr);
-	//Entity entity1 = Master.CreateEntity();
-	//Entity entity2 = Master.CreateEntity();
-	//
-	//EXPECT_TRUE(entity2.GetID() != 0);
+	EXPECT_EQ(m_Scene->GetNumEntities(), 0);
+	m_Scene->CreateEntity();
+	m_Scene->CreateEntity();
+	m_Scene->CreateEntity();
+
+	EXPECT_EQ(m_Scene->GetNumEntities(), 3);
+	auto entity = m_Scene->GetEntity(2);
+	
+	EXPECT_GT(entity.GetID(), 0);
 }
 
 
-TEST(EcsTest, DestroyEntity)
+TEST_F(SceneTest, DestroyEntity)
 {
-	//ComponentManager* CompMgr = new ComponentManager;
-	//SystemManager* SysMgr = new SystemManager(CompMgr);
-	//
-	//ECS Master(SysMgr, CompMgr);
-	//
-	//Entity entity1 = Master.CreateEntity();
-	//Entity entity2 = Master.CreateEntity();
-	//
-	//Master.AddComponent<int>(entity1);
-	//Master.AddComponent<bool>(entity1);
-	//
-	//
-	//Master.DestroyEntity(entity1);
-	//
-	//
-	//EXPECT_TRUE(false);
+
 }
 
 #endif

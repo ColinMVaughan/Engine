@@ -1,17 +1,17 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 enable_testing()
 
-add_subdirectory(googletest)
+add_subdirectory(googletest-master)
 add_subdirectory(Test_Events)
 add_subdirectory(Test_ECS)
 
 #GOOGLE TEST
 #this is very bad, turn these warnings back on plz
-target_compile_options(gtest PRIVATE -W0 -MDd)
-target_compile_options(gtest_main PRIVATE -W0 -MDd)
-target_compile_options(gmock PRIVATE -W0 -MDd)
-target_compile_options(gmock_main PRIVATE -W0 -MDd)
+target_compile_options(gtest PRIVATE -MDd -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+target_compile_options(gtest_main PRIVATE -MDd -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+target_compile_options(gmock PRIVATE -MDd -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+target_compile_options(gmock_main PRIVATE -MDd -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
 
 set_target_properties(gtest PROPERTIES FOLDER "Testing/Googletest")
 set_target_properties(gtest_main PROPERTIES FOLDER "Testing/Googletest")

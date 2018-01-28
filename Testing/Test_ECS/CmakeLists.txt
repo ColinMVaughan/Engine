@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(Test_ECS)
+include(GoogleTest)
 
 file(GLOB SRCS Src/*.cpp)
 file(GLOB HEADERS Include/*.h)
@@ -10,3 +11,6 @@ target_link_libraries(Test_ECS gtest ECS Events)
 target_include_directories(Test_ECS PUBLIC 
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
 			$<INSTALL_INTERFACE:Include>)
+
+gtest_discover_tests(Test_ECS)
+add_test(NAME monolithic COMMAND Test_ECS)

@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(Test_Events)
+include(GoogleTest)
 
 file(GLOB SRCS Src/*.cpp)
 file(GLOB HEADERS Include/*.h)
@@ -14,4 +15,7 @@ target_include_directories(Test_Events PUBLIC
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
 			$<INSTALL_INTERFACE:Include>)
 			
+gtest_discover_tests(Test_Events)
+add_test(NAME monolithic COMMAND Test_Events)
+
 install(TARGETS Test_Events DESTINATION bin)

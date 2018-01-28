@@ -10,6 +10,7 @@ file(GLOB HEADERS "Editor/Include/*.h")
 file(GLOB SOURCES "Editor/Src/*.cpp")
 		
 add_executable(Editor ${SOURCES} ${HEADERS})
+target_compile_features(Editor PUBLIC cxx_std_17)
 target_link_libraries(Editor Application Physics GLRenderer ECS Events Serialization)
 
 target_include_directories(Editor PUBLIC 

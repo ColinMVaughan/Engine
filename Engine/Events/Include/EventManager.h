@@ -17,6 +17,38 @@ public:
 private:
 };
 
+
+//BaseEventHandler used to provide pure virtual interface for dispatching events
+class EventDispatcherInterface
+{
+public:
+	virtual void DispatchEvent(IEvent& a_event) = 0;
+
+};
+
+template<typename EventType>
+class EventDispatcher : public EventDispatcherInterface
+{
+public:
+	using FunctionType = std::function<void(EventType&)>;
+
+	void DispatchEvent(IEvent& a_event) override
+	{
+		EventType* convertedEvent = static_cast<EventType*>(&a_event);
+		for (auto&& Listner : Functions)
+		{
+			Listner(*convertedEvent);
+		}
+	}
+
+	void AddListner(std::function<void(EventType)>&& a_function)
+	{
+		Functions.push_back(a_function);
+	}
+
+private:
+	std::vector<FunctionType> Functions;
+};
 	
 //------------------------------------------------------------------------------
 //								Event Manager
@@ -47,9 +79,8 @@ public:
 	void DispatchEvent(EventType& a_event);
 
 private:
-	std::map<size_t, std::vector<FunctionType>> Listners;
+	std::map<size_t, EventDispatcherInterface*> Dispatchers;
 };
-
 
 
 //----------------------------------------------
@@ -61,10 +92,20 @@ private:
 template<typename EventType>
 void EventManager::AddListner(std::function<void(const EventType&)>&& a_func)
 {
+	//Ensure that EventType is derrived from IEvent
 	if constexpr(std::is_base_of<IEvent, EventType>::value)
 	{
-		//auto ID = typeid(EventType).hash_code();
-		//Listners[ID].push_back(a_func);
+		//Get the registered event dispatcher, if none exists create one
+		auto ID = typeid(EventType).hash_code();
+		EventDispatcherInterface* ED = Dispatchers[ID];
+		if (!ED)
+		{
+			ED = new EventDispatcher<EventType>;
+			Dispatchers[ID] = ED;
+		}
+
+		//Get the correct event dispatcher and add the listner function to it.
+		static_cast<EventDispatcher<EventType>*>(ED)->AddListner(a_func);
 	}
 
 }
@@ -74,15 +115,14 @@ void EventManager::AddListner(std::function<void(const EventType&)>&& a_func)
 template<typename EventType>
 void EventManager::DispatchEvent(EventType& a_event)
 {
-	//Get the ID of the current event
-	int type = a_event.ID;
-	if (Listners.find(type) == Listners.end())
+	//Get the ID of the current event. If dispatcher not found, return.
+	int type = typeid(EventType).hash_code();
+	if (Dispatchers.find(type) == Dispatchers.end())
 		return;
 
-	//Iterate through the vector of Registered functions corrisponding to the Event
-	auto&& ListnerList = Listners.at(type);
-	for (auto&& listner : ListnerList)
-		listner(a_event); //Call the function and pass the event.
+	//Iterate through the vector of Registered dispatcher corrisponding to the Event
+	auto&& ListnerList = Dispatchers.at(type);
+	ListnerList->DispatchEvent(a_event);
 }
 
 

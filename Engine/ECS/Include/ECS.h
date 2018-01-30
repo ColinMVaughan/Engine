@@ -62,7 +62,7 @@ namespace ECS
 			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr) {}
 
 		Entity CreateEntity();
-		void DestroyEntity(Entity a_entity);
+		void DestroyEntity(Entity& a_entity);
 
 		template<typename T>
 		T* AddComponent(Entity a_entity);
@@ -181,6 +181,18 @@ namespace ECS
 		return Entity(EntityCounter, this);
 	}
 
+	inline void Scene::DestroyEntity(Entity& a_entity)
+	{
+		//Free all components associated with the Entity
+		m_ComponentManager->RemoveAllComponents(a_entity.GetID());
+
+		//Remove Entity from EntityList
+
+		//Set Entity's ID to zero and scene pointer to null.
+		//this denotes that the entity is no longer available.
+		a_entity = Entity(0, nullptr);
+	}
+
 	inline void Scene::UpdateSystems(double deltaTime)
 	{
 		m_SystemManager->UpdateSystems(deltaTime, m_EntityList.data(), m_EntityList.size());
@@ -204,6 +216,11 @@ namespace ECS
 	T* Entity::AddComponent()
 	{
 		return m_Scene->AddComponent<T>(*this);
+	}
+
+	template<typename T>
+	inline void Entity::RemoveComponent()
+	{
 	}
 
 	template<typename T>

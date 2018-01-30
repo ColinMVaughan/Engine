@@ -26,6 +26,11 @@ namespace ECS
 		template<typename T>
 		T* GetComponent(unsigned int entity);
 
+		template<typename T>
+		void RemoveComponent(unsigned int entity);
+
+		void RemoveAllComponents(unsigned int entity);
+
 		//--------------
 		template<typename First>
 		bool HasComponents(unsigned int entity);
@@ -68,6 +73,15 @@ namespace ECS
 		BaseComponentPool* temp = PoolMap.at(typeid(T).hash_code());
 		ComponentPool<T>* pool = static_cast<ComponentPool<T>*>(temp);
 		return pool->GetComponent(entity);
+	}
+
+
+	template<typename T>
+	inline void ComponentManager::RemoveComponent(unsigned int entity)
+	{
+		BaseComponentPool* temp = PoolMap.at(typeid(T).hash_code());
+		ComponentPool<T>* pool = static_cast<ComponentPool<T>*>(temp);
+		pool->RemoveComponent(entity);
 	}
 
 

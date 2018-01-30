@@ -18,6 +18,7 @@ namespace ECS
 	{
 	public:
 		virtual bool HasComponent(unsigned int entity) = 0;
+		virtual void RemoveComponent(unsigned int entity) = 0;
 	};
 
 
@@ -30,6 +31,7 @@ namespace ECS
 		~ComponentPool();
 		void AddComponent(unsigned int entityID);
 		T* GetComponent(unsigned int entityID);
+		void RemoveComponent(unsigned int entityID) override;
 		bool HasComponent(unsigned int entity) override;
 
 	private:
@@ -65,6 +67,12 @@ namespace ECS
 	inline T * ComponentPool<T>::GetComponent(unsigned int entityID)
 	{
 		return &Components.at(entityID);
+	}
+
+	template<typename T>
+	inline void ComponentPool<T>::RemoveComponent(unsigned int entityID)
+	{
+		Components.erase(entityID);
 	}
 
 	template<typename T>

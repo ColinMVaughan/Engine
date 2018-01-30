@@ -22,7 +22,7 @@ class TestEventHandler
 public:
 	void HandleEvent(const TestEvent& a_event)
 	{
-		
+		EventRecieved = true;
 	}
 
 	bool EventRecieved = false;

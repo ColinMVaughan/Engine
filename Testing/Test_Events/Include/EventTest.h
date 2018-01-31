@@ -23,6 +23,7 @@ public:
 	void HandleEvent(const TestEvent& a_event)
 	{
 		EventRecieved = true;
+		return;
 	}
 
 	bool EventRecieved = false;
@@ -38,7 +39,7 @@ TEST(EventManagerTest, AddListnerTest)
 	TestEventHandler handler;
 
 	EventManager manager;
-	manager.AddListner<TestEvent>((std::bind(&TestEventHandler::HandleEvent, handler, std::placeholders::_1)));
+	manager.AddListner<TestEvent>((std::bind(&TestEventHandler::HandleEvent, &handler, std::placeholders::_1)));
 
 	TestEvent eve;
 	manager.DispatchEvent<TestEvent>(eve);
@@ -51,7 +52,7 @@ TEST(EventManagerTest, EventDispatch)
 {
 	TestEventHandler handler;
 	EventManager manager;
-	manager.AddListner<TestEvent>(std::bind(&TestEventHandler::HandleEvent, handler, std::placeholders::_1));
+	manager.AddListner<TestEvent>(std::bind(&TestEventHandler::HandleEvent, &handler, std::placeholders::_1));
 	
 	manager.DispatchEvent<TestEvent2>(TestEvent2());
 	EXPECT_FALSE(handler.EventRecieved);

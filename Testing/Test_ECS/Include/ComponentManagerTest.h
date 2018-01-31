@@ -64,12 +64,28 @@ TEST(ComponentManagerTest, AddComponent)
 
 TEST(ComponentManagerTest, RemoveComponent)
 {
-	EXPECT_TRUE(false);
+	ECS::ComponentManager CManager;
+
+	CManager.AddComponent<bool>(0);
+	EXPECT_TRUE(CManager.HasComponents<bool>(0));
+
+	CManager.RemoveComponent<bool>(0);
+	EXPECT_FALSE(CManager.HasComponents<bool>(0));
 }
 
 TEST(ComponentManagerTest, GetComponent)
 {
-	EXPECT_TRUE(false);
+	ECS::ComponentManager cManager;
+	cManager.AddComponent<int>(0);
+
+	{
+		int* val = cManager.GetComponent<int>(0);
+		*val = 1234;
+	}
+
+	int* newVal = cManager.GetComponent<int>(0);
+
+	EXPECT_EQ(*newVal, 1234);
 }
 
 #endif

@@ -17,6 +17,8 @@ namespace ECS
 	class BaseComponentPool
 	{
 	public:
+		virtual ~BaseComponentPool() {}
+
 		virtual bool HasComponent(unsigned int entity) = 0;
 		virtual void RemoveComponent(unsigned int entity) = 0;
 	};
@@ -37,7 +39,6 @@ namespace ECS
 	private:
 
 		std::map<unsigned int, T> Components;
-		T* m_Pool;
 	};
 
 	//-----------------------------------------------------------------
@@ -47,13 +48,12 @@ namespace ECS
 	template <typename T>
 	ComponentPool<T>::ComponentPool()
 	{
-		m_Pool = new T[10];
 	}
 
 	template <typename T>
 	ComponentPool<T>::~ComponentPool()
 	{
-		delete m_Pool;
+		delete Components;
 	}
 
 	template<typename T>

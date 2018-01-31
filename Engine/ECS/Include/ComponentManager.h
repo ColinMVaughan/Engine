@@ -17,6 +17,9 @@ namespace ECS
 	{
 	public:
 
+		ComponentManager();
+		~ComponentManager();
+
 
 		//Adds a componet to its corrisponding pool. 
 		//Component must be derrived from BaseComponent
@@ -114,40 +117,6 @@ namespace ECS
 
 		return false;
 	}
-
-
-
-	//--------------------------------------
-	//
-	//-------------------------------------
-	//template<typename T> Component* CreateComponent() { return T; }
-	//
-	//
-	//class ComponentFactory
-	//{
-	//public:
-	//	typedef std::map<std::string, Component*(*)()> map_type;
-	//
-	//	static Component* CreateInstance(std::string const& s)
-	//	{
-	//		map_type::iterator it = getMap()->find(s);
-	//		if (it == getMap()->end())
-	//			return 0;
-	//
-	//		return it->second();
-	//	}
-	//
-	//
-	//protected:
-	//	static map_type* getMap()
-	//	{
-	//		if (!map) { map = new map_type; }
-	//		return map;
-	//	}
-	//private:
-	//	static map_type* map;
-	//	
-	//};
 }
 
 #endif

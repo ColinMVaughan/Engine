@@ -53,7 +53,6 @@ namespace ECS
 	template <typename T>
 	ComponentPool<T>::~ComponentPool()
 	{
-		delete Components;
 	}
 
 	template<typename T>

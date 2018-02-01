@@ -1,6 +1,41 @@
 #pragma once
 #include <gtest\gtest.h>
 #include <ECS.h>
+#include <ComponentReflection.h>
+
+//--------------------------------------------------------------------
+//						Dummy Components
+//-------------------------------------------------------------------
+
+class TestComp1
+{
+public:
+	COMPONENT_SERIALIZE(value)
+
+public:
+	int value = 0;
+};
+COMPONENT_REGISTER(TestComp1, "TestComp1")
+
+class TestComp2
+{
+public:
+	COMPONENT_SERIALIZE(value2)
+public:
+	int value2 = 0;
+};
+COMPONENT_REGISTER(TestComp2, "TestComp2")
+
+//--------------------------------------------------------------------
+//						Dummy Systems
+//-------------------------------------------------------------------
+
+
+
+
+//---------------------------------------------------------------------
+//							FIXTURES
+//--------------------------------------------------------------------
 
 class SceneTest : public ::testing::Test
 {

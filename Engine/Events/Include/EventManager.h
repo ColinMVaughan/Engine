@@ -68,10 +68,10 @@ private:
 class EventManager
 {
 public:
-	using FunctionType = std::function<void(const IEvent&)>;
+	using FunctionType = std::function<void(IEvent&)>;
 
 	template<typename EventType>
-	void AddListner(std::function<void(const EventType&)>&& a_func);
+	void AddListner(std::function<void(EventType&)>&& a_func);
 
 	void RemoveListner();
 
@@ -83,6 +83,17 @@ private:
 };
 
 
+//Macro Inteded to be used for registering listner member functions within System
+#define REGISTER_EVENT_LISTNER(EventType, Function, Manager) \
+		Manager.AddListner<EventType>(std::bind(&Function, this, std::placeholders::_1));\
+
+
+
+
+
+
+
+
 //----------------------------------------------
 //			IMPLEMENTATION
 //----------------------------------------------
@@ -90,7 +101,7 @@ private:
 //Registers a System's function against an Event. When that event is dispatched,
 //All resgistered functions will be called.
 template<typename EventType>
-void EventManager::AddListner(std::function<void(const EventType&)>&& a_func)
+void EventManager::AddListner(std::function<void(EventType&)>&& a_func)
 {
 	//Ensure that EventType is derrived from IEvent
 	if constexpr(std::is_base_of<IEvent, EventType>::value)
@@ -124,7 +135,6 @@ void EventManager::DispatchEvent(EventType& a_event)
 	auto&& ListnerList = Dispatchers.at(type);
 	ListnerList->DispatchEvent(a_event);
 }
-
 
 
 #endif

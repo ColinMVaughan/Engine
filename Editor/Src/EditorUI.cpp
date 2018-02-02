@@ -52,7 +52,7 @@ void Editor::PreUpdate(double deltaTime)
 			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
 				LookMode = true;
 			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
-				m_EventManager->DispatchEvent<TestEvent>(TestEvent());
+				m_EventManager->DispatchEvent<ButtonClicked>(ButtonClicked());
 			break;
 		case SDL_MOUSEBUTTONUP:
 			if (InputEvent.button.button == SDL_BUTTON_RIGHT)

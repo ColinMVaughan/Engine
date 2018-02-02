@@ -36,6 +36,9 @@ namespace ECS
 		template<typename T>
 		void RemoveComponent();
 
+		template<typename EventType>
+		void DispatchEvent(EventType& a_event);
+
 		unsigned int GetNumComponents();
 
 		void DestroyEntity();
@@ -61,6 +64,14 @@ namespace ECS
 		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr)
 			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr) {}
 
+		Scene()
+		{
+			m_EventManager = new EventManager;
+			m_ComponentManager = new ComponentManager;
+			m_SystemManager = new SystemManager(m_ComponentManager, m_EventManager);
+
+		}
+
 		Entity CreateEntity();
 		void DestroyEntity(Entity& a_entity);
 
@@ -82,6 +93,9 @@ namespace ECS
 		template <typename T>
 		bool UnserializeComponent(Entity a_entity);
 
+		template<typename EventType>
+		void DispatchEvent(EventType& a_event);
+
 		bool SaveScene(std::string filePath);
 		bool LoadScene(std::string filePath);
 
@@ -97,6 +111,7 @@ namespace ECS
 	private:
 		SystemManager*    m_SystemManager;
 		ComponentManager* m_ComponentManager;
+		EventManager*	  m_EventManager;
 
 		unsigned int EntityCounter = 0;
 		std::vector<Entity> m_EntityList;
@@ -173,6 +188,12 @@ namespace ECS
 		return false;
 	}
 
+	template<typename EventType>
+	inline void Scene::DispatchEvent(EventType & a_event)
+	{
+		m_EventManager->DispatchEvent<EventType>(a_event);
+	}
+
 
 	inline Entity Scene::CreateEntity()
 	{
@@ -221,6 +242,12 @@ namespace ECS
 	template<typename T>
 	inline void Entity::RemoveComponent()
 	{
+	}
+
+	template<typename EventType>
+	inline void Entity::DispatchEvent(EventType & a_event)
+	{
+		m_Scene->DispatchEvent<EventType>(a_event);
 	}
 
 	template<typename T>

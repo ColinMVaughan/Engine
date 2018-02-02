@@ -33,7 +33,7 @@ class FPSControlSystem : public ECS::System<Transform, Camera, PlayerControl>
 {
 public:
 
-	FPSControlSystem(ECS::ComponentManager* a_cmanager, EventManager* eManager);
+	FPSControlSystem(ECS::ComponentManager* a_cmanager, EventManager& eManager);
 
 	void PreUpdate(double deltaTime) override;
 	void Update(double deltaTime, ECS::Entity& entity) override;

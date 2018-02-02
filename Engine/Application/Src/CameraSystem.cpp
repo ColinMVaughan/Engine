@@ -1,6 +1,6 @@
 #include "CameraSystem.h"
 
-DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cmanager, EventManager* a_eManager)
+DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cmanager, EventManager& a_eManager)
 	:System(a_cmanager, a_eManager)
 {
 	MoveDirection = PxVec3(0);

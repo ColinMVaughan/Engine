@@ -20,7 +20,7 @@ private:
 	Renderer* m_Renderer;
 public:
 
-	RenderSystem(ECS::ComponentManager* a_Cmanager, EventManager* a_eManager)
+	RenderSystem(ECS::ComponentManager* a_Cmanager, EventManager& a_eManager)
 	:System(a_Cmanager, a_eManager){}
 
 	Renderer* GetRenderer()
@@ -89,7 +89,7 @@ class PointLightSystem : public ECS::System<PointLightComponent, Transform>
 {
 public:
 
-	PointLightSystem(ECS::ComponentManager* a_Cmanager, EventManager* a_eManager)
+	PointLightSystem(ECS::ComponentManager* a_Cmanager, EventManager& a_eManager)
 		:System(a_Cmanager, a_eManager) {}
 
 	void SetRenderer(Renderer* a_Renderer)

@@ -25,7 +25,7 @@ public:
 //Registers the component with a string so it can be added int
 COMPONENT_REGISTER(TestComp, "TestComp")
 
-class TestEvent : public IEvent
+class ButtonClicked : public IEvent
 {
 public:
 	bool Triggered = true;
@@ -36,10 +36,10 @@ public:
 class EventSystemTest : public ECS::System<TestComp>
 {
 public:
-	EventSystemTest(ECS::ComponentManager* a_comp, EventManager* a_eve)
+	EventSystemTest(ECS::ComponentManager* a_comp, EventManager& a_eve)
 		:System(a_comp, a_eve) 
 	{
-		a_eve->AddListner<TestEvent>(std::bind(&EventSystemTest::EventReciever, this, std::placeholders::_1));
+		REGISTER_EVENT_LISTNER(ButtonClicked, EventSystemTest::EventReciever, a_eve)
 	}
 
 
@@ -48,7 +48,7 @@ public:
 		
 	}
 
-	void EventReciever(const TestEvent& test)
+	void EventReciever(const ButtonClicked& test)
 	{
 		std::cout << "Event Triggered\n";
 		Triggered = test.Triggered;

@@ -22,13 +22,13 @@ namespace ECS
 	class SystemManager
 	{
 	public:
-		SystemManager(ComponentManager* cManager, EventManager* eManager) : m_ComponentManager(cManager) {}
+		SystemManager(ComponentManager* cManager, EventManager* eManager) : m_ComponentManager(cManager), m_EventManager(eManager) {}
 
 		template<typename T>
 		T* AddSystem()
 		{
 			//static_assert(std::is_base_of<BaseSystem, T>::value, "");
-			T* returnPtr = new T(m_ComponentManager, m_EventManager);
+			T* returnPtr = new T(m_ComponentManager, *m_EventManager);
 
 			BaseSystem* tempPtr = returnPtr;
 			SystemList.push_back(tempPtr);

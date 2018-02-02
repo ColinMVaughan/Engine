@@ -5,29 +5,7 @@
 #include <EventManager.h>
 #include <string>
 
-class TestEvent : public IEvent
-{
-public:
-	std::string Message;
-};
-
-class TestEvent2 : public IEvent
-{
-public:
-
-};
-
-class TestEventHandler
-{
-public:
-	void HandleEvent(const TestEvent& a_event)
-	{
-		EventRecieved = true;
-		return;
-	}
-
-	bool EventRecieved = false;
-};
+#include "Fixtures.h"
 
 //--------------------------------------------------------------
 //							TESTS
@@ -63,9 +41,16 @@ TEST(EventManagerTest, EventDispatch)
 }
 
 //Test that Events are cleaned up after dispatching to lisners.
-TEST(EventManagerTest, EventMemoryManagement)
+TEST(EventManagerTest, RegistrationMacro)
 {
-	EXPECT_TRUE(true);
+	EventManager manager;
+	SelfRegisteredListner listner(manager);
+
+	TestEvent eve("Hello World");
+	manager.DispatchEvent<TestEvent>(eve);
+
+
+	EXPECT_TRUE(listner.RecievedEvent);
 }
 
 #endif

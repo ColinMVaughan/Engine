@@ -8,7 +8,7 @@
 class TestSystem : public ECS::System<bool, int>
 {
 public:
-	TestSystem(ECS::ComponentManager* a_cmanager, EventManager* a_emanager) 
+	TestSystem(ECS::ComponentManager* a_cmanager, EventManager& a_emanager) 
 	: System(a_cmanager, a_emanager){}
 
 	void Update(double deltaTime, ECS::Entity& entity) override
@@ -21,7 +21,7 @@ public:
 class TestSystem2 : public ECS::System<bool>
 {
 public:
-	TestSystem2(ECS::ComponentManager* a_cmanager, EventManager* a_emanager)
+	TestSystem2(ECS::ComponentManager* a_cmanager, EventManager& a_emanager)
 		: System(a_cmanager, a_emanager) {}
 
 	void Update(double deltaTime, ECS::Entity& entity) override

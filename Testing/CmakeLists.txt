@@ -5,6 +5,7 @@ enable_testing()
 add_subdirectory(googletest-master)
 add_subdirectory(Test_Events)
 add_subdirectory(Test_ECS)
+add_subdirectory(Test_Application)
 
 #GOOGLE TEST
 #this is very bad, turn these warnings back on plz
@@ -22,3 +23,4 @@ set_target_properties(gmock_main PROPERTIES FOLDER "Testing/Googletest")
 #TESTS
 set_target_properties(Test_Events PROPERTIES FOLDER "Testing")
 set_target_properties(Test_ECS PROPERTIES FOLDER "Testing")
+set_target_properties(Test_Application PROPERTIES FOLDER "Testing")

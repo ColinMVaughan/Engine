@@ -14,19 +14,29 @@
 
 
 #include <imgui.h>
+#include <EventManager.h>
 
 #include <thread>
 #include <vector>
 #include <string>
 #include <map>
 #include <tuple>
+#include <functional>
+
+
+
+//--------------------------------------------------
+// BaseAssetPool
+//--------------------------------------------------
 
 class BaseAssetPool
 {
 public:
-
 	virtual void LoadAsset(std::string filePath) = 0;
-	//virtual void UnloadPool() = 0;
+private:
+	std::function<void(std::string)> m_Load;
+	std::function<void()> m_UnLoad;
+	std::string PoolName;
 };
 
 //---------------------------------------------------
@@ -81,6 +91,10 @@ public:
 		}
 	}
 
+	void GetResourceType()
+	{
+		
+	}
 	//Display the AssetManager window. Allowing the user to view and add different 
 	
 	void DisplayInEditor()
@@ -93,5 +107,13 @@ private:
 	std::map<std::string, BaseAssetPool*> m_PoolMap;
 	bool IsWindowActive = false;
 };
+
+
+#define LOAD_ASSET_TYPE()    \
+		void LoadAssetType() \
+		{					 \
+							 \
+		}					 \
+
 
 #endif

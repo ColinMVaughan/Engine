@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.10)
+project(Test_Application)
+include(GoogleTest)
+
+file(GLOB SRCS Src/*.cpp)
+file(GLOB HEADERS Include/*.h)
+
+add_executable(Test_Application ${HEADERS} ${SRCS})
+target_link_libraries(Test_Application gtest Application)
+
+target_include_directories(Test_Application PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+			$<INSTALL_INTERFACE:Include>)
+
+gtest_discover_tests(Test_Application)

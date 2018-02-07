@@ -3,14 +3,17 @@
 
 #include <gtest\gtest.h>
 #include <AssetManager.h>
+#include "Fixtures.h"
 
 
+//Tests that Resources can be added to the AssetManager
 TEST(AssetManagerTest, AddResourceType)
 {
 	AssetManager manager;
-	manager.AddResourceType
+	manager.AddResourceType<SomeAsset>("SomeAsset");
 }
 
+//Check that existing assets can be Retrieved and copied
 TEST(AssetManagerTest, RetrieveAsset)
 {
 

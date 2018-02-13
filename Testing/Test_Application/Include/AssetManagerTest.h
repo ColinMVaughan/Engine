@@ -16,7 +16,16 @@ TEST(AssetManagerTest, AddResourceType)
 //Check that existing assets can be Retrieved and copied
 TEST(AssetManagerTest, RetrieveAsset)
 {
+	AssetManager manager;
+	manager.AddResourceType<SomeAsset>("SomeAsset");
+	manager.AddResource("SomeAsset", "MyFilepath");
 
+	AssetRequestEvent request;
+	request.m_AssetTypeName = "SomeAsset";
+	request.m_AssetName = "name";
+
+	manager.HandleAssetRequestEvent(&request);
+	EXPECT_EQ(request.m_AssetName, "Found Asset");
 }
 
 TEST(AssetManagerTest, RemoveAsset)

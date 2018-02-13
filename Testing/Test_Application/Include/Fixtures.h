@@ -9,7 +9,7 @@
 class SomeAsset
 {
 public:
-	void LoadAsset(std::string filePath)
+	void MSomeAsset(std::string filePath)
 	{
 		m_FilePath = filePath;
 		Index = 1;

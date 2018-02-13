@@ -13,6 +13,13 @@
 //----------------------------------------------------------------------------
 
 
+//---------------------------------------------------------------------------
+//					Notes to Self 2
+//
+// *We may want to make asset manager its own project. 
+//		-Aset Management is probabbly a core feature.
+//		-Im thinking 
+//--------------------------------------------------------------------------
 #include <imgui.h>
 #include <EventManager.h>
 
@@ -25,6 +32,19 @@
 
 
 
+class BaseARE : public IEvent
+{
+public:
+	std::string m_AssetTypeName;
+};
+
+class AssetRequestEvent : public BaseARE
+{
+public:
+	std::string m_AssetName;
+};
+
+
 //--------------------------------------------------
 // BaseAssetPool
 //--------------------------------------------------
@@ -33,6 +53,7 @@ class BaseAssetPool
 {
 public:
 	virtual void LoadAsset(std::string filePath) = 0;
+	virtual void RetrieveAsset(BaseARE* request) = 0;
 private:
 	std::function<void(std::string)> m_Load;
 	std::function<void()> m_UnLoad;
@@ -51,11 +72,18 @@ template<typename T>
 class AssetPool : public BaseAssetPool
 {
 public:
-
+	using AssetType = T;
 
 	virtual void LoadAsset(std::string filePath) override
 	{
-		//m_Pool.push_back(T(filePath));
+		m_Pool.push_back(std::tuple<std::string, T>);
+	}
+
+	virtual void RetrieveAsset(BaseARE* assetRequest) override
+	{
+		auto request = static_cast<AssetRequestEvent*>(assetRequest);
+		request->m_AssetName = "Found Asset";
+
 	}
 
 
@@ -65,7 +93,7 @@ public:
 		for (auto it = m_Pool.begin(); it < m_Pool.end(); ++it)
 		{
 			//display selectable with name given from first element of tuple
-			ImGui::Selectable(std::get<0>(it*), nullptr);
+			//ImGui::Selectable(std::get<0>(it*), nullptr);
 		}
 	}
 
@@ -91,29 +119,36 @@ public:
 		}
 	}
 
+	void AddResource(std::string AssetType, std::string FilePath)
+	{
+		m_PoolMap[AssetType]->LoadAsset(FilePath);
+	}
+
 	void GetResourceType()
 	{
 		
 	}
-	//Display the AssetManager window. Allowing the user to view and add different 
-	
+
+	//Display the AssetManager window. Allowing the user to view and add different Assets.
+	//Assets are grouped into the same type.
 	void DisplayInEditor()
 	{
 		ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
 	}
+
+
+	void HandleAssetRequestEvent(BaseARE* request)
+	{
+		m_PoolMap[request->m_AssetTypeName]->RetrieveAsset(request);
+		return;
+	}
+
 
 private:
 	std::thread m_WorkerThread;
 	std::map<std::string, BaseAssetPool*> m_PoolMap;
 	bool IsWindowActive = false;
 };
-
-
-#define LOAD_ASSET_TYPE()    \
-		void LoadAssetType() \
-		{					 \
-							 \
-		}					 \
 
 
 #endif

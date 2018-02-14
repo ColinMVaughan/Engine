@@ -262,10 +262,7 @@ void Editor::DrawResourceManager()
 		ImGui::Text("Resources");
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
 		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
-		for (int i = 0; i < 10; ++i)
-		{
-			ImGui::CollapsingHeader("Resource Type");
-		}
+		m_AssetManager.DisplayDirectoryContents();
 		ImGui::EndChild();
 
 		ImGui::SameLine();

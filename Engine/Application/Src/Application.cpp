@@ -4,6 +4,7 @@
 #include <glm\gtc\type_ptr.hpp>
 
 Application::Application()
+	:m_AssetManager("./Assets/")
 {
 	m_EventManager = new EventManager;
 	m_ComponentManager = new ECS::ComponentManager;

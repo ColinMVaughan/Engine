@@ -20,12 +20,23 @@ TEST(AssetManagerTest, RetrieveAsset)
 	manager.AddResourceType<SomeAsset>("SomeAsset");
 	manager.AddResource("SomeAsset", "MyFilepath");
 
-	AssetRequestEvent request;
+	AssetRequestEvent<SomeAsset> request;
 	request.m_AssetTypeName = "SomeAsset";
 	request.m_AssetName = "name";
 
 	manager.HandleAssetRequestEvent(&request);
-	EXPECT_EQ(request.m_AssetName, "Found Asset");
+	EXPECT_EQ(request.Asset.m_FilePath, "FoundAsset");
+}
+
+//Test for retrieving assets through an event dispatch
+TEST(AssetManagerTest, Events)
+{
+
+}
+
+TEST(AssetManagerTest, Directory)
+{
+
 }
 
 TEST(AssetManagerTest, RemoveAsset)

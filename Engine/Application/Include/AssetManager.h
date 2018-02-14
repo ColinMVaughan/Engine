@@ -1,25 +1,6 @@
 #ifndef ASSET_MANAGER_H
 #define ASSET_MANAGER_H
 
-//----------------------------------------------------------------------------
-//					Notes to Self
-// *The Asset Manager needs to be reworked
-//		-How do we differentiate project assets from scene assets?
-//		-How should users add assets to the scene?
-//		-The asset manager should probably be seperate from all UI, right?
-//
-//	*Asset Access/Storage/Retreaval should probably be hooked into Events...
-//		-We should get Events up and running before we worry about assets.
-//----------------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------------
-//					Notes to Self 2
-//
-// *We may want to make asset manager its own project. 
-//		-Aset Management is probabbly a core feature.
-//		-Im thinking 
-//--------------------------------------------------------------------------
 #include <imgui.h>
 #include <EventManager.h>
 
@@ -29,19 +10,26 @@
 #include <map>
 #include <tuple>
 #include <functional>
+#include <filesystem>
 
+//-----------------------------------------------
+//			AssetRequestEvent
+//
+// These events are used to request assets for components
+//----------------------------------------------
 
-
-class BaseARE : public IEvent
+class BaseAssetRequestEvent : public IEvent
 {
 public:
 	std::string m_AssetTypeName;
 };
 
-class AssetRequestEvent : public BaseARE
+template<typename T>
+class AssetRequestEvent : public BaseAssetRequestEvent
 {
 public:
 	std::string m_AssetName;
+	T Asset;
 };
 
 
@@ -52,8 +40,8 @@ public:
 class BaseAssetPool
 {
 public:
-	virtual void LoadAsset(std::string filePath) = 0;
-	virtual void RetrieveAsset(BaseARE* request) = 0;
+	virtual void LoadAsset(std::string a_filePath) = 0;
+	virtual void RetrieveAsset(BaseAssetRequestEvent* request) = 0;
 private:
 	std::function<void(std::string)> m_Load;
 	std::function<void()> m_UnLoad;
@@ -67,22 +55,22 @@ private:
 // Has Ability to Load, store and retrieve asset of type T.
 // Is used in combination with the editor.
 //---------------------------------------------------
-
 template<typename T>
 class AssetPool : public BaseAssetPool
 {
 public:
 	using AssetType = T;
 
-	virtual void LoadAsset(std::string filePath) override
+	virtual void LoadAsset(std::string a_filePath) override
 	{
-		m_Pool.push_back(std::tuple<std::string, T>);
+		m_Pool.push_back(std::tuple<std::string, T>(a_filePath,T(a_filePath)));
 	}
 
-	virtual void RetrieveAsset(BaseARE* assetRequest) override
+	virtual void RetrieveAsset(BaseAssetRequestEvent* a_assetRequest) override
 	{
-		auto request = static_cast<AssetRequestEvent*>(assetRequest);
+		auto request = static_cast<AssetRequestEvent<AssetType>*>(a_assetRequest);
 		request->m_AssetName = "Found Asset";
+		request->Asset = AssetType("FoundAsset");
 
 	}
 
@@ -102,53 +90,52 @@ private:
 
 };
 
-
+//-----------------------------------------------------------------------
+//						ASSET MANAGER
+//
+//-----------------------------------------------------------------------
 class AssetManager
 {
 public:
 	
+	AssetManager() = default;
+	AssetManager(const std::string &a_assetDirectory);
+
 	template<typename T>
-	void AddResourceType(std::string typeName)
-	{
-		//Check that the pool dosen't already exist
-		auto iterator = m_PoolMap.find(typeName);
-		if (iterator == m_PoolMap.end())
-		{
-			BaseAssetPool* pool = new AssetPool<T>();
-			m_PoolMap.insert(std::map<std::string, BaseAssetPool*>::value_type(typeName, pool));
-		}
-	}
+	void AddResourceType(std::string typeName);
 
-	void AddResource(std::string AssetType, std::string FilePath)
-	{
-		m_PoolMap[AssetType]->LoadAsset(FilePath);
-	}
-
-	void GetResourceType()
-	{
-		
-	}
-
-	//Display the AssetManager window. Allowing the user to view and add different Assets.
-	//Assets are grouped into the same type.
-	void DisplayInEditor()
-	{
-		ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-	}
+	void AddResource(std::string AssetType, std::string FilePath);
+	void DisplayDirectoryContents();
 
 
-	void HandleAssetRequestEvent(BaseARE* request)
-	{
-		m_PoolMap[request->m_AssetTypeName]->RetrieveAsset(request);
-		return;
-	}
-
+	void HandleAssetRequestEvent(BaseAssetRequestEvent* request);
 
 private:
+	void DisplayDirectoryRecursive(const std::experimental::filesystem::path& a_pathToShow, int a_level);
+
 	std::thread m_WorkerThread;
 	std::map<std::string, BaseAssetPool*> m_PoolMap;
 	bool IsWindowActive = false;
+	std::experimental::filesystem::path m_AssetDirectory;
 };
+
+
+//------------------------------------------------------------
+//				TEMPLATE IMPLEMENTATIONS
+//-----------------------------------------------------------
+
+
+template <typename T>
+void AssetManager::AddResourceType(std::string typeName)
+{
+	//Check that the pool dosen't already exist
+	auto iterator = m_PoolMap.find(typeName);
+	if (iterator == m_PoolMap.end())
+	{
+		BaseAssetPool* pool = new AssetPool<T>();
+		m_PoolMap.insert(std::map<std::string, BaseAssetPool*>::value_type(typeName, pool));
+	}
+}
 
 
 #endif

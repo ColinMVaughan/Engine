@@ -34,15 +34,15 @@ void AssetManager::DisplayDirectoryRecursive(const std::experimental::filesystem
 				}
 
 			}
-
+			
 			else if (fs::is_regular_file(entry.status()))
 				ImGui::Text(filename.generic_string().c_str());
 		}
 	}
 }
 
-void AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * request)
+void AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * a_request)
 {
-	m_PoolMap[request->m_AssetTypeName]->RetrieveAsset(request);
+	m_PoolMap[a_request->GetAssetTypeName()]->RetrieveAsset(a_request);
 	return;
 }

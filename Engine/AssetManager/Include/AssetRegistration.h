@@ -1,0 +1,5 @@
+#ifndef _ASSET_REGISTRATION_H_
+#define _ASSET_REGISTRATION_H_
+
+
+#endif

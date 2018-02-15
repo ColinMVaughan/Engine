@@ -3,6 +3,7 @@ project(Application)
 
 add_subdirectory(Events)
 add_subdirectory(ECS)
+add_subdirectory(AssetManager)
 add_subdirectory(GLRenderer)
 add_subdirectory(Physics)
 add_subdirectory(ImGUI)
@@ -13,7 +14,7 @@ file(GLOB SOURCES "Application/Src/*.cpp")
 		
 add_library(Application STATIC ${HEADERS} ${SOURCES})
 target_compile_features(Application PUBLIC cxx_std_17)
-target_link_libraries(Application Physics GLRenderer ECS Events ImGUI Serialization)
+target_link_libraries(Application Physics GLRenderer ECS AssetManager Events ImGUI Serialization)
 
 target_include_directories(Application PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Application/Include>

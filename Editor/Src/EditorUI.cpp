@@ -168,15 +168,31 @@ void Editor::DrawEntityInspector()
 		//Enity View
 		static int selected = 0;
 		ImGui::BeginChild("Left Pane", ImVec2(150, 0), true);
+
 		//**************
 		// This is where you list the entities
 		for (int i = 0; i < m_Scene->GetNumEntities(); ++i)
 		{
-			char label[128];
-			sprintf(label, "Entity %d", i);
-			if (ImGui::Selectable(label, selected == i))
+			if (ImGui::Selectable(m_Scene->GetEntity(i).GetName().c_str(), selected == i))
 				selected = i;
+
+			//I Know this nested if statement seems unessisary, but ImGUI throws an exception otherwise
+			if(selected==i)
+			{
+				if (ImGui::BeginPopupContextItem("Rename"))
+				{
+					//Buffer used if the user wishes to rename an entity
+					char renameBuffer[128] = "";
+					if (ImGui::InputText("Rename Entity", renameBuffer, sizeof(renameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+						m_Scene->GetEntity(selected).SetName(std::string(renameBuffer));
+
+					ImGui::EndPopup();
+				}
+			}
+
 		}
+
+
 		//**************
 		ImGui::EndChild();
 		ImGui::SameLine();

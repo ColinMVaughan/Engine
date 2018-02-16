@@ -20,6 +20,15 @@ public:
 	PxTransform* GetTransform();
 	void ExposeToEditor();
 
+	template<typename Archive>
+	void serialize(Archive& arc)
+	{
+		arc(m_Transform.p.x, m_Transform.p.y, m_Transform.p.z, m_EulerRotations.x, m_EulerRotations.y, m_EulerRotations.z);
+		m_Transform.q = PxQuat(PxIdentity);
+		m_Transform.q *= PxQuat(m_EulerRotations.x, PxVec3(1, 0, 0));
+		m_Transform.q *= PxQuat(m_EulerRotations.y, PxVec3(0, 1, 0));
+		m_Transform.q *= PxQuat(m_EulerRotations.z, PxVec3(0, 0, 1));
+	}
 
 private:
 	PxRigidActor* m_Actor = nullptr;

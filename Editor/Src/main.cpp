@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 
-	demo->m_Window = SDL_CreateWindow("Ocean Engine", 100, 100, 1280, 720, WindowFlags);
+	demo->m_Window = SDL_CreateWindow("Ocean Engine", 0, 0, 1920, 1080, WindowFlags);
 	SDL_GL_CreateContext(demo->m_Window);
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 

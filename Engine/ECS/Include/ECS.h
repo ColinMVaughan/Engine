@@ -23,7 +23,7 @@ namespace ECS
 	{
 	public:
 		//Entity requires a unique ID and a pointer to the scene it belongs to
-		Entity(unsigned int a_id, Scene* a_scene) :m_ID(a_id), m_Scene(a_scene) {}
+		Entity(unsigned int a_id, std::string a_name, Scene* a_scene) :m_ID(a_id), m_Name(a_name), m_Scene(a_scene) {}
 
 		unsigned int GetID() { return m_ID; }
 
@@ -41,11 +41,15 @@ namespace ECS
 
 		unsigned int GetNumComponents();
 
+		void SetName(std::string a_name);
+		std::string GetName();
+
 		void DestroyEntity();
 		void DisableEntity();
 		void EnableEntity();
 
 	private:
+		std::string m_Name;
 		unsigned int m_ID;
 		Scene* m_Scene;
 	};
@@ -72,7 +76,8 @@ namespace ECS
 
 		}
 
-		Entity CreateEntity();
+		Entity& CreateEntity();
+		Entity& CreateEntity(std::string a_name);
 		void DestroyEntity(Entity& a_entity);
 
 		template<typename T>
@@ -101,7 +106,7 @@ namespace ECS
 
 		void UpdateSystems(double deltaTime);
 		unsigned int GetNumEntities();
-		Entity GetEntity(unsigned int index);
+		Entity& GetEntity(unsigned int index);
 
 
 		std::vector<std::string> m_EntityNames;
@@ -195,11 +200,18 @@ namespace ECS
 	}
 
 
-	inline Entity Scene::CreateEntity()
+	inline Entity& Scene::CreateEntity()
 	{
 		EntityCounter++;
-		m_EntityList.push_back(Entity(EntityCounter, this));
-		return Entity(EntityCounter, this);
+		m_EntityList.push_back(Entity(EntityCounter,"Entity " + std::to_string(EntityCounter), this));
+		return m_EntityList.back();
+	}
+
+	inline Entity& Scene::CreateEntity(std::string a_name)
+	{
+		EntityCounter++;
+		m_EntityList.push_back(Entity(EntityCounter, a_name, this));
+		return m_EntityList.back();
 	}
 
 	inline void Scene::DestroyEntity(Entity& a_entity)
@@ -211,7 +223,7 @@ namespace ECS
 
 		//Set Entity's ID to zero and scene pointer to null.
 		//this denotes that the entity is no longer available.
-		a_entity = Entity(0, nullptr);
+		a_entity = Entity(0,"", nullptr);
 	}
 
 	inline void Scene::UpdateSystems(double deltaTime)
@@ -224,7 +236,7 @@ namespace ECS
 		return m_EntityList.size();
 	}
 
-	inline Entity Scene::GetEntity(unsigned int index)
+	inline Entity& Scene::GetEntity(unsigned int index)
 	{
 		return m_EntityList[index];
 	}
@@ -256,6 +268,13 @@ namespace ECS
 		return m_Scene->GetComponent<T>(*this);
 	}
 
-
+	inline void Entity::SetName(std::string a_name)
+	{
+		m_Name = a_name;
+	}
+	inline std::string Entity::GetName()
+	{
+		return m_Name;
+	}
 }
 #endif //ECS_H

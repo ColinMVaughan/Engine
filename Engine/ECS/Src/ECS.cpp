@@ -76,6 +76,10 @@ bool ECS::Scene::SaveScene(std::string filePath)
 	//For each entity, search for it's components and add their index & data
 	for (int i = 1; i < numEntities; ++i)
 	{
+		//Write the name of the entity to file
+		std::string entityName = GetEntity(i).GetName();
+		File.write(entityName.c_str(), entityName.length()+1);
+
 		uint32_t compIndex = 0;
 		std::vector<uint32_t> components;
 
@@ -172,7 +176,7 @@ bool ECS::Scene::LoadScene(std::string filePath)
 	numEntities = *reinterpret_cast<uint32_t*>(fileData + offset);
 	offset += 4; //increase the offset by 4 bytes (size of uint32_t)
 
-				 //Get the number of Component Types in the scene
+	//Get the number of Component Types in the scene
 	numComponents = *reinterpret_cast<uint32_t*>(fileData + offset);
 	offset += 4;
 
@@ -189,8 +193,11 @@ bool ECS::Scene::LoadScene(std::string filePath)
 	//Start with one to skip over the default user camera, which will have no effect on the game/scene.
 	for (int i = 1; i < numEntities; ++i)
 	{
+		char* entname = reinterpret_cast<char*>(fileData + offset);
+		offset += (strlen(entname) +1);
+
 		//create new entity
-		ECS::Entity entity = CreateEntity();
+		ECS::Entity entity = CreateEntity(entname);
 
 		//Get the number of components registered to the entity
 		uint32_t registeredComps = *reinterpret_cast<uint32_t*>(fileData + offset);

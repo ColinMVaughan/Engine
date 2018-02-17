@@ -50,6 +50,12 @@ namespace has_detail
 	//Registered component has a Serialize() function?
 	template <class U>
 	using has_serialization = decltype(std::declval<U>().serialize(std::declval<U&>()));
+
+	template <class U>
+	using has_serialization_save = decltype(std::declval<U>().save(std::declval<U&>()));
+
+	template <class U>
+	using has_serialization_load = decltype(std::declval<U>().load(std::declval<U&>()));
 }
 
 
@@ -94,14 +100,14 @@ namespace ECS
 				break;
 
 			case Save:
-				if constexpr(is_detected_v<has_detail::has_serialization, T>)
+				if constexpr(is_detected_v<has_detail::has_serialization, T> || is_detected_v<has_detail::has_serialization_save, T>)
 				{
 					scene->SerializeComponent<T>(entity);
 				}
 				break;
 
 			case Load:
-				if constexpr(is_detected_v<has_detail::has_serialization, T>)
+				if constexpr(is_detected_v<has_detail::has_serialization, T> || is_detected_v<has_detail::has_serialization_load, T>)
 				{
 					scene->UnserializeComponent<T>(entity);
 				}

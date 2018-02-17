@@ -34,8 +34,15 @@ struct Material
 
 	void ExposeToEditor();
 
+
 	template<typename Archive>
-	void serialize(Archive & arc)
+	void save(Archive& arc) const
+	{
+		arc(m_folderPath);
+	}
+
+	template<typename Archive>
+	void load(Archive& arc)
 	{
 		arc(m_folderPath);
 		SetTexturesFromFolder(m_folderPath);

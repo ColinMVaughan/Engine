@@ -40,11 +40,18 @@ public:
 	void ExposeToEditor();
 
 	template<typename Archive>
-	void serialize(Archive & arc)
+	void save(Archive& arc) const
+	{
+		arc(Filepath);
+	}
+
+	template<typename Archive>
+	void load(Archive& arc)
 	{
 		arc(Filepath);
 		LoadFromFile(Filepath);
 	}
+
 
 	GLuint VBO_Verticies = 0;
 	GLuint VBO_UVs		 = 0;

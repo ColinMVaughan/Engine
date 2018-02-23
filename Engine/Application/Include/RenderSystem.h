@@ -78,6 +78,8 @@ public:
 	glm::fvec3 Color;
 	bool Registered = false;
 
+	COMPONENT_SERIALIZE(BaseColour[0], BaseColour[1], BaseColour[2], Intensity)
+
 private:
 	glm::vec3 BaseColour;
 	float Intensity = 0;

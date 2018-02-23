@@ -347,11 +347,11 @@ void Renderer::CombineUI()
 	UICombinedShader.Bind();
 	UICombinedShader.SendUniform("uTex", 0);
 
-	CombinedLighingBuffer.Bind();
+	FinalBuffer->Bind();
 	glBindTexture(GL_TEXTURE_2D, UIBuffer.GetColorHandle(0));
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, 0);
-	CombinedLighingBuffer.UnBind();
+	FinalBuffer->UnBind();
 
 	UICombinedShader.Bind();
 
@@ -492,6 +492,22 @@ void Renderer::SetCamera(Camera* cam)
 	m_Camera = cam;
 }
 
+void Renderer::SetBufferToDisplay(unsigned int index)
+{
+	switch (index)
+	{
+	case 0:
+		FinalBuffer = &CombinedLighingBuffer;
+		break;
+	case 1:
+		FinalBuffer = &LightpassBuffer;
+		break;
+	case 3:
+		FinalBuffer = &SSAOBuffer;
+		break;
+	}
+}
+
 void Renderer::InitalizeSSAO()
 {
 	std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
@@ -579,7 +595,7 @@ void Renderer::SSAOPass()
 
 void Renderer::SubmitFrame()
 {
-	CombinedLighingBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	FinalBuffer->MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//UIBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//SSAOBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);

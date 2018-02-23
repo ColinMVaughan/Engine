@@ -72,18 +72,18 @@ namespace ECS
 
 //PARAMETERS:
 // "..." = Names of variables you want to serialize
-#define COMPONENT_SAVE(...)		\
-	template<typename Archive>	\
-	void save(archive & arc)	\
-	{							\
-		arc(__VA_ARGS__);		\
+#define COMPONENT_SAVE(...)			\
+	template<typename Archive>		\
+	void save(Archive & arc) const	\
+	{								\
+		arc(__VA_ARGS__);			\
 	}							
 
 //PARAMETERS:
 // "..." = Names of variables you want to serialize
 #define COMPONENT_LOAD(...)		\
 	template<typename Archive>	\
-	void save(archive & arc)	\
+	void save(Archive & arc)	\
 	{							\
 		arc(__VA_ARGS__);		\
 	}	

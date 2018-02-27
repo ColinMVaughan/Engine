@@ -89,6 +89,8 @@ void Editor::DoUpdate(double deltaTime)
 		DrawEntityInspector();
 	if (IsResourceManagerActive)
 		DrawResourceManager();
+	if (IsRenderSettingsActive)
+		DrawRenderSettings();
 
 	m_Renderer->UIBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -109,6 +111,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	{
 		if (ImGui::MenuItem("Save Scene")) { m_Scene->SaveScene("./Assets/DemoScene.Scene"); }
 		if (ImGui::MenuItem("Open Scene")) { m_Scene->LoadScene("./Assets/DemoScene.Scene"); }
+		if (ImGui::MenuItem("Quit")) { Running = false; }
 		ImGui::EndMenu();
 	}
 
@@ -117,7 +120,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	{
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Render Options")) {}
+			if (ImGui::MenuItem("Render Options", NULL, IsRenderSettingsActive)) { IsRenderSettingsActive = !IsRenderSettingsActive; }
 			if (ImGui::MenuItem("Option2")) {}
 			ImGui::EndMenu();
 		}
@@ -127,9 +130,9 @@ void Editor::DrawMenuBar(double deltaTime)
 	//View Menu Item
 	if (ImGui::BeginMenu("View"))
 	{
-		if (ImGui::MenuItem("EntityInspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
-		if (ImGui::MenuItem("SystemList", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
-		if (ImGui::MenuItem("Resource Manager", NULL, IsResourceManagerActive)) { IsResourceManagerActive = !IsResourceManagerActive; }
+		if (ImGui::MenuItem("Entity Inspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
+		if (ImGui::MenuItem("System Inspector", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
+		if (ImGui::MenuItem("Resource Inspector", NULL, IsResourceManagerActive)) { IsResourceManagerActive = !IsResourceManagerActive; }
 		ImGui::EndMenu();
 	}
 
@@ -291,5 +294,20 @@ void Editor::DrawResourceManager()
 
 		ImGui::PopStyleVar();
 	}
+	ImGui::End();
+}
+
+void Editor::DrawRenderSettings()
+{
+	ImGui::Begin("Render Settings", &IsRenderSettingsActive);
+
+	ImGui::Text("Buffer to Display");
+
+	static int display = 0;
+	ImGui::RadioButton("Full Buffer", &display, 0); ImGui::SameLine();
+	ImGui::RadioButton("SSAO Buffer", &display, 1); ImGui::SameLine();
+	ImGui::RadioButton("Lighting Buffer", &display, 2);
+
+
 	ImGui::End();
 }

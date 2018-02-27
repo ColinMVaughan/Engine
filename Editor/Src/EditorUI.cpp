@@ -269,7 +269,7 @@ void Editor::DrawResourceManager()
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Add Resource"))
+				if (ImGui::MenuItem("Refresh Directory"))
 				{
 
 				}
@@ -278,18 +278,16 @@ void Editor::DrawResourceManager()
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Text("Resources");
+		ImGui::Text("Asset Directory");
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
-		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
-		m_AssetManager.DisplayDirectoryContents();
+		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.2f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
+		m_AssetManager.DisplayAssetDirectory();
 		ImGui::EndChild();
 
 		ImGui::SameLine();
 
 		ImGui::BeginChild("Info", ImVec2(0, 300), true);
-		ImGui::Text("Resource Type: ");
-		ImGui::Text("Path: ");
-		ImGui::Text("Size: ");
+		m_AssetManager.DisplayDirectoryContents();
 		ImGui::EndChild();
 
 		ImGui::PopStyleVar();

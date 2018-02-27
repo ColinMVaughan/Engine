@@ -29,8 +29,8 @@ public:
 	void AddResourceType(std::string typeName);
 
 	void AddResource(std::string AssetType, std::string FilePath);
+	void DisplayAssetDirectory();
 	void DisplayDirectoryContents();
-
 
 	void HandleAssetRequestEvent(BaseAssetRequestEvent* a_request);
 
@@ -41,6 +41,7 @@ private:
 	std::map<std::string, BaseAssetPool*> m_PoolMap;
 	bool IsWindowActive = false;
 	std::experimental::filesystem::path m_AssetDirectory;
+	std::experimental::filesystem::path m_SelectedPath;
 };
 
 

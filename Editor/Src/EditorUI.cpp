@@ -89,6 +89,8 @@ void Editor::DoUpdate(double deltaTime)
 		DrawEntityInspector();
 	if (IsResourceManagerActive)
 		DrawResourceManager();
+	if (IsRenderSettingsActive)
+		DrawRenderSettings();
 
 	m_Renderer->UIBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -109,6 +111,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	{
 		if (ImGui::MenuItem("Save Scene")) { m_Scene->SaveScene("./Assets/DemoScene.Scene"); }
 		if (ImGui::MenuItem("Open Scene")) { m_Scene->LoadScene("./Assets/DemoScene.Scene"); }
+		if (ImGui::MenuItem("Quit")) { Running = false; }
 		ImGui::EndMenu();
 	}
 
@@ -117,7 +120,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	{
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Render Options")) {}
+			if (ImGui::MenuItem("Render Options", NULL, IsRenderSettingsActive)) { IsRenderSettingsActive = !IsRenderSettingsActive; }
 			if (ImGui::MenuItem("Option2")) {}
 			ImGui::EndMenu();
 		}
@@ -127,9 +130,9 @@ void Editor::DrawMenuBar(double deltaTime)
 	//View Menu Item
 	if (ImGui::BeginMenu("View"))
 	{
-		if (ImGui::MenuItem("EntityInspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
-		if (ImGui::MenuItem("SystemList", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
-		if (ImGui::MenuItem("Resource Manager", NULL, IsResourceManagerActive)) { IsResourceManagerActive = !IsResourceManagerActive; }
+		if (ImGui::MenuItem("Entity Inspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
+		if (ImGui::MenuItem("System Inspector", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
+		if (ImGui::MenuItem("Resource Inspector", NULL, IsResourceManagerActive)) { IsResourceManagerActive = !IsResourceManagerActive; }
 		ImGui::EndMenu();
 	}
 
@@ -266,7 +269,7 @@ void Editor::DrawResourceManager()
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Add Resource"))
+				if (ImGui::MenuItem("Refresh Directory"))
 				{
 
 				}
@@ -275,21 +278,34 @@ void Editor::DrawResourceManager()
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Text("Resources");
+		ImGui::Text("Asset Directory");
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
-		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
-		m_AssetManager.DisplayDirectoryContents();
+		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.2f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
+		m_AssetManager.DisplayAssetDirectory();
 		ImGui::EndChild();
 
 		ImGui::SameLine();
 
 		ImGui::BeginChild("Info", ImVec2(0, 300), true);
-		ImGui::Text("Resource Type: ");
-		ImGui::Text("Path: ");
-		ImGui::Text("Size: ");
+		m_AssetManager.DisplayDirectoryContents();
 		ImGui::EndChild();
 
 		ImGui::PopStyleVar();
 	}
+	ImGui::End();
+}
+
+void Editor::DrawRenderSettings()
+{
+	ImGui::Begin("Render Settings", &IsRenderSettingsActive);
+
+	ImGui::Text("Buffer to Display");
+
+	static int display = 0;
+	ImGui::RadioButton("Full Buffer", &display, 0); ImGui::SameLine();
+	ImGui::RadioButton("SSAO Buffer", &display, 1); ImGui::SameLine();
+	ImGui::RadioButton("Lighting Buffer", &display, 2);
+
+
 	ImGui::End();
 }

@@ -125,13 +125,32 @@ private:
 //								Directional Light System
 //-------------------------------------------------------------------------------------------------
 
-class DirectionalLight
+class DirectionalLightComponent
 {
 public:
+
+	DirectionalLightComponent()
+	{
+		m_ShadowMap = new FrameBuffer(0);
+	}
+
+	void ExposeToEditor()
+	{
+		ImGui::ColorEdit3("Light Colour", &BaseColour.x);
+		ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 1000.0f);
+		ImGui::Checkbox("Casts Shadow", &CastsShadow);
+
+		Colour = BaseColour * Intensity;
+	}
+
+
 	glm::vec3 Colour;
 	glm::vec3 Direction;
-	bool CastsShadow;
+	bool CastsShadow = true;
 
 private:
-	FrameBuffer m_ShadowMap;
+	FrameBuffer* m_ShadowMap;
+	glm::vec3 BaseColour;
+	float Intensity = 0;;
 };
+COMPONENT_REGISTER(DirectionalLightComponent, "DirectionalLightComp")

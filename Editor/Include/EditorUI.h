@@ -14,11 +14,13 @@ private:
 	void DrawMenuBar(double deltaTime);
 	void DrawEntityInspector();
 	void DrawResourceManager();
+	void DrawRenderSettings();
 
 
 	bool IsEntityListActive = false;
 	bool IsEntityInspectorActive = false;
 	bool IsResourceManagerActive = false;
+	bool IsRenderSettingsActive = false;
 	int SelectedEntity = 0;
 	bool LookMode = false;
 };

@@ -165,6 +165,7 @@ int main(int argc, char **argv)
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//-----------------------------------------------------------
+
 	//		Init GLEW
 	//---------------------------------------------------------
 	glewExperimental = true;

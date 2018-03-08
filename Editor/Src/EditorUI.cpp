@@ -95,6 +95,7 @@ void Editor::DoUpdate(double deltaTime)
 	m_Renderer->UIBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
 	ImGui::Render();
+	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
 	m_Renderer->UIBuffer.UnBind();
 }
 
@@ -229,7 +230,7 @@ void Editor::DrawEntityInspector()
 
 		ImGui::BeginChild("Buttons");
 		if (ImGui::Button("Add Component")) { ImGui::OpenPopup("ComponentList"); }
-		if (ImGui::BeginPopup("ComponentList"))
+		if (ImGui::BeginPopup((const char*)"ComponentList"))
 		{
 			ImGui::Text("Components");
 			ImGui::Separator();

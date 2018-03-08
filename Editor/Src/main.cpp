@@ -125,6 +125,7 @@ class Demo : public Application
 		m_Renderer->UIBuffer.Bind();
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui::Render();
+		ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
 		m_Renderer->UIBuffer.UnBind();
 
 		return;
@@ -161,7 +162,7 @@ int main(int argc, char **argv)
 
 
 	demo->m_Window = SDL_CreateWindow("Ocean Engine", 0, 0, 1920, 1080, WindowFlags);
-	SDL_GL_CreateContext(demo->m_Window);
+	SDL_GLContext glContext = SDL_GL_CreateContext(demo->m_Window);
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//-----------------------------------------------------------
@@ -179,6 +180,7 @@ int main(int argc, char **argv)
 	//-----------------------------------------------------------
 	//	Init IMGUI
 	//-----------------------------------------------------------
+	ImGui::CreateContext();
 	ImGui_ImplSdlGL3_Init(demo->m_Window);
 
 	//-----------------------------------------------------------

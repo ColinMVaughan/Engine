@@ -25,7 +25,7 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 	transform->GetTransform()->q *= PxQuat(rotations.y, PxVec3(1, 0, 0));
 
 	//Translate camera in orientation corrected movement direction
-	transform->GetTransform()->p += transform->GetTransform()->rotate(MoveDirection);
+	transform->GetTransform()->p += transform->GetTransform()->rotate(MoveDirection) * deltaTime;
 
 
 	// Convert physx::PxMat44 to glm::mat4 and send updated transform to camera component
@@ -47,25 +47,27 @@ void DebugCameraControlSystem::PostUpdate(double deltaTime)
 
 void DebugCameraControlSystem::KeyDown(unsigned char key)
 {
+	float Speed = 20.5f;
+
 	switch (key)
 	{
 	case 'W':
-		MoveDirection.z -= 0.5f;
+		MoveDirection.z -= Speed;
 		break;
 	case 'A':
-		MoveDirection.x -= 0.5f;
+		MoveDirection.x -= Speed;
 		break;
 	case 'S':
-		MoveDirection.z += 0.5f;
+		MoveDirection.z += Speed;
 		break;
 	case'D':
-		MoveDirection.x += 0.5f;
+		MoveDirection.x += Speed;
 		break;
 	case 'E':
-		MoveDirection.y += 0.5f;
+		MoveDirection.y += Speed;
 		break;
 	case 'Q':
-		MoveDirection.y -= 0.5f;
+		MoveDirection.y -= Speed;
 		break;
 	}
 }

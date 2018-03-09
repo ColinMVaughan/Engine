@@ -60,11 +60,14 @@ void AssetManager::DisplayDirectoryContents()
 				ImGui::Text(filename.generic_string().c_str());
 				if(ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
+					ImGui::Text(filename.string().c_str());
+
 					BaseAssetRequestEvent* baseAsset = Assets::RequestAsset(this, asset.path());
 
-					auto pp = asset.path();
+					if(baseAsset)
+						ImGui::SetDragDropPayload(baseAsset->GetAssetTypeName().c_str(), &baseAsset, sizeof(BaseAssetRequestEvent*), ImGuiCond_Once);
 
-					ImGui::SetDragDropPayload(baseAsset->GetAssetTypeName().c_str(), &baseAsset, sizeof(BaseAssetRequestEvent*), ImGuiCond_Once);
+
 					ImGui::EndDragDropSource();
 				}
 			}
@@ -73,13 +76,13 @@ void AssetManager::DisplayDirectoryContents()
 }
 
 
-void AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * a_request)
+bool AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * a_request)
 {
-	m_PoolMap[a_request->GetAssetTypeName()]->RetrieveAsset(a_request);
-	return;
+	return m_PoolMap[a_request->GetAssetTypeName()]->RetrieveAsset(a_request);
 }
 
 void AssetManager::LoadAllAssets()
 {
-	Assets::LoadNewAsset(this, std::experimental::filesystem::path("./Assets/Testing/TestAsset.bla"));
+	Assets::LoadNewAsset(this, std::experimental::filesystem::path("./Assets/Models/guy.obj"));
+	Assets::LoadNewAsset(this, std::experimental::filesystem::path("./Assets/Models/Orb.obj"));
 }

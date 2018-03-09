@@ -32,7 +32,7 @@ public:
 	void DisplayAssetDirectory();
 	void DisplayDirectoryContents();
 
-	void HandleAssetRequestEvent(BaseAssetRequestEvent* a_request);
+	bool HandleAssetRequestEvent(BaseAssetRequestEvent* a_request);
 	void RetrieveAsset(std::string assetType, std::string assetName);
 
 	void LoadAllAssets();

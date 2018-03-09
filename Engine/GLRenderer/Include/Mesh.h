@@ -13,6 +13,10 @@ public:
 	typedef glm::mat4 mat4;
 public:
 	Mesh();
+	Mesh(const std::string& file)
+	{
+		LoadFromFile(file);
+	}
 	~Mesh();
 
 	bool LoadFromFile(const std::string &file);

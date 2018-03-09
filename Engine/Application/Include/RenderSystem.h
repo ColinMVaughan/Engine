@@ -7,6 +7,58 @@
 #include <ComponentReflection.h>
 #include <AssetRegistration.h>
 
+
+//---------------------------------------------------------------------------------
+//							Mesh and Material Components
+//----------------------------------------------------------------------------------
+
+class MeshFilter
+{
+public:
+
+	void ExposeToEditor()
+	{
+		ImGui::Text("Mesh: ");
+		ImGui::SameLine();
+		ImGui::Selectable(m_AssetName.c_str(), true);
+		//If something is being dragged/dropped into our window
+		if (ImGui::BeginDragDropTarget())
+		{
+			//If this is something we can accept
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Mesh"))
+			{
+				//Assert that this data is the correct size
+				IM_ASSERT(payload->DataSize == sizeof(BaseAssetRequestEvent*));
+
+				BaseAssetRequestEvent* base = nullptr;
+				memcpy(&base, payload->Data, sizeof(BaseAssetRequestEvent*));
+
+				auto meshRequest = static_cast<AssetRequestEvent<Mesh>*>(base);
+				m_AssetName = meshRequest->m_AssetName;
+				m_Mesh = *meshRequest->Asset;
+
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+	}
+
+	//COMPONENT_SAVE(m_AssetName)
+	//template<typename Archive>
+	//void load(Archive& arc) const
+	//{
+	//	arc(m_AssetName);
+
+	//}
+
+	std::string m_AssetName = "Nothing...";
+	Mesh m_Mesh;
+};
+COMPONENT_REGISTER(MeshFilter, "MeshFilter")
+
+
+
+
 //-----------------------------------------------------
 //	RenderSystem is used in conjunction with ECS to fit old code into
 //	the new framework.
@@ -15,7 +67,7 @@
 //	Add system to system Manager, and send avalid Renderer pointer.
 //-----------------------------------------------------
 
-class RenderSystem : public ECS::System<Mesh, Material, Transform>
+class RenderSystem : public ECS::System<MeshFilter, Material, Transform>
 {
 private:
 	Renderer* m_Renderer;
@@ -46,7 +98,7 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		auto mat =entity.GetComponent<Transform>()->GetGlobalTransformMatrix();
-		m_Renderer->Render(entity.GetComponent<Mesh>(), entity.GetComponent<Material>(), mat.front());
+		m_Renderer->Render(&entity.GetComponent<MeshFilter>()->m_Mesh, entity.GetComponent<Material>(), mat.front());
 	}
 	void PostUpdate(double deltaTime) override
 	{
@@ -60,51 +112,7 @@ public:
 };
 
 
-//---------------------------------------------------------------------------------
-//							Mesh and Material Components
-//----------------------------------------------------------------------------------
-class DMesh
-{
-public:
-	DMesh(std::string filepath)
-		:m_FilePath(filepath){}
 
-	std::string m_FilePath;
-};
-REGISTER_ASSET(".bla","DMesh", DMesh)
-
-class DummyMeshComponent
-{
-public:
-
-	void ExposeToEditor()
-	{
-		ImGui::Text(m_AssetName.c_str());
-		//If something is being dragged/dropped into our window
-		if(ImGui::BeginDragDropTarget())
-		{
-			//If this is something we can accept
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DMesh"))
-			{
-				//Assert that this data is the correct size
-				IM_ASSERT(payload->DataSize == sizeof(BaseAssetRequestEvent*));
-				
-				BaseAssetRequestEvent* base = nullptr;
-				memcpy(&base, payload->Data, sizeof(BaseAssetRequestEvent*));
-
-				auto meshRequest = static_cast<AssetRequestEvent<DMesh>*>(base);
-				m_AssetName = meshRequest->m_AssetName;
-
-				//delete meshRequest;
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-	}
-private:
-	std::string m_AssetName = "Nothing...";
-};
-COMPONENT_REGISTER(DummyMeshComponent, "DummyMeshComponent")
 
 
 

@@ -14,7 +14,7 @@ namespace Assets
 		std::string assetType = std::get<0>(asset);
 		detail::AssetFunction func = std::get<1>(asset);
 
-		return func(manager, assetPath.stem().string(), assetType, detail::AssetActions::Retrieve);
+		return func(manager, assetPath.string(), assetType, detail::AssetActions::Retrieve);
 
 	}
 

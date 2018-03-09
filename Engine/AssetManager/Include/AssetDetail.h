@@ -43,13 +43,14 @@ namespace Assets
 			case Retrieve:
 
 				AssetRequestEvent<T>* RE = new AssetRequestEvent<T>();
-				RE->m_AssetName = asset.stem().string();
+				RE->m_AssetName = asset.string();
 				RE->m_AssetTypeName = typeName;
 
 				BaseAssetRequestEvent* BE = RE;
-				manager->HandleAssetRequestEvent(BE);
 
+				if(manager->HandleAssetRequestEvent(BE))
 				return BE;
+
 				break;
 			}
 

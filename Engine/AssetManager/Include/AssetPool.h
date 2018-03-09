@@ -14,7 +14,7 @@ class BaseAssetPool
 {
 public:
 	virtual void LoadAsset(std::experimental::filesystem::path assetPath) = 0;
-	virtual void RetrieveAsset(BaseAssetRequestEvent* request) = 0;
+	virtual bool RetrieveAsset(BaseAssetRequestEvent* request) = 0;
 private:
 	std::function<void(std::string)> m_Load;
 	std::function<void()> m_UnLoad;
@@ -36,10 +36,10 @@ public:
 
 	virtual void LoadAsset(std::experimental::filesystem::path assetPath) override
 	{
-		m_Pool.insert(std::make_pair(assetPath.stem().string(), T(assetPath.string())));
+		m_Pool.insert(std::make_pair(assetPath.string(), T(assetPath.string())));
 	}
 
-	virtual void RetrieveAsset(BaseAssetRequestEvent* a_assetRequest) override
+	virtual bool RetrieveAsset(BaseAssetRequestEvent* a_assetRequest) override
 	{
 		auto request = static_cast<AssetRequestEvent<AssetType>*>(a_assetRequest);
 
@@ -47,9 +47,10 @@ public:
 		it = m_Pool.find(request->m_AssetName);
 
 		if (it == m_Pool.end())
-			return;
-		request->Asset = &it->second;
+			return false;
 
+		request->Asset = &it->second;
+		return true;
 	}
 
 

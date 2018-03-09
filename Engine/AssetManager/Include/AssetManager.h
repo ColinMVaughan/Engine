@@ -39,6 +39,7 @@ public:
 
 private:
 	void DisplayDirectoryRecursive(const std::experimental::filesystem::path& a_pathToShow, int a_level);
+	void LoadAssetsRecursive(const std::experimental::filesystem::path& currentPath);
 
 	std::thread m_WorkerThread;
 	std::map<std::string, BaseAssetPool*> m_PoolMap;

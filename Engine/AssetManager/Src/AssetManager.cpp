@@ -19,7 +19,7 @@ void AssetManager::DisplayAssetDirectory()
 	DisplayDirectoryRecursive(m_AssetDirectory, 0);
 }
 
-
+//Display the folder structure of the directory
 void AssetManager::DisplayDirectoryRecursive(const std::experimental::filesystem::path& a_pathToShow, int a_level)
 {
 
@@ -46,6 +46,7 @@ void AssetManager::DisplayDirectoryRecursive(const std::experimental::filesystem
 	}
 }
 
+//Display the contents of the currently selected directory
 void AssetManager::DisplayDirectoryContents()
 {
 	if(fs::exists(m_SelectedPath) && fs::is_directory(m_SelectedPath))
@@ -57,7 +58,7 @@ void AssetManager::DisplayDirectoryContents()
 			if(!fs::is_directory(asset.status()))
 			{
 				//Print the name of the file
-				ImGui::Text(filename.generic_string().c_str());
+				ImGui::Selectable(filename.generic_string().c_str());
 				if(ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
 					ImGui::Text(filename.string().c_str());
@@ -81,8 +82,32 @@ bool AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * a_request)
 	return m_PoolMap[a_request->GetAssetTypeName()]->RetrieveAsset(a_request);
 }
 
+//Load all compatible files in the asset directory.
 void AssetManager::LoadAllAssets()
 {
-	Assets::LoadNewAsset(this, std::experimental::filesystem::path("./Assets/Models/guy.obj"));
-	Assets::LoadNewAsset(this, std::experimental::filesystem::path("./Assets/Models/Orb.obj"));
+	LoadAssetsRecursive(m_AssetDirectory);
 }
+
+//Iterate through asset directory and find files. 
+//once a file is found, check if the file extension is registered, and if so, attempt to load it.
+void AssetManager::LoadAssetsRecursive(const std::experimental::filesystem::path & a_currentPath)
+{
+	//----------------------------------------------------------------------------------------------------
+	if (fs::exists(a_currentPath) && fs::is_directory(a_currentPath))
+	{
+		for (const auto& entry : fs::directory_iterator(a_currentPath))
+		{
+			auto filename = entry.path().filename();
+			if (fs::is_directory(entry.status()))
+			{
+				LoadAssetsRecursive(entry.path());
+			}
+			else
+			{
+				Assets::LoadNewAsset(this, entry.path());
+			}
+
+		}
+	}
+}
+

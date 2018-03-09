@@ -37,6 +37,9 @@ void Editor::DoInitalize()
 
 	//set the style to the dark theme
 	ImGui::StyleColorsDark();
+
+	//Load all assets in the asset directory
+	m_AssetManager.LoadAllAssets();
 }
 
 void Editor::PreUpdate(double deltaTime)

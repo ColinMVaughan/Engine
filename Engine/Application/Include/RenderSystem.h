@@ -5,6 +5,7 @@
 #include <PxPhysicsAPI.h>
 #include <imgui.h>
 #include <ComponentReflection.h>
+#include <AssetRegistration.h>
 
 //-----------------------------------------------------
 //	RenderSystem is used in conjunction with ECS to fit old code into
@@ -57,6 +58,55 @@ public:
 	}
 	
 };
+
+
+//---------------------------------------------------------------------------------
+//							Mesh and Material Components
+//----------------------------------------------------------------------------------
+class DMesh
+{
+public:
+	DMesh(std::string filepath)
+		:m_FilePath(filepath){}
+
+	std::string m_FilePath;
+};
+REGISTER_ASSET(".bla","DMesh", DMesh)
+
+class DummyMeshComponent
+{
+public:
+
+	void ExposeToEditor()
+	{
+		ImGui::Text(m_AssetName.c_str());
+		//If something is being dragged/dropped into our window
+		if(ImGui::BeginDragDropTarget())
+		{
+			//If this is something we can accept
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DMesh"))
+			{
+				//Assert that this data is the correct size
+				IM_ASSERT(payload->DataSize == sizeof(BaseAssetRequestEvent*));
+				
+				BaseAssetRequestEvent* base = nullptr;
+				memcpy(&base, payload->Data, sizeof(BaseAssetRequestEvent*));
+
+				auto meshRequest = static_cast<AssetRequestEvent<DMesh>*>(base);
+				m_AssetName = meshRequest->m_AssetName;
+
+				//delete meshRequest;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+	}
+private:
+	std::string m_AssetName = "Nothing...";
+};
+COMPONENT_REGISTER(DummyMeshComponent, "DummyMeshComponent")
+
+
 
 //-----------------------------------------------------------------------------
 //						Point Light System

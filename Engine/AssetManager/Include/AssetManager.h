@@ -28,11 +28,14 @@ public:
 	template<typename T>
 	void AddResourceType(std::string typeName);
 
-	void AddResource(std::string AssetType, std::string FilePath);
+	void AddResource(std::string AssetType, std::experimental::filesystem::path assetPath);
 	void DisplayAssetDirectory();
 	void DisplayDirectoryContents();
 
 	void HandleAssetRequestEvent(BaseAssetRequestEvent* a_request);
+	void RetrieveAsset(std::string assetType, std::string assetName);
+
+	void LoadAllAssets();
 
 private:
 	void DisplayDirectoryRecursive(const std::experimental::filesystem::path& a_pathToShow, int a_level);

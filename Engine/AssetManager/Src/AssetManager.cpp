@@ -1,4 +1,5 @@
 #include "AssetManager.h"
+#include "AssetRegistration.h"
 
 namespace fs = std::experimental::filesystem;
 
@@ -8,9 +9,9 @@ AssetManager::AssetManager(const std::string &a_assetDirectory)
 	
 }
 
-void AssetManager::AddResource(std::string AssetType, std::string FilePath)
+void AssetManager::AddResource(std::string AssetType, std::experimental::filesystem::path assetPath)
 {
-	m_PoolMap[AssetType]->LoadAsset(FilePath);
+	m_PoolMap[AssetType]->LoadAsset(assetPath);
 }
 
 void AssetManager::DisplayAssetDirectory()
@@ -51,11 +52,21 @@ void AssetManager::DisplayDirectoryContents()
 	{
 		for(const auto& asset : fs::directory_iterator(m_SelectedPath))
 		{
-			
+			//Get Filename & check if it is a directory
 			auto filename = asset.path().filename();
 			if(!fs::is_directory(asset.status()))
 			{
+				//Print the name of the file
 				ImGui::Text(filename.generic_string().c_str());
+				if(ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				{
+					BaseAssetRequestEvent* baseAsset = Assets::RequestAsset(this, asset.path());
+
+					auto pp = asset.path();
+
+					ImGui::SetDragDropPayload(baseAsset->GetAssetTypeName().c_str(), &baseAsset, sizeof(BaseAssetRequestEvent*), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
 			}
 		}
 	}
@@ -66,4 +77,9 @@ void AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * a_request)
 {
 	m_PoolMap[a_request->GetAssetTypeName()]->RetrieveAsset(a_request);
 	return;
+}
+
+void AssetManager::LoadAllAssets()
+{
+	Assets::LoadNewAsset(this, std::experimental::filesystem::path("./Assets/Testing/TestAsset.bla"));
 }

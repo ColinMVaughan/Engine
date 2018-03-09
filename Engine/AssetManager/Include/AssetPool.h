@@ -13,7 +13,7 @@
 class BaseAssetPool
 {
 public:
-	virtual void LoadAsset(std::string a_filePath) = 0;
+	virtual void LoadAsset(std::experimental::filesystem::path assetPath) = 0;
 	virtual void RetrieveAsset(BaseAssetRequestEvent* request) = 0;
 private:
 	std::function<void(std::string)> m_Load;
@@ -34,32 +34,28 @@ class AssetPool : public BaseAssetPool
 public:
 	using AssetType = T;
 
-	virtual void LoadAsset(std::string a_filePath) override
+	virtual void LoadAsset(std::experimental::filesystem::path assetPath) override
 	{
-		m_Pool.push_back(std::tuple<std::string, T>(a_filePath, T(a_filePath)));
+		m_Pool.insert(std::make_pair(assetPath.stem().string(), T(assetPath.string())));
 	}
 
 	virtual void RetrieveAsset(BaseAssetRequestEvent* a_assetRequest) override
 	{
 		auto request = static_cast<AssetRequestEvent<AssetType>*>(a_assetRequest);
-		request->m_AssetName = "Found Asset";
-		request->Asset = AssetType("FoundAsset");
+
+		std::map<std::string, T>::iterator it;
+		it = m_Pool.find(request->m_AssetName);
+
+		if (it == m_Pool.end())
+			return;
+		request->Asset = &it->second;
 
 	}
 
-
-	virtual void DisplayInEditor()
-	{
-		//Display all Assets of type T in the editor
-		for (auto it = m_Pool.begin(); it < m_Pool.end(); ++it)
-		{
-			//display selectable with name given from first element of tuple
-			//ImGui::Selectable(std::get<0>(it*), nullptr);
-		}
-	}
 
 private:
-	std::vector<std::tuple<std::string, T>> m_Pool;
+	//std::vector<std::tuple<std::string, T>> m_Pool;
+	std::map<std::string, T> m_Pool;
 
 };
 

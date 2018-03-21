@@ -1,17 +1,31 @@
 #include "AssetManager.h"
 #include "AssetRegistration.h"
+#include <iostream>
 
 namespace fs = std::experimental::filesystem;
 
 AssetManager::AssetManager(const std::string &a_assetDirectory)
 	:m_AssetDirectory(a_assetDirectory), m_SelectedPath(a_assetDirectory)
 {
-	
+}
+
+AssetManager::AssetManager(const std::string &a_assetDirectory, EventManager & eManager)
+	: m_AssetDirectory(a_assetDirectory), m_SelectedPath(a_assetDirectory)
+{
+	//REGISTER_EVENT_LISTNER(BaseAssetRequestEvent, AssetManager::HandleAssetRequestEvent, eManager)
+	//eManager.AddListner<BaseAssetRequestEvent>(std::bind(&AssetManager::HandleAssetRequestEvent, this, std::placeholders::_1));
+	std:std::function<void(BaseAssetRequestEvent&)> f2 = [this](BaseAssetRequestEvent& eve) {HandleAssetRequestEvent(eve); };
+	eManager.AddListner<BaseAssetRequestEvent>(f2);
 }
 
 void AssetManager::AddResource(std::string AssetType, std::experimental::filesystem::path assetPath)
 {
-	m_PoolMap[AssetType]->LoadAsset(assetPath);
+	std::map<std::string, BaseAssetPool*>::iterator it = m_PoolMap.find(AssetType);
+
+	if (it == m_PoolMap.end())
+		return;
+
+	it->second->LoadAsset(assetPath);
 }
 
 void AssetManager::DisplayAssetDirectory()
@@ -77,9 +91,14 @@ void AssetManager::DisplayDirectoryContents()
 }
 
 
-bool AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent * a_request)
+bool AssetManager::HandleAssetRequestEvent(BaseAssetRequestEvent& a_request)
 {
-	return m_PoolMap[a_request->GetAssetTypeName()]->RetrieveAsset(a_request);
+	std::map<std::string, BaseAssetPool*>::iterator it = m_PoolMap.find(a_request.GetAssetTypeName());
+
+	if (it == m_PoolMap.end())
+		return false;
+
+	return it->second->RetrieveAsset(&a_request);
 }
 
 //Load all compatible files in the asset directory.
@@ -97,6 +116,7 @@ void AssetManager::LoadAssetsRecursive(const std::experimental::filesystem::path
 	{
 		for (const auto& entry : fs::directory_iterator(a_currentPath))
 		{
+			//If the current path isn't a file: recurse down
 			auto filename = entry.path().filename();
 			if (fs::is_directory(entry.status()))
 			{
@@ -104,10 +124,12 @@ void AssetManager::LoadAssetsRecursive(const std::experimental::filesystem::path
 			}
 			else
 			{
+				//if the current path is a file: attempt to load it
 				Assets::LoadNewAsset(this, entry.path());
 			}
 
 		}
 	}
+	return;
 }
 

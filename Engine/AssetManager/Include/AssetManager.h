@@ -24,6 +24,7 @@ public:
 	
 	AssetManager() = default;
 	AssetManager(const std::string &a_assetDirectory);
+	AssetManager(const std::string &a_assetDirectory, EventManager& eManager);
 
 	template<typename T>
 	void AddResourceType(std::string typeName);
@@ -32,7 +33,7 @@ public:
 	void DisplayAssetDirectory();
 	void DisplayDirectoryContents();
 
-	bool HandleAssetRequestEvent(BaseAssetRequestEvent* a_request);
+	bool HandleAssetRequestEvent(BaseAssetRequestEvent& a_request);
 	void RetrieveAsset(std::string assetType, std::string assetName);
 
 	void LoadAllAssets();
@@ -62,7 +63,8 @@ void AssetManager::AddResourceType(std::string typeName)
 	if (iterator == m_PoolMap.end())
 	{
 		BaseAssetPool* pool = new AssetPool<T>();
-		m_PoolMap.insert(std::map<std::string, BaseAssetPool*>::value_type(typeName, pool));
+		//m_PoolMap.insert(std::map<std::string, BaseAssetPool*>::value_type(typeName, pool));
+		m_PoolMap.insert(std::make_pair(typeName, pool));
 	}
 }
 

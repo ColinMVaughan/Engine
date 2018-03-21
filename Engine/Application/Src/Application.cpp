@@ -4,13 +4,13 @@
 #include <glm\gtc\type_ptr.hpp>
 
 Application::Application()
-	:m_AssetManager("./Assets/")
 {
 	m_EventManager = new EventManager;
 	m_ComponentManager = new ECS::ComponentManager;
 	m_SystemManager = new ECS::SystemManager(m_ComponentManager, m_EventManager);
-	m_Scene = new ECS::Scene(m_SystemManager, m_ComponentManager);
+	m_Scene = new ECS::Scene(m_SystemManager, m_ComponentManager,m_EventManager);
 	m_Timer = new Timer();
+	m_AssetManager = new AssetManager("./Assets/", *m_EventManager);
 }
 
 Application::~Application()

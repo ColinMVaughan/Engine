@@ -65,8 +65,8 @@ namespace ECS
 	{
 
 	public:
-		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr)
-			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr) {}
+		Scene(SystemManager* a_systemMgr, ComponentManager* a_compMgr, EventManager* a_eveMgr)
+			: m_SystemManager(a_systemMgr), m_ComponentManager(a_compMgr), m_EventManager(a_eveMgr) {}
 
 		Scene()
 		{
@@ -107,7 +107,7 @@ namespace ECS
 		void UpdateSystems(double deltaTime);
 		unsigned int GetNumEntities();
 		Entity& GetEntity(unsigned int index);
-
+		EventManager& GetEventManager();
 
 		std::vector<std::string> m_EntityNames;
 		cereal::BinaryOutputArchive* m_BinaryOutput;

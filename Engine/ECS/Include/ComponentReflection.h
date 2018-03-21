@@ -88,5 +88,10 @@ namespace ECS
 		arc(__VA_ARGS__);		\
 	}	
 
+#define ASSET_SERIALIZE(ASSET_NAME)					\
+	void serialize_asset(EventManager& manager)		\
+	{												\
+		ASSET_NAME.RequestAsset(manager);			\
+	}												\
 
 #endif

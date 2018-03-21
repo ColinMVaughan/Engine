@@ -56,6 +56,9 @@ namespace has_detail
 
 	template <class U>
 	using has_serialization_load = decltype(std::declval<U>().load(std::declval<U&>()));
+
+	template<class U>
+	using has_serialization_asset = decltype(std::declval<U>().serialize_asset(std::declval<EventManager&>()));
 }
 
 
@@ -110,6 +113,10 @@ namespace ECS
 				if constexpr(is_detected_v<has_detail::has_serialization, T> || is_detected_v<has_detail::has_serialization_load, T>)
 				{
 					scene->UnserializeComponent<T>(entity);
+					if constexpr(is_detected_v<has_detail::has_serialization_asset, T>)
+					{
+						scene->GetComponent<T>(entity)->serialize_asset(scene->GetEventManager());
+					}
 				}
 				break;
 			}

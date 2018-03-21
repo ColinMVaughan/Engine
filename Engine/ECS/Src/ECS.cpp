@@ -36,7 +36,10 @@ private:
 };
 
 
-
+EventManager& ECS::Scene::GetEventManager()
+{
+	return *m_EventManager;
+}
 
 //--------------------------------------------------------------------
 // Saves the scene to a file

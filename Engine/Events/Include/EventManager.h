@@ -35,15 +35,16 @@ public:
 	void DispatchEvent(IEvent& a_event) override
 	{
 		EventType* convertedEvent = static_cast<EventType*>(&a_event);
-		for (auto&& Listner : Functions)
+		for (auto Listner : Functions)
 		{
 			Listner(*convertedEvent);
 		}
 	}
 
-	void AddListner(std::function<void(EventType)>&& a_function)
+	void AddListner(std::function<void(EventType&)>& a_function)
 	{
 		Functions.push_back(a_function);
+		return;
 	}
 
 private:
@@ -71,7 +72,7 @@ public:
 	using FunctionType = std::function<void(IEvent&)>;
 
 	template<typename EventType>
-	void AddListner(std::function<void(EventType&)>&& a_func);
+	void AddListner(std::function<void(EventType&)>& a_func);
 
 	void RemoveListner();
 
@@ -101,7 +102,7 @@ private:
 //Registers a System's function against an Event. When that event is dispatched,
 //All resgistered functions will be called.
 template<typename EventType>
-void EventManager::AddListner(std::function<void(EventType&)>&& a_func)
+void EventManager::AddListner(std::function<void(EventType&)>& a_func)
 {
 	//Ensure that EventType is derrived from IEvent
 	if constexpr(std::is_base_of<IEvent, EventType>::value)

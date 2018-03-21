@@ -6,6 +6,7 @@
 #include <imgui.h>
 #include <ComponentReflection.h>
 #include <AssetRegistration.h>
+#include "Asset.h"
 
 
 //---------------------------------------------------------------------------------
@@ -20,7 +21,7 @@ public:
 	{
 		ImGui::Text("Mesh: ");
 		ImGui::SameLine();
-		ImGui::Selectable(m_AssetName.c_str(), true);
+		ImGui::Selectable(m_Mesh.m_AssetName.c_str(), true);
 		//If something is being dragged/dropped into our window
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -34,8 +35,9 @@ public:
 				memcpy(&base, payload->Data, sizeof(BaseAssetRequestEvent*));
 
 				auto meshRequest = static_cast<AssetRequestEvent<Mesh>*>(base);
-				m_AssetName = meshRequest->m_AssetName;
-				m_Mesh = *meshRequest->Asset;
+				m_Mesh.m_AssetName = meshRequest->m_AssetName;
+				m_Mesh.m_AssetType = "Mesh";
+				m_Mesh.m_Asset = *meshRequest->Asset;
 
 			}
 			ImGui::EndDragDropTarget();
@@ -43,16 +45,12 @@ public:
 
 	}
 
-	//COMPONENT_SAVE(m_AssetName)
-	//template<typename Archive>
-	//void load(Archive& arc) const
-	//{
-	//	arc(m_AssetName);
-
-	//}
-
-	std::string m_AssetName = "Nothing...";
-	Mesh m_Mesh;
+	COMPONENT_SERIALIZE(m_Mesh)
+	void serialize_asset(EventManager& manager)		
+	{												
+		m_Mesh.RequestAsset(manager);			
+	}
+	Asset<Mesh> m_Mesh;
 };
 COMPONENT_REGISTER(MeshFilter, "MeshFilter")
 
@@ -98,7 +96,7 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		auto mat =entity.GetComponent<Transform>()->GetGlobalTransformMatrix();
-		m_Renderer->Render(&entity.GetComponent<MeshFilter>()->m_Mesh, entity.GetComponent<Material>(), mat.front());
+		m_Renderer->Render(&entity.GetComponent<MeshFilter>()->m_Mesh.m_Asset, entity.GetComponent<Material>(), mat.front());
 	}
 	void PostUpdate(double deltaTime) override
 	{

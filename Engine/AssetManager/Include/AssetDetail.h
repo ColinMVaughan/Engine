@@ -48,7 +48,7 @@ namespace Assets
 
 				BaseAssetRequestEvent* BE = RE;
 
-				if(manager->HandleAssetRequestEvent(BE))
+				if(manager->HandleAssetRequestEvent(*BE))
 				return BE;
 
 				break;

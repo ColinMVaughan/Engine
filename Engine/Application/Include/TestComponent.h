@@ -39,7 +39,7 @@ public:
 	EventSystemTest(ECS::ComponentManager* a_comp, EventManager& a_eve)
 		:System(a_comp, a_eve) 
 	{
-		REGISTER_EVENT_LISTNER(ButtonClicked, EventSystemTest::EventReciever, a_eve)
+		//REGISTER_EVENT_LISTNER(ButtonClicked, EventSystemTest::EventReciever, a_eve)
 	}
 
 

@@ -39,7 +39,7 @@ void Editor::DoInitalize()
 	ImGui::StyleColorsDark();
 
 	//Load all assets in the asset directory
-	m_AssetManager.LoadAllAssets();
+	m_AssetManager->LoadAllAssets();
 }
 
 void Editor::PreUpdate(double deltaTime)
@@ -285,13 +285,13 @@ void Editor::DrawResourceManager()
 		ImGui::Text("Asset Directory");
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
 		ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.2f, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
-		m_AssetManager.DisplayAssetDirectory();
+		m_AssetManager->DisplayAssetDirectory();
 		ImGui::EndChild();
 
 		ImGui::SameLine();
 
 		ImGui::BeginChild("Info", ImVec2(0, 300), true);
-		m_AssetManager.DisplayDirectoryContents();
+		m_AssetManager->DisplayDirectoryContents();
 		ImGui::EndChild();
 
 		ImGui::PopStyleVar();

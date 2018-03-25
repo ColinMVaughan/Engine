@@ -18,6 +18,10 @@ AssetManager::AssetManager(const std::string &a_assetDirectory, EventManager & e
 	eManager.AddListner<BaseAssetRequestEvent>(f2);
 }
 
+//-----------------------------------
+// Add an asset to an existing pool
+//
+//------------------------------------
 void AssetManager::AddResource(std::string AssetType, std::experimental::filesystem::path assetPath)
 {
 	std::map<std::string, BaseAssetPool*>::iterator it = m_PoolMap.find(AssetType);
@@ -81,7 +85,7 @@ void AssetManager::DisplayDirectoryContents()
 
 					if(baseAsset)
 						ImGui::SetDragDropPayload(baseAsset->GetAssetTypeName().c_str(), &baseAsset, sizeof(BaseAssetRequestEvent*), ImGuiCond_Once);
-
+				
 
 					ImGui::EndDragDropSource();
 				}

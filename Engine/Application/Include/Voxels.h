@@ -14,13 +14,6 @@
 //									VOXELS
 //--------------------------------------------------------------------------------------
 
-class Voxel
-{
-public:
-	int x, y, z;
-	int MaterialIndex = 0;
-};
-
 class VoxelContainer
 {
 public:
@@ -38,11 +31,25 @@ public:
 private:
 	void ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
 	void ConstructVoxelMaterial();
+
 	Material m_Material;
 	Mesh m_Mesh;
 
 };
 COMPONENT_REGISTER(VoxelContainer, "VoxelContainer")
+
+
+
+
+//--------------------------------------------------------
+//					Revamp Voxel Container
+//
+//
+//-------------------------------------------------------
+class NewVoxelContainer
+{
+
+};
 
 
 #endif

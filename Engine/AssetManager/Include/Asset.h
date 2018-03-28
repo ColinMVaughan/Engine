@@ -36,4 +36,39 @@ public:
 };
 
 
+//----------------------------------------------------------------
+#define SERIALIZE_ASSET(ASSET)\
+		void serialize_asset(EventManager& manager) \
+		{ \
+			ASSET.RequestAsset(manager);\
+		}\
+
+//------------------------------------------------------------------
+#define EDITOR_REQUEST_ASSET(ASSET_TYPE,ASSET,NAME)									\
+		ImGui::Text(NAME);															\
+		ImGui::SameLine();															\
+		ImGui::Selectable(ASSET.m_AssetName.c_str(), true);							\
+		/*If something is being dragged/dropped into our window */					\
+		if (ImGui::BeginDragDropTarget())											\
+		{																			\
+			/*If this is something we can accept*/									\
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(NAME))	\
+			{																		\
+				/*Assert that this data is the correct size*/						\
+				IM_ASSERT(payload->DataSize == sizeof(BaseAssetRequestEvent*));		\
+																					\
+				BaseAssetRequestEvent* base = nullptr;								\
+				memcpy(&base, payload->Data, sizeof(BaseAssetRequestEvent*));		\
+																					\
+				auto assetRequest = static_cast<AssetRequestEvent<ASSET_TYPE>*>(base);\
+				ASSET.m_AssetName = assetRequest->m_AssetName;						\
+				ASSET.m_AssetType = NAME;											\
+				ASSET.m_Asset = *assetRequest->Asset;								\
+																					\
+			}																		\
+		ImGui::EndDragDropTarget();													\
+		}																			\
+
+
+
 #endif

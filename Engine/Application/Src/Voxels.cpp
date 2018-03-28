@@ -6,7 +6,7 @@
 #define CODEFLAG 2
 #define NEXTSLICEFLAG 6
 
-void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
+void VoxelContainer::ReadQubicBinaryFile(std::string file)
 {
 	char* data;
 	Uint32 offset;
@@ -93,7 +93,7 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file, Mesh* mesh)
 		}
 	}
 
-	ConstructVoxelMesh(Matrix, mesh, matrixSizeX, matrixSizeY, matrixSizeZ);
+	ConstructVoxelMesh(Matrix, nullptr, matrixSizeX, matrixSizeY, matrixSizeZ);
 	delete[] Matrix;
 	delete[] data;
 }
@@ -143,14 +143,6 @@ void VoxelContainer::ReadVoxFile(std::string file, Mesh * mesh)
 }
 
 
-void VoxelContainer::ExposeToEditor()
-{
-	char buff[128] = "./Assets/Models/";
-	if (ImGui::InputText("Mesh File Path", buff, 128, ImGuiInputTextFlags_EnterReturnsTrue))
-	{
-		
-	}
-}
 
 void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
 {
@@ -212,15 +204,15 @@ void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t 
 	//}
 
 
-	//push the positions from all visible blocks to the instance buffer
-	if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
-	{
-		std::cout << "\nSomething went wrong with the instancing";
-	}
+	////push the positions from all visible blocks to the instance buffer
+	//if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
+	//{
+	//	std::cout << "\nSomething went wrong with the instancing";
+	//}
 
-	//Push Material Data to instance buffer
-	if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
-	{
-		std::cout << "\nSomething went wrong with the instancing";
-	}
+	////Push Material Data to instance buffer
+	//if (!mesh->SetInstancing(m_Matricies.data(), m_Matricies.size()))
+	//{
+	//	std::cout << "\nSomething went wrong with the instancing";
+	//}
 }

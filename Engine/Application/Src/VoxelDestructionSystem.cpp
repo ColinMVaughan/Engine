@@ -50,13 +50,21 @@ void VoxelDestructionSystem::Update(double deltaTime, ECS::Entity& entity)
 {
 	//Collect entity's mesh and voxelContainer components
 	auto mesh = entity.GetComponent<Mesh>();
-	auto voxels = entity.GetComponent<VoxelContainer>();
+	auto voxels = entity.GetComponent<VoxelContainerFilter>();
+
+	if(!mesh->IsInstanced)
+	{
+		mesh->SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
+	}
 
 	//Submit the new Voxel matricies to the gpu.
 	//Currently the entire instance buffer will have to be resubmitted
 	if (voxels->dynamic)
 	{
-		mesh->BufferSubData(mesh->VBO_Instance, 0, voxels->m_Matricies.size() * sizeof(glm::mat4), (void*)voxels->m_Matricies.data());
+		mesh->BufferSubData(mesh->VBO_Instance,
+			0, 
+			voxels->m_VoxelContainer.m_Asset.m_Matricies.size() * sizeof(glm::mat4),
+			(void*)voxels->m_VoxelContainer.m_Asset.m_Matricies.data());
 	}
 }
 
@@ -70,32 +78,32 @@ void VoxelDestructionSystem::KeyDown(unsigned char key)
 {
 	if (key == 'F')
 	{
-		//Loop through each affected voxel and set a rigidbody to their position.
-		for (int i = 0; i < TestCase->m_Matricies.size(); ++i)
-		{
-			//this could be a problem because of local scope
-			//if none of the objects move, it could be because of that.
+		////Loop through each affected voxel and set a rigidbody to their position.
+		//for (int i = 0; i < TestCase->m_Matricies.size(); ++i)
+		//{
+		//	//this could be a problem because of local scope
+		//	//if none of the objects move, it could be because of that.
 
-			//PxMat44 mat(); //convert the GLM mat4 into a PhysX mat4
-			PxTransform transform(PxVec3(TestCase->m_Matricies[i][3].x, TestCase->m_Matricies[i][3].y, TestCase->m_Matricies[i][3].z)); //Initalize a physx transform with the voxel transform matrix
+		//	//PxMat44 mat(); //convert the GLM mat4 into a PhysX mat4
+		//	PxTransform transform(PxVec3(TestCase->m_Matricies[i][3].x, TestCase->m_Matricies[i][3].y, TestCase->m_Matricies[i][3].z)); //Initalize a physx transform with the voxel transform matrix
 
 
-																																		//Sets the Rigidbody to the position/orientation/size of the voxel and wake it up
-			m_RigidbodyPool[i]->setGlobalPose(transform, true);
-			m_RigidbodyPool[i]->wakeUp();
+		//																																//Sets the Rigidbody to the position/orientation/size of the voxel and wake it up
+		//	m_RigidbodyPool[i]->setGlobalPose(transform, true);
+		//	m_RigidbodyPool[i]->wakeUp();
 
-			m_RigidbodyPool[i]->addForce(PxVec3(500, 0, 0));
-			//attach a pointer to the voxel matrix to the rigidbody
-			//so that we can update the location of the matrix
-			m_RigidbodyPool[i]->userData = &TestCase->m_Matricies[i];
-			TestCase->dynamic = true;
+		//	m_RigidbodyPool[i]->addForce(PxVec3(500, 0, 0));
+		//	//attach a pointer to the voxel matrix to the rigidbody
+		//	//so that we can update the location of the matrix
+		//	m_RigidbodyPool[i]->userData = &TestCase->m_Matricies[i];
+		//	TestCase->dynamic = true;
 
-			//Incrase the number of active rigidbodies.
-			//This will be replaced soon
-			m_RigidbodyNumber++;
+		//	//Incrase the number of active rigidbodies.
+		//	//This will be replaced soon
+		//	m_RigidbodyNumber++;
 
-		}
-		std::cout << "\nCompleted.";
+		//}
+		//std::cout << "\nCompleted.";
 	}
 
 }

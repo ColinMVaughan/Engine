@@ -17,7 +17,7 @@
 //	
 //--------------------------------------------------------------------------------------
 
-class VoxelDestructionSystem : public ECS::System<VoxelContainer, Mesh, Transform>
+class VoxelDestructionSystem : public ECS::System<VoxelContainerFilter, Mesh, Transform>
 {
 public:
 	VoxelDestructionSystem(ECS::ComponentManager* a_CompManager, EventManager& a_eManager);

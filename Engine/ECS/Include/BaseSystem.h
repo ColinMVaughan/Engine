@@ -24,9 +24,17 @@ namespace ECS
 		// Update:     runs once per applicable entity
 		// PostUpdate: runs once per frame
 
-		virtual void PreUpdate(double deltaTime) {};
+		virtual void PreStart() {}
+		virtual void Start(Entity& entity) = 0;
+		virtual void PostStart() {}
+
+		virtual void PreUpdate(double deltaTime) {}
 		virtual void Update(double deltaTime, Entity& entity) = 0;
-		virtual void PostUpdate(double deltaTime) {};
+		virtual void PostUpdate(double deltaTime) {}
+
+		virtual void PreStop() {}
+		virtual void Stop(Entity& entity) = 0;
+		virtual void PostStop(){}
 
 		virtual void UnInitalize() {};
 
@@ -64,9 +72,17 @@ namespace ECS
 		// Update:     runs once per applicable entity
 		// PostUpdate: runs once per frame
 
+		virtual void PreStart() {}
+		virtual void Start(Entity& entity) = 0;
+		virtual void PostStart() {}
+
 		virtual void PreUpdate(double deltaTime) {};
 		virtual void Update(double deltaTime, Entity& entity) {};
 		virtual void PostUpdate(double deltaTime) {};
+
+		virtual void PreStop() {}
+		virtual void Stop(Entity& entity) = 0;
+		virtual void PostStop() {}
 
 		virtual void UnInitalize() {};
 

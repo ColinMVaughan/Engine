@@ -14,6 +14,9 @@ namespace ECS
 	class AddComponentEvent : public IEvent
 	{
 	public:
+		AddComponentEvent() = default;
+		AddComponentEvent(Entity* a_entity) : m_Entity(a_entity){}
+
 		Entity* m_Entity;
 	};
 
@@ -74,7 +77,10 @@ namespace ECS
 	{
 	public:
 
-		System(ComponentManager* a_cmanager, EventManager& a_eManager) : m_CManager(a_cmanager) {}
+		System(ComponentManager* a_cmanager, EventManager& a_eManager) : m_CManager(a_cmanager)
+		{
+			RegisterEventCallback_AddComponent<C, RequiredComponents...>(a_eManager);
+		}
 		virtual void Initalize() {};
 
 		// PreUpdate:  runs one once per frame
@@ -94,7 +100,7 @@ namespace ECS
 		//virtual void PostStop() {}
 
 		virtual void UnInitalize() {};
-
+		virtual void ComponentAdded(Entity& entity) {}
 
 		// Returns true if the entity is registered with all the required components.
 		// Marked final to prevent definition by derrived classes.
@@ -106,7 +112,7 @@ namespace ECS
 		ComponentManager* m_CManager;
 
 
-		virtual void ComponentAdded(Entity& entity) {}
+
 
 		template<typename T>
 		void ComponentAddedCallback(AddComponentEvent<T>& a_event)
@@ -119,14 +125,19 @@ namespace ECS
 		template<typename First>
 		void RegisterEventCallback_AddComponent(EventManager& eManager)
 		{
-			REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
+			//REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
+			std:std::function<void(AddComponentEvent<First>&)> f2 = [this](AddComponentEvent<First>& eve) {ComponentAddedCallback<First>(eve); };
+			eManager.AddListner<AddComponentEvent<First>>(f2);
 			return;
 		}
 
 		template<typename First, typename Second, typename ...Components>
 		void RegisterEventCallback_AddComponent(EventManager& eManager)
 		{
-			REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
+			//REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
+			std:std::function<void(AddComponentEvent<First>&)> f2 = [this](AddComponentEvent<First>& eve) {ComponentAddedCallback<First>(eve); };
+			eManager.AddListner<AddComponentEvent<First>>(f2);
+
 			RegisterEventCallback_AddComponent<Second, Components...>(eManager);
 			return;
 		}

@@ -138,6 +138,7 @@ namespace ECS
 	T* Scene::AddComponent(Entity a_entity)
 	{
 		m_ComponentManager->AddComponent<T>(a_entity.GetID());
+		m_EventManager->DispatchEvent(AddComponentEvent<T>(&a_entity));
 		return m_ComponentManager->GetComponent<T>(a_entity.GetID());
 	}
 

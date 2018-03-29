@@ -9,6 +9,15 @@
 namespace ECS
 {
 	class Entity;
+
+	template<typename T>
+	class AddComponentEvent : public IEvent
+	{
+	public:
+		Entity* m_Entity;
+	};
+
+
 	//-----------------------------------------
 	//				BASE SYSTEM
 	// Derrive your system from this class to be able to submit it to the system manager.
@@ -24,17 +33,17 @@ namespace ECS
 		// Update:     runs once per applicable entity
 		// PostUpdate: runs once per frame
 
-		virtual void PreStart() {}
-		virtual void Start(Entity& entity) = 0;
-		virtual void PostStart() {}
+		//virtual void PreStart() {}
+		//virtual void Start(Entity& entity) = 0;
+		//virtual void PostStart() {}
 
 		virtual void PreUpdate(double deltaTime) {}
 		virtual void Update(double deltaTime, Entity& entity) = 0;
 		virtual void PostUpdate(double deltaTime) {}
 
-		virtual void PreStop() {}
-		virtual void Stop(Entity& entity) = 0;
-		virtual void PostStop(){}
+		//virtual void PreStop() {}
+		//virtual void Stop(Entity& entity) = 0;
+		//virtual void PostStop(){}
 
 		virtual void UnInitalize() {};
 
@@ -72,17 +81,17 @@ namespace ECS
 		// Update:     runs once per applicable entity
 		// PostUpdate: runs once per frame
 
-		virtual void PreStart() {}
-		virtual void Start(Entity& entity) = 0;
-		virtual void PostStart() {}
+		//virtual void PreStart() {}
+		//virtual void Start(Entity& entity) = 0;
+		//virtual void PostStart() {}
 
 		virtual void PreUpdate(double deltaTime) {};
 		virtual void Update(double deltaTime, Entity& entity) {};
 		virtual void PostUpdate(double deltaTime) {};
 
-		virtual void PreStop() {}
-		virtual void Stop(Entity& entity) = 0;
-		virtual void PostStop() {}
+		//virtual void PreStop() {}
+		//virtual void Stop(Entity& entity) = 0;
+		//virtual void PostStop() {}
 
 		virtual void UnInitalize() {};
 
@@ -95,6 +104,32 @@ namespace ECS
 		}
 
 		ComponentManager* m_CManager;
+
+
+		virtual void ComponentAdded(Entity& entity) {}
+
+		template<typename T>
+		void ComponentAddedCallback(AddComponentEvent<T>& a_event)
+		{
+			ComponentAdded(*a_event.m_Entity);
+		}
+
+	private:
+
+		template<typename First>
+		void RegisterEventCallback_AddComponent(EventManager& eManager)
+		{
+			REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
+			return;
+		}
+
+		template<typename First, typename Second, typename ...Components>
+		void RegisterEventCallback_AddComponent(EventManager& eManager)
+		{
+			REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
+			RegisterEventCallback_AddComponent<Second, Components...>(eManager);
+			return;
+		}
 	};
 
 

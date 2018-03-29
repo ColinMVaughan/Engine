@@ -104,7 +104,7 @@ class Demo : public Application
 		World.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/RedBrick");
 
 		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		World.AddComponent<VoxelContainer>()->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb", worldMesh);
+		World.AddComponent<VoxelContainer>()->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb");
 
 		//add light
 		PointLightComponent* Wlight = m_Scene->AddComponent<PointLightComponent>(World);

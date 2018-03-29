@@ -19,7 +19,7 @@
 class VoxelContainer
 {
 public:
-	VoxelContainer(std::string file) { ReadQubicBinaryFile(file); }
+	VoxelContainer(std::string file) {/* ReadQubicBinaryFile(file);*/ }
 	VoxelContainer() = default;
 
 	void ReadQubicBinaryFile(std::string file);

@@ -48,6 +48,11 @@ public:
 		
 	}
 
+	void ComponentAdded(ECS::Entity& entity) override
+	{
+		std::cout << "TestComponent Added.";
+	}
+
 	void EventReciever(const ButtonClicked& test)
 	{
 		std::cout << "Event Triggered\n";

@@ -25,116 +25,116 @@
 
 #include <EditorUI.h>
 
-class Demo : public Application
-{
-	void DoInitalize() override
-	{
-		//-----------------------------------------------------------
-		//	Add Desired Systems & Callbacks
-		//-----------------------------------------------------------
-		m_Scene->AddSystem<PointLightSystem>();
-		auto vds = m_Scene->AddSystem<VoxelDestructionSystem>();
-		vds->Initalize(&m_Physics);
-
-		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
-		RegisterKeyboardCallback(vds);
-
-		//---------------------------------------------------
-		//  Rendering Setup
-		//-------------------------------------------------
-		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
-
-		//---------------------------------------------------------------
-		//	Camera Setup
-		//--------------------------------------------------------------
-		//Create entity & add Camera
-		ECS::Entity Player = m_Scene->CreateEntity();
-		auto camera = Player.AddComponent<Camera>();
-		Player.AddComponent<Transform>();
-
-		m_Renderer->SetCamera(camera);
-		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
-
-		//--------------------------------------------------------------------------------------------
-		//Player Constrol Setup
-		//-------------------------------------------------------------------------------------------
-		//create shape and physics material
-		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
-		PxShape* shape = m_Physics.GetPhysics()->createShape(PxSphereGeometry(3.0f), *myMat, true);
-
-		//Add PlayerController
-		PxCapsuleControllerDesc description;
-		description.position = PxExtendedVec3(0, 10.0f, 0);
-		description.height = 0.001f;
-		description.radius = 3.0f;
-		description.material = myMat;
-		description.upDirection = PxVec3(1, 0, 0);
-
-		auto pc = Player.AddComponent<PlayerControl>();
-		auto characterController = m_Physics.GetControllerManager()->createController(description);
-		pc->Initalize(characterController);
-
-		Player.AddComponent<Transform>()->SetActor(pc->GetActor());
-
-		//Add Light
-		PointLightComponent* light = Player.AddComponent<PointLightComponent>();
-		light->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
-		m_Renderer->AddPointLight(&light->Color, &light->position, false);
-
-
-		//--------------------------------------------------------------------------------------------
-		//Ground Setup
-		//--------------------------------------------------------------------------------------------
-		//Create entity
-		ECS::Entity Plane = m_Scene->CreateEntity();
-
-		//Add Physics / rigidBody
-		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
-		m_Physics.GetScene()->addActor(*groundPlane);
-
-		Plane.AddComponent<Transform>()->SetActor(groundPlane); // Attach rigidbody to Transform Component
-
-		shape->release();
-
-		//World Setup
-		//-------------------------------------------
-		ECS::Entity World = m_Scene->CreateEntity();
-		World.AddComponent<Transform>();
-		auto worldMesh = World.AddComponent<Mesh>();
-		World.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/RedBrick");
-
-		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
-		World.AddComponent<VoxelContainer>()->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb");
-
-		//add light
-		PointLightComponent* Wlight = m_Scene->AddComponent<PointLightComponent>(World);
-		Wlight->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
-		m_Renderer->AddPointLight(&Wlight->Color, &Wlight->position, false);
-		//----------------------------------------------
-
-		return;
-	}
-
-	void DoUpdate(double deltaTime) override
-	{
-		ImGui_ImplSdlGL3_ProcessEvent(&InputEvent);
-		ImGui_ImplSdlGL3_NewFrame(m_Window);
-
-
-
-		m_Renderer->UIBuffer.Bind();
-		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui::Render();
-		ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
-		m_Renderer->UIBuffer.UnBind();
-
-		return;
-	}
-
-private:
-
-	float TotalRotation = 0;
-};
+//class Demo : public Application
+//{
+//	void DoInitalize() override
+//	{
+//		//-----------------------------------------------------------
+//		//	Add Desired Systems & Callbacks
+//		//-----------------------------------------------------------
+//		m_Scene->AddSystem<PointLightSystem>();
+//		auto vds = m_Scene->AddSystem<VoxelDestructionSystem>();
+//		vds->Initalize(&m_Physics);
+//
+//		RegisterKeyboardCallback(m_Scene->AddSystem<FPSControlSystem>());
+//		RegisterKeyboardCallback(vds);
+//
+//		//---------------------------------------------------
+//		//  Rendering Setup
+//		//-------------------------------------------------
+//		m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Footprint_Court_2k.hdr");
+//
+//		//---------------------------------------------------------------
+//		//	Camera Setup
+//		//--------------------------------------------------------------
+//		//Create entity & add Camera
+//		ECS::Entity Player = m_Scene->CreateEntity();
+//		auto camera = Player.AddComponent<Camera>();
+//		Player.AddComponent<Transform>();
+//
+//		m_Renderer->SetCamera(camera);
+//		camera->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+//
+//		//--------------------------------------------------------------------------------------------
+//		//Player Constrol Setup
+//		//-------------------------------------------------------------------------------------------
+//		//create shape and physics material
+//		PxMaterial* myMat = m_Physics.GetPhysics()->createMaterial(0.5, 0.5, 0.5);
+//		PxShape* shape = m_Physics.GetPhysics()->createShape(PxSphereGeometry(3.0f), *myMat, true);
+//
+//		//Add PlayerController
+//		PxCapsuleControllerDesc description;
+//		description.position = PxExtendedVec3(0, 10.0f, 0);
+//		description.height = 0.001f;
+//		description.radius = 3.0f;
+//		description.material = myMat;
+//		description.upDirection = PxVec3(1, 0, 0);
+//
+//		auto pc = Player.AddComponent<PlayerControl>();
+//		auto characterController = m_Physics.GetControllerManager()->createController(description);
+//		pc->Initalize(characterController);
+//
+//		Player.AddComponent<Transform>()->SetActor(pc->GetActor());
+//
+//		//Add Light
+//		PointLightComponent* light = Player.AddComponent<PointLightComponent>();
+//		light->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
+//		m_Renderer->AddPointLight(&light->Color, &light->position, false);
+//
+//
+//		//--------------------------------------------------------------------------------------------
+//		//Ground Setup
+//		//--------------------------------------------------------------------------------------------
+//		//Create entity
+//		ECS::Entity Plane = m_Scene->CreateEntity();
+//
+//		//Add Physics / rigidBody
+//		PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics.GetPhysics(), PxPlane(0, 1, 0, 0), *myMat);
+//		m_Physics.GetScene()->addActor(*groundPlane);
+//
+//		Plane.AddComponent<Transform>()->SetActor(groundPlane); // Attach rigidbody to Transform Component
+//
+//		shape->release();
+//
+//		//World Setup
+//		//-------------------------------------------
+//		ECS::Entity World = m_Scene->CreateEntity();
+//		World.AddComponent<Transform>();
+//		auto worldMesh = World.AddComponent<Mesh>();
+//		World.AddComponent<Material>()->SetTexturesFromFolder("./Assets/Textures/RedBrick");
+//
+//		worldMesh->LoadFromFile("./Assets/Models/Cube.obj");
+//		World.AddComponent<VoxelContainer>()->ReadQubicBinaryFile("./Assets/Voxels/TestWorld.qb");
+//
+//		//add light
+//		PointLightComponent* Wlight = m_Scene->AddComponent<PointLightComponent>(World);
+//		Wlight->Color = glm::fvec3({ 500.0f, 500.0f, 500.0f });
+//		m_Renderer->AddPointLight(&Wlight->Color, &Wlight->position, false);
+//		//----------------------------------------------
+//
+//		return;
+//	}
+//
+//	void DoUpdate(double deltaTime) override
+//	{
+//		ImGui_ImplSdlGL3_ProcessEvent(&InputEvent);
+//		ImGui_ImplSdlGL3_NewFrame(m_Window);
+//
+//
+//
+//		m_Renderer->UIBuffer.Bind();
+//		glClear(GL_COLOR_BUFFER_BIT);
+//		ImGui::Render();
+//		ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+//		m_Renderer->UIBuffer.UnBind();
+//
+//		return;
+//	}
+//
+//private:
+//
+//	float TotalRotation = 0;
+//};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////

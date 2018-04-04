@@ -11,6 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "AssetRegistration.h"
 #include <Asset.h>
+#include <imgui.h>
 
 //--------------------------------------------------------------------------------------
 //									VOXELS

@@ -1,6 +1,7 @@
 #pragma once 
 #include <string>
 #include "Texture.h"
+#include "Mesh.h"
 #include <glm\mat4x4.hpp>
 
 void InitFullScreenQuad();
@@ -8,6 +9,8 @@ void InitCube();
 
 void DrawFullScreenQuad();
 void DrawCube();
+
+void LoadCubeMesh(Mesh& a_Mesh);
 
 void EnvironmentmapToCubemap(std::string filepath, Texture& CubeMap);
 void CubemapToIrradianceMap(Texture& Cubemap, Texture& Irradiancemap);

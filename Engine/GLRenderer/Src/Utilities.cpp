@@ -4,6 +4,7 @@
 #include "ShaderProgram.h"
 #include <glm/gtc/matrix_transform.inl>
 
+//------------------------------------------------------------------------------------------------------------
 #define BUFFER_OFFSET(i) ((char *) + (i))
 
 GLuint _FullScreenQuadVAO = GL_NONE;
@@ -22,6 +23,89 @@ glm::mat4 captureViews[] =
 	glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 	glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 };
+
+
+
+float CUBE_VBO_NORMAL[] = 
+{
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f
+	
+};
+
+float CUBE_VBO_UV[] =
+{
+	-1.0f, 1.0f,
+	-1.0f, -1.0f,
+	1.0f, -1.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f,
+
+	0.0f, 0.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f,
+	0.0f, 0.0f
+
+};
+
+float CUBE_VBO_DATA[] =
+{
+	-1.0f,  1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	-1.0f,  1.0f, -1.0f,
+	1.0f,  1.0f, -1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	1.0f, -1.0f,  1.0f
+};
+
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 void InitFullScreenQuad()
 {
@@ -141,6 +225,11 @@ void DrawCube()
 	glBindVertexArray(_CubeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(GL_NONE);
+}
+
+void LoadCubeMesh(Mesh & a_Mesh)
+{
+
 }
 
 void CubemapToIrradianceMap(Texture& CubeMap, Texture& IrradianceMap)

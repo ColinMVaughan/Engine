@@ -52,10 +52,10 @@ void VoxelDestructionSystem::Update(double deltaTime, ECS::Entity& entity)
 	auto mesh = entity.GetComponent<Mesh>();
 	auto voxels = entity.GetComponent<VoxelContainerFilter>();
 
-	if(!mesh->IsInstanced)
-	{
-		mesh->SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
-	}
+	//if(!mesh->IsInstanced)
+	//{
+	//	mesh->SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
+	//}
 
 	//Submit the new Voxel matricies to the gpu.
 	//Currently the entire instance buffer will have to be resubmitted

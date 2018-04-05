@@ -17,5 +17,7 @@ void CubemapToIrradianceMap(Texture& Cubemap, Texture& Irradiancemap);
 void CubemapToPrefiltermap(Texture& Cubemap, Texture& Prefiltermap);
 void CalculateBRDF(Texture& brdfLUT);
 
+void LoadAsCube(Mesh& a_Mesh);
+
 glm::vec3 LERP(glm::vec3 vec1, glm::vec3 vec2, float t);
 float LERP(float p1, float p2, float t);

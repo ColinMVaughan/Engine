@@ -10,17 +10,6 @@ namespace ECS
 {
 	class Entity;
 
-	template<typename T>
-	class AddComponentEvent : public IEvent
-	{
-	public:
-		AddComponentEvent() = default;
-		AddComponentEvent(Entity* a_entity) : m_Entity(a_entity){}
-
-		Entity* m_Entity;
-	};
-
-
 	//-----------------------------------------
 	//				BASE SYSTEM
 	// Derrive your system from this class to be able to submit it to the system manager.
@@ -49,6 +38,8 @@ namespace ECS
 		//virtual void PostStop(){}
 
 		virtual void UnInitalize() {};
+		virtual void EntityRegistered(Entity& entity) {}
+
 
 		// returns true if the entity is registered with all the required components.
 		virtual bool HasComponents(unsigned int entityID)
@@ -57,9 +48,22 @@ namespace ECS
 			return false;
 		}
 
+
+		//Registeres the an enity if it has the required components.
+		//Registered entities will be updated by this system
+		void RegisterEntity(Entity& a_Entity);
+
+		void UpdateSystem(double deltaTime);
+
+
+
 		virtual void KeyUp(unsigned char key) {}
 		virtual void KeyDown(unsigned char key) {}
 		virtual void MouseMoved(float xVelocity, float yVelicity) {}
+
+
+	private:
+		std::vector<Entity> m_RegisteredEntities;
 	};
 
 
@@ -78,9 +82,7 @@ namespace ECS
 	public:
 
 		System(ComponentManager* a_cmanager, EventManager& a_eManager) : m_CManager(a_cmanager)
-		{
-			RegisterEventCallback_AddComponent<C, RequiredComponents...>(a_eManager);
-		}
+		{}
 		virtual void Initalize() {};
 
 		// PreUpdate:  runs one once per frame
@@ -100,7 +102,6 @@ namespace ECS
 		//virtual void PostStop() {}
 
 		virtual void UnInitalize() {};
-		virtual void ComponentAdded(Entity& entity) {}
 
 		// Returns true if the entity is registered with all the required components.
 		// Marked final to prevent definition by derrived classes.
@@ -111,36 +112,6 @@ namespace ECS
 
 		ComponentManager* m_CManager;
 
-
-
-
-		template<typename T>
-		void ComponentAddedCallback(AddComponentEvent<T>& a_event)
-		{
-			ComponentAdded(*a_event.m_Entity);
-		}
-
-	private:
-
-		template<typename First>
-		void RegisterEventCallback_AddComponent(EventManager& eManager)
-		{
-			//REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
-			std:std::function<void(AddComponentEvent<First>&)> f2 = [this](AddComponentEvent<First>& eve) {ComponentAddedCallback<First>(eve); };
-			eManager.AddListner<AddComponentEvent<First>>(f2);
-			return;
-		}
-
-		template<typename First, typename Second, typename ...Components>
-		void RegisterEventCallback_AddComponent(EventManager& eManager)
-		{
-			//REGISTER_EVENT_LISTNER(AddComponentEvent<First>, System::ComponentAddedCallback<First>, eManager)
-			std:std::function<void(AddComponentEvent<First>&)> f2 = [this](AddComponentEvent<First>& eve) {ComponentAddedCallback<First>(eve); };
-			eManager.AddListner<AddComponentEvent<First>>(f2);
-
-			RegisterEventCallback_AddComponent<Second, Components...>(eManager);
-			return;
-		}
 	};
 
 

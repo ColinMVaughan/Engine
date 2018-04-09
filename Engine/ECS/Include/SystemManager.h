@@ -41,7 +41,7 @@ namespace ECS
 		//We need to figure out how to efficiently register systems with componets
 		//------------------------------
 		void UpdateSystems(double deltaTime, Entity entityList[], size_t entityCount);
-
+		void RegisterEntity(Entity& entity);
 
 		ComponentManager* m_ComponentManager;
 		EventManager* m_EventManager;

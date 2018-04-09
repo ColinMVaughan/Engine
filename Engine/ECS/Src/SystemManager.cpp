@@ -11,15 +11,15 @@ namespace ECS
 	{
 		for (unsigned int i = 0; i < SystemList.size(); ++i)
 		{
-			SystemList[i]->PreUpdate(deltaTime);
+			SystemList[i]->UpdateSystem(deltaTime);
+		}
+	}
 
-			for (unsigned int count = 0; count < entityCount; ++count)
-			{
-				if (SystemList[i]->HasComponents(entityList[count].GetID()))
-					SystemList[i]->Update(deltaTime, entityList[count]);
-			}
-
-			SystemList[i]->PostUpdate(deltaTime);
+	void SystemManager::RegisterEntity(Entity& entity)
+	{
+		for each(BaseSystem* system in SystemList)
+		{
+			system->RegisterEntity(entity);
 		}
 	}
 }

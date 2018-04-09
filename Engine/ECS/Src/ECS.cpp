@@ -5,6 +5,13 @@
 #include <Detail.h>
 
 
+unsigned ECS::Entity::GetID()
+{
+	return m_ID;
+}
+
+
+
 //----------------------------------------
 //Converts data buffer into a stream for the 
 //----------------------------------------

@@ -25,7 +25,7 @@ namespace ECS
 		//Entity requires a unique ID and a pointer to the scene it belongs to
 		Entity(unsigned int a_id, std::string a_name, Scene* a_scene) :m_ID(a_id), m_Name(a_name), m_Scene(a_scene) {}
 
-		unsigned int GetID() { return m_ID; }
+		unsigned int GetID();
 
 		template<typename T>
 		T* GetComponent();
@@ -138,7 +138,8 @@ namespace ECS
 	T* Scene::AddComponent(Entity a_entity)
 	{
 		m_ComponentManager->AddComponent<T>(a_entity.GetID());
-		m_EventManager->DispatchEvent(AddComponentEvent<T>(&a_entity));
+		m_SystemManager->RegisterEntity(a_entity);
+
 		return m_ComponentManager->GetComponent<T>(a_entity.GetID());
 	}
 

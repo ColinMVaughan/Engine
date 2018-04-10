@@ -7,6 +7,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "RenderSystem.h"
+#include "LightProbe.h"
 
 //--------------------------------------------------------------------------------------
 //							VOXEL DESTRUCTION SYSTEM
@@ -39,21 +40,9 @@ public:
 		TestCase = a_VC;
 	}
 
-	void ComponentAdded(ECS::Entity& entity) override
+	void VoxelContainerChanged()
 	{
-		auto mesh = entity.GetComponent<MeshFilter>();
-		auto voxels = entity.GetComponent<VoxelContainerFilter>();
-
-		//if the entity has both mesh and voxel components
-		if(mesh && voxels)
-		{
-			
-
-			//Set Instancing for voxel container
-			mesh->m_Mesh.m_Asset.SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
-		}
-
-		return;
+		
 	}
 
 private:

@@ -1,7 +1,11 @@
 #include "VoxelDestructionSystem.h"
 
 VoxelDestructionSystem::VoxelDestructionSystem(ECS::ComponentManager* a_CompManager, EventManager& a_eManager)
-	:System(a_CompManager, a_eManager) {}
+	:System(a_CompManager, a_eManager)
+{
+	
+	//Voxel container changed
+}
 
 
 
@@ -52,10 +56,12 @@ void VoxelDestructionSystem::Update(double deltaTime, ECS::Entity& entity)
 	auto mesh = entity.GetComponent<Mesh>();
 	auto voxels = entity.GetComponent<VoxelContainerFilter>();
 
-	//if(!mesh->IsInstanced)
-	//{
-	//	mesh->SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
-	//}
+	if(!mesh->IsInstanced)
+	{
+		if (mesh->VAO == 0)
+			LoadAsCube(*mesh);
+		mesh->SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
+	}
 
 	//Submit the new Voxel matricies to the gpu.
 	//Currently the entire instance buffer will have to be resubmitted

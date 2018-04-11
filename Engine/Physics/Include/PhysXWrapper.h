@@ -42,13 +42,24 @@ private:
 class RigidBody
 {
 public:
+	void ExposeToEditor();
+
 	PxRigidBody* m_RigidBody;
+
+private:
+
 };
 
 
 class Collider
 {
-	
+public:
+	void ExposeToEditor();
+	PxShape * m_CollisionShape;
+
+private:
+	int m_SelectedShape = 0;
+	int m_CurrentShape = 0;
 };
 //------------------------------------------------------------------------------
 //

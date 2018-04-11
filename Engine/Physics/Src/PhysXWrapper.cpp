@@ -181,3 +181,78 @@ void Transform::ExposeToEditor()
 	m_Transform.q *= PxQuat(m_EulerRotations.y, PxVec3(0, 1, 0));
 	m_Transform.q *= PxQuat(m_EulerRotations.z, PxVec3(0, 0, 1));
 }
+
+
+//----------------------------------------------------------------
+//					RIGIDBODY
+//----------------------------------------------------------------
+void RigidBody::ExposeToEditor()
+{
+	ImGui::SliderFloat("Mass", nullptr, 0.0f, 1000.0f);
+	ImGui::DragFloat("Drag", nullptr);
+	ImGui::DragFloat("Friction", nullptr);
+}
+
+
+
+
+//----------------------------------------------------------------
+//					COLLIDER
+//----------------------------------------------------------------
+void Collider::ExposeToEditor()
+{
+	//If the user selects a different kind of geometry, change to it.
+	if(ImGui::Combo("CollisionShape", &m_SelectedShape, "Box\0Sphere\0Capsule\0Plane\0\0"))
+	{
+		switch (m_SelectedShape)
+		{
+			//Box
+		case 0:
+		{PxBoxGeometry box; }
+			break;
+
+			//Sphere
+		case 1:
+		{PxSphereGeometry sphere; }
+			break;
+
+		case 2:
+		{PxCapsuleGeometry cap; }
+			break;
+
+		case 3:
+		{PxPlaneGeometry plane; }
+			break;
+
+		}
+	}
+		
+	ImGui::Separator();
+
+	//Different settings based on kind of geometry
+	switch(m_CollisionShape->getGeometryType())
+	{
+	case PxGeometryType::eBOX:
+	{
+		PxBoxGeometry boxInfo;
+		m_CollisionShape->getBoxGeometry(boxInfo);
+		ImGui::SliderFloat3("Box Size:", &boxInfo.halfExtents.x, 0.0001f, 10000.0f);
+	}
+		break;
+
+	case PxGeometryType::eSPHERE:
+	{
+		PxSphereGeometry sphereInfo;
+		m_CollisionShape->getSphereGeometry(sphereInfo);
+		ImGui::SliderFloat("Radius:", &sphereInfo.radius, 0.0000f, 10000.0f);
+	}
+		break;
+
+	case PxGeometryType::eCAPSULE:
+		break;
+
+	case PxGeometryType::ePLANE:
+		break;
+	}
+
+}

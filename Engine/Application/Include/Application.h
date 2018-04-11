@@ -55,7 +55,7 @@ protected:
 	AssetManager* m_AssetManager;
 
 	Renderer* m_Renderer;
-	PhysicsSystem m_Physics;
+	PhysXWrapper m_Physics;
 
 	Timer* m_Timer;
 	std::vector<ECS::BaseSystem*> InputCallbackList;

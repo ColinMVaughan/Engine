@@ -19,6 +19,7 @@ namespace ECS
 	class BaseSystem
 	{
 	public:
+		virtual ~BaseSystem() = default;
 		virtual void Initalize() {};
 
 		// PreUpdate:  runs one once per frame

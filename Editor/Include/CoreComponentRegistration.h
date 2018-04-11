@@ -13,6 +13,8 @@ COMPONENT_REGISTER(Transform, "Transform")
 COMPONENT_REGISTER(Material, "Material")
 COMPONENT_REGISTER(DebugControl, "DebugControl")
 COMPONENT_REGISTER(Camera, "Camera")
+COMPONENT_REGISTER(RigidBody, "RigidBody")
+COMPONENT_REGISTER(Collider, "Collider")
 
 //Registeres some of the core assets
 

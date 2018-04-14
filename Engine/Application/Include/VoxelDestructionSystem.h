@@ -25,7 +25,7 @@ class VoxelDestructionSystem : public ECS::System<VoxelContainerFilter, Mesh, Tr
 public:
 	VoxelDestructionSystem(ECS::ComponentManager* a_CompManager, EventManager& a_eManager);
 
-	void Initalize(PhysicsSystem* m_PhysicsSystem);
+	void Initalize(PhysXWrapper* m_PhysicsSystem);
 
 	void PreUpdate(double deltaTime) override;
 	void Update(double deltaTime, ECS::Entity& entity) override;

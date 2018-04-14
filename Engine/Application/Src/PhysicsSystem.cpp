@@ -4,17 +4,12 @@
 PhysicsSystem::PhysicsSystem(ECS::ComponentManager* a_CompManager, EventManager& a_EveManager)
 	: System(a_CompManager, a_EveManager)
 {
-	PhysicsSettings settings;
-	settings.GpuRigidbodies = false;
-
-	m_PhysX->Initalize(settings);
 
 }
 
 void PhysicsSystem::PreUpdate(double deltaTime)
 {
 	m_PhysX->StepPhysics(deltaTime);
-	m_PhysX->FetchResults();
 }
 
 //Update entity transforms based on rigidbody simulation
@@ -41,4 +36,13 @@ void PhysicsSystem::EntityRegistered(ECS::Entity & entity)
 	m_PhysX->GetScene()->addActor(*rigid);
 
 	rigidbody->m_RigidBody = rigid;
+}
+
+CollisionSystem::CollisionSystem(ECS::ComponentManager * a_CompManager, EventManager & a_EveManager)
+	:System(a_CompManager, a_EveManager)
+{
+}
+
+void CollisionSystem::EntityRegistered(ECS::Entity & entity)
+{
 }

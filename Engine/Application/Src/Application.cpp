@@ -59,8 +59,11 @@ void Application::PreInitalize()
 
 void Application::PostInitalize()
 {
-	m_SystemManager->AddSystem<PointLightSystem>()->SetRenderer(m_Renderer);
-	m_SystemManager->AddSystem<RenderSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<PhysicsSystem>()->m_PhysX = &m_Physics;
+	m_SystemManager->AddCoreSystem<CollisionSystem>()->m_Physx = &m_Physics;
+
+	m_SystemManager->AddCoreSystem<PointLightSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<RenderSystem>()->SetRenderer(m_Renderer);
 }
 
 void Application::PreUpdate(double deltaTime)
@@ -85,12 +88,11 @@ void Application::PreUpdate(double deltaTime)
 			break;
 		}
 	}
-	m_Physics.StepPhysics(deltaTime);
+	//m_Physics.StepPhysics(deltaTime);
 }
 
 void Application::PostUpdate(double deltaTime)
 {
-
 	m_Scene->UpdateSystems(deltaTime);
 }
 
@@ -129,5 +131,5 @@ void Application::MouseMoved(SDL_MouseMotionEvent motion)
 
 void Application::Unload()
 {
-	m_Physics.Unload();
+	//m_Physics.Unload();
 }

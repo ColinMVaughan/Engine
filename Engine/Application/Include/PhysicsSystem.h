@@ -2,7 +2,7 @@
 #include <PhysXWrapper.h>
 #include <BaseSystem.h>
 
-
+//For Handling Physics Simulation
 class PhysicsSystem : public ECS::System<Transform, RigidBody>
 {
 public:
@@ -15,7 +15,7 @@ public:
 
 	void EntityRegistered(ECS::Entity& entity) override;
 
-private:
+
 	PhysXWrapper* m_PhysX;
 };
 
@@ -28,6 +28,6 @@ public:
 
 	void EntityRegistered(ECS::Entity& entity) override;
 
-private:
+
 	PhysXWrapper* m_Physx;
 };

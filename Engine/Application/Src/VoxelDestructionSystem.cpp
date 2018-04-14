@@ -9,7 +9,7 @@ VoxelDestructionSystem::VoxelDestructionSystem(ECS::ComponentManager* a_CompMana
 
 
 
-void VoxelDestructionSystem::Initalize(PhysicsSystem* m_PhysicsSystem)
+void VoxelDestructionSystem::Initalize(PhysXWrapper* m_PhysicsSystem)
 {
 	PxMaterial* shapeMaterial = m_PhysicsSystem->GetPhysics()->createMaterial(0.5, 0.5, 0.5);
 	m_CollisionShape = m_PhysicsSystem->GetPhysics()->createShape(PxBoxGeometry(0.5f, 0.5f, 0.5f), *shapeMaterial, false);

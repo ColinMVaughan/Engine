@@ -36,11 +36,24 @@ namespace ECS
 			return returnPtr;
 		}
 
+		template<typename T>
+		T* AddCoreSystem()
+		{
+			T* returnPtr = new T(m_ComponentManager, *m_EventManager);
+			BaseSystem* tempPtr = returnPtr;
+			
+			CoreSystemList.push_back(tempPtr);
+			SystemList.push_back(tempPtr);
+
+			return returnPtr;
+		}
+
 		//-------------------------------
 		// Loop through each system and update its corrisponding entities.
 		//We need to figure out how to efficiently register systems with componets
 		//------------------------------
 		void UpdateSystems(double deltaTime, Entity entityList[], size_t entityCount);
+		void UpdateCoreSystems(double deltaTime);
 		void RegisterEntity(Entity& entity);
 
 		ComponentManager* m_ComponentManager;
@@ -48,7 +61,7 @@ namespace ECS
 	private:
 
 		std::vector<BaseSystem*> SystemList;
-		std::vector<BaseSystem*> Test;
+		std::vector<BaseSystem*> CoreSystemList;
 	};
 
 }

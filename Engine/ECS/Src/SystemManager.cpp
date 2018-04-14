@@ -15,6 +15,14 @@ namespace ECS
 		}
 	}
 
+	void SystemManager::UpdateCoreSystems(double deltaTime)
+	{
+		for (unsigned int i = 0; i < CoreSystemList.size(); ++i)
+		{
+			CoreSystemList[i]->UpdateSystem(deltaTime);
+		}
+	}
+
 	void SystemManager::RegisterEntity(Entity& entity)
 	{
 		for each(BaseSystem* system in SystemList)

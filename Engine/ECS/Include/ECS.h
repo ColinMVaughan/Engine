@@ -87,6 +87,9 @@ namespace ECS
 		T* AddSystem();
 
 		template<typename T>
+		T* AddCoreSystem();
+
+		template<typename T>
 		T* GetComponent(Entity a_entity);
 
 		template<typename T>
@@ -105,6 +108,8 @@ namespace ECS
 		bool LoadScene(std::string filePath);
 
 		void UpdateSystems(double deltaTime);
+		void UpdateCoreSystems(double deltaTime);
+
 		unsigned int GetNumEntities();
 		Entity& GetEntity(unsigned int index);
 		EventManager& GetEventManager();
@@ -147,6 +152,12 @@ namespace ECS
 	T* Scene::AddSystem()
 	{
 		return m_SystemManager->AddSystem<T>();
+	}
+
+	template<typename T>
+	inline T * Scene::AddCoreSystem()
+	{
+		return m_SystemManager->AddCoreSystem<T>();
 	}
 
 	template <typename T>
@@ -232,6 +243,12 @@ namespace ECS
 	{
 		m_SystemManager->UpdateSystems(deltaTime, m_EntityList.data(), m_EntityList.size());
 	}
+
+	inline void Scene::UpdateCoreSystems(double deltaTime)
+	{
+		m_SystemManager->UpdateCoreSystems(deltaTime);
+	}
+
 
 	inline unsigned int Scene::GetNumEntities()
 	{

@@ -38,7 +38,7 @@ protected:
 
 	virtual void PreUpdate(double deltaTime);
 	virtual void DoUpdate(double deltaTime) = 0;
-	void PostUpdate(double deltaTime);
+	virtual void PostUpdate(double deltaTime);
 
 	void RegisterKeyboardCallback(ECS::BaseSystem* system);
 

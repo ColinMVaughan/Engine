@@ -21,7 +21,7 @@ void Editor::DoInitalize()
 	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/GCanyon_C_YumaPoint_3k.hdr");
 
 	//Allows the user to move the camera in debug mode.
-	RegisterKeyboardCallback(m_Scene->AddSystem<DebugCameraControlSystem>());
+	RegisterKeyboardCallback(m_Scene->AddCoreSystem<DebugCameraControlSystem>());
 	m_Scene->AddSystem<EventSystemTest>();
 
 	//Create Entity that will act as the editor camera
@@ -100,6 +100,14 @@ void Editor::DoUpdate(double deltaTime)
 	ImGui::Render();
 	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
 	m_Renderer->UIBuffer.UnBind();
+}
+
+void Editor::PostUpdate(double deltaTime)
+{
+	if (GameRunning)
+		m_Scene->UpdateSystems(deltaTime);
+	else
+		m_Scene->UpdateCoreSystems(deltaTime);
 }
 
 //---------------------------------------------------

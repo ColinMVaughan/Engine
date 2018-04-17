@@ -73,8 +73,12 @@ namespace ECS
 	template<typename T>
 	T* ComponentManager::GetComponent(unsigned int entity)
 	{
-		BaseComponentPool* temp = PoolMap.at(typeid(T).hash_code());
-		ComponentPool<T>* pool = static_cast<ComponentPool<T>*>(temp);
+		std::map<size_t,BaseComponentPool*>::iterator temp = PoolMap.find(typeid(T).hash_code());
+
+		if (temp == PoolMap.end())
+			return nullptr;
+
+		ComponentPool<T>* pool = static_cast<ComponentPool<T>*>(temp->second);
 		return pool->GetComponent(entity);
 	}
 

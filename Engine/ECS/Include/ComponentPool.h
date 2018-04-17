@@ -65,7 +65,8 @@ namespace ECS
 	template<typename T>
 	inline T * ComponentPool<T>::GetComponent(unsigned int entityID)
 	{
-		return &Components.at(entityID);
+		std::map<unsigned, T>::iterator it = Components.find(entityID);
+		return (it != Components.end()) ? &it->second : nullptr;
 	}
 
 	template<typename T>

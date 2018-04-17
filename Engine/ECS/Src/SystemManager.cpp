@@ -30,4 +30,18 @@ namespace ECS
 			system->RegisterEntity(entity);
 		}
 	}
+	void SystemManager::StartSystems()
+	{
+		for each(BaseSystem* system in SystemList)
+		{
+			system->StartSystem();
+		}
+	}
+	void SystemManager::StopSystems()
+	{
+		for each(BaseSystem* system in SystemList)
+		{
+			system->StopSystem();
+		}
+	}
 }

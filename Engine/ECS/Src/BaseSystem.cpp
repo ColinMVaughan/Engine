@@ -30,3 +30,23 @@ void ECS::BaseSystem::UpdateSystem(double deltaTime)
 	}
 	PostUpdate(deltaTime);
 }
+
+void ECS::BaseSystem::StartSystem()
+{
+	PreStart();
+	for each(Entity entity in m_RegisteredEntities)
+	{
+		Start(entity);
+	}
+	PostStart();
+}
+
+void ECS::BaseSystem::StopSystem()
+{
+	PreStop();
+	for each(Entity entity in m_RegisteredEntities)
+	{
+		Stop(entity);
+	}
+	PostStop();
+}

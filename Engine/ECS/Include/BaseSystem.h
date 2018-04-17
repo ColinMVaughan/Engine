@@ -26,17 +26,17 @@ namespace ECS
 		// Update:     runs once per applicable entity
 		// PostUpdate: runs once per frame
 
-		//virtual void PreStart() {}
-		//virtual void Start(Entity& entity) = 0;
-		//virtual void PostStart() {}
+		virtual void PreStart() {}
+		virtual void Start(Entity& entity){};
+		virtual void PostStart() {}
 
 		virtual void PreUpdate(double deltaTime) {}
 		virtual void Update(double deltaTime, Entity& entity) = 0;
 		virtual void PostUpdate(double deltaTime) {}
 
-		//virtual void PreStop() {}
-		//virtual void Stop(Entity& entity) = 0;
-		//virtual void PostStop(){}
+		virtual void PreStop() {}
+		virtual void Stop(Entity& entity){};
+		virtual void PostStop(){}
 
 		virtual void UnInitalize() {};
 		virtual void EntityRegistered(Entity& entity) {}
@@ -55,7 +55,8 @@ namespace ECS
 		void RegisterEntity(Entity& a_Entity);
 
 		void UpdateSystem(double deltaTime);
-
+		void StartSystem();
+		void StopSystem();
 
 
 		virtual void KeyUp(unsigned char key) {}

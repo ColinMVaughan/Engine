@@ -56,6 +56,9 @@ namespace ECS
 		void UpdateCoreSystems(double deltaTime);
 		void RegisterEntity(Entity& entity);
 
+		void StartSystems();
+		void StopSystems();
+
 		ComponentManager* m_ComponentManager;
 		EventManager* m_EventManager;
 	private:

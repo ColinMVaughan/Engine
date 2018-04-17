@@ -149,8 +149,16 @@ void Editor::DrawMenuBar(double deltaTime)
 	}
 
 	//Display FPS
-	ImGui::Button("Start");
-	ImGui::Button("Stop");
+	if(ImGui::Button("Start"))
+	{
+		GameRunning = true;
+		m_SystemManager->StartSystems();
+	}
+	if(ImGui::Button("Stop"))
+	{
+		GameRunning = false;
+		m_SystemManager->StopSystems();
+	}
 	ImGui::Text("%f FPS (%f ms)", ceil(1.0 / deltaTime), deltaTime);
 
 	//End Menu Bar

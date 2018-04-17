@@ -59,8 +59,8 @@ void Application::PreInitalize()
 
 void Application::PostInitalize()
 {
-	m_SystemManager->AddCoreSystem<PhysicsSystem>()->m_PhysX = &m_Physics;
-	m_SystemManager->AddCoreSystem<CollisionSystem>()->m_Physx = &m_Physics;
+	m_SystemManager->AddSystem<PhysicsSystem>()->m_PhysX = &m_Physics;
+	m_SystemManager->AddSystem<CollisionSystem>()->m_Physx = &m_Physics;
 
 	m_SystemManager->AddCoreSystem<PointLightSystem>()->SetRenderer(m_Renderer);
 	m_SystemManager->AddCoreSystem<RenderSystem>()->SetRenderer(m_Renderer);

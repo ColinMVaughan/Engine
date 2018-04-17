@@ -110,6 +110,7 @@ namespace ECS
 		void UpdateSystems(double deltaTime);
 		void UpdateCoreSystems(double deltaTime);
 
+
 		unsigned int GetNumEntities();
 		Entity& GetEntity(unsigned int index);
 		EventManager& GetEventManager();

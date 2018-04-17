@@ -188,9 +188,17 @@ void Transform::ExposeToEditor()
 //----------------------------------------------------------------
 void RigidBody::ExposeToEditor()
 {
-	ImGui::SliderFloat("Mass", nullptr, 0.0f, 1000.0f);
-	ImGui::DragFloat("Drag", nullptr);
-	ImGui::DragFloat("Friction", nullptr);
+
+	if (ImGui::SliderFloat("Mass", &m_Mass, 0.0f, 1000.0f) && m_RigidBody) 
+	{
+		m_RigidBody->setMass(PxReal(m_Mass));
+	}
+
+	if (ImGui::Checkbox("Is Kinematic", &m_IsKinematic) && m_RigidBody)
+	{
+		m_RigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	}
+
 }
 
 
@@ -208,34 +216,43 @@ void Collider::ExposeToEditor()
 		{
 			//Box
 		case 0:
-		{PxBoxGeometry box; }
+			m_Geometry = PxBoxGeometry(0.5, 0.5, 0.5);
 			break;
 
 			//Sphere
 		case 1:
-		{PxSphereGeometry sphere; }
+			m_Geometry = PxSphereGeometry(1.0f);
 			break;
 
 		case 2:
-		{PxCapsuleGeometry cap; }
+			m_Geometry = PxCapsuleGeometry(0.5, 1.0);
 			break;
 
 		case 3:
-		{PxPlaneGeometry plane; }
+			m_Geometry = PxPlaneGeometry();
 			break;
 
 		}
+
+		//If we need to change the shape, we must detach and destroy the old one,
+		//and create and attach a new one
+		auto actor = m_CollisionShape->getActor();
+		actor->detachShape(*m_CollisionShape);
+		m_CollisionShape->release();
+
+		m_CollisionShape = PxGetPhysics().createShape(m_Geometry, *m_Material, true);
+		actor->attachShape(*m_CollisionShape);
 	}
-		
+
+
 	ImGui::Separator();
 
 	//Different settings based on kind of geometry
-	switch(m_CollisionShape->getGeometryType())
+	switch(m_Geometry.getType())
 	{
 	case PxGeometryType::eBOX:
 	{
 		PxBoxGeometry boxInfo;
-		m_CollisionShape->getBoxGeometry(boxInfo);
 		ImGui::SliderFloat3("Box Size:", &boxInfo.halfExtents.x, 0.0001f, 10000.0f);
 	}
 		break;
@@ -244,7 +261,8 @@ void Collider::ExposeToEditor()
 	{
 		PxSphereGeometry sphereInfo;
 		m_CollisionShape->getSphereGeometry(sphereInfo);
-		ImGui::SliderFloat("Radius:", &sphereInfo.radius, 0.0000f, 10000.0f);
+		ImGui::SliderFloat("Radius:", &sphereInfo.radius, 0.001f, 100.0f);
+		m_CollisionShape->setGeometry(sphereInfo);
 	}
 		break;
 

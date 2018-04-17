@@ -45,9 +45,8 @@ public:
 	void ExposeToEditor();
 
 	PxRigidBody* m_RigidBody;
-
-private:
-
+	bool m_IsKinematic = false;
+	float m_Mass = 1.0f;
 };
 
 
@@ -55,11 +54,20 @@ class Collider
 {
 public:
 	void ExposeToEditor();
-	PxShape * m_CollisionShape;
+	PxShape * m_CollisionShape = nullptr;
+	PxMaterial* m_Material = nullptr;
+	PxGeometry m_Geometry = PxSphereGeometry(1.0f);
+
+	float m_StaticFriction = 1.0;
+	float m_Restitution = 1.0;
+	float m_DynamicFriction = 1.0;
 
 private:
 	int m_SelectedShape = 0;
 	int m_CurrentShape = 0;
+
+
+
 };
 //------------------------------------------------------------------------------
 //

@@ -8,6 +8,8 @@ class PhysicsSystem : public ECS::System<Transform, RigidBody>
 public:
 	PhysicsSystem(ECS::ComponentManager* a_CompManager, EventManager& a_EveManager);
 
+	void Start(ECS::Entity& entity) override;
+	void Stop(ECS::Entity& entity) override;
 
 	void PreUpdate(double deltaTime) override;
 	void Update(double deltaTime, ECS::Entity& entity) override;

@@ -3,6 +3,8 @@
 #include "RenderSystem.h"
 #include "DebugShapes.h"
 
+
+
 PhysicsSystem::PhysicsSystem(ECS::ComponentManager* a_CompManager, EventManager& a_EveManager)
 	: System(a_CompManager, a_EveManager)
 {
@@ -52,7 +54,7 @@ void PhysicsSystem::EntityRegistered(ECS::Entity & entity)
 
 	rigid->setMass(rigidbody->m_Mass);
 	rigid->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, rigidbody->m_IsKinematic);
-	rigid->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+
 
 	m_PhysX->GetScene()->addActor(*rigid);
 
@@ -82,7 +84,6 @@ void CollisionSystem::EntityRegistered(ECS::Entity & entity)
 	collider->m_Material = m_Physx->GetPhysics()->createMaterial(collider->m_StaticFriction, collider->m_DynamicFriction, collider->m_Restitution);
 	collider->m_CollisionShape = m_Physx->GetPhysics()->createShape(collider->m_Geometry, *collider->m_Material, true);
 
-	collider->m_CollisionShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 	//check that rigidbody is registered, and has no other shapes attached.
 	if(rigid->m_RigidBody && rigid->m_RigidBody->getNbShapes() < 1)
 	{

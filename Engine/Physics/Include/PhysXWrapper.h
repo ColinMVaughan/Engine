@@ -44,19 +44,80 @@ class RigidBody
 public:
 	void ExposeToEditor();
 
-	PxRigidBody* m_RigidBody;
+
+	template <typename Archive>
+	void serialize(Archive& arc)
+	{
+		arc(m_IsKinematic, 
+			m_Mass, 
+			m_AngularDampening, 
+			m_LinearDampening);
+	}
+
+
+	PxRigidDynamic* m_RigidBody = nullptr;
 	bool m_IsKinematic = false;
 	float m_Mass = 1.0f;
+	float m_AngularDampening = 0;
+	float m_LinearDampening = 0;
+
 };
 
 
 class Collider
 {
 public:
+
 	void ExposeToEditor();
+	
+	template<typename Archive>
+	void save(Archive& arc) const
+	{
+		arc(m_StaticFriction,
+			m_SavedType,
+			m_Restitution, 
+			m_DynamicFriction,
+			m_LocalPosition.x, m_LocalPosition.y, m_LocalPosition.z,
+			m_Dimentions.x, m_Dimentions.y, m_Dimentions.z);
+	}
+
+
+	template<typename Archive>
+	void load(Archive& arc)
+	{
+		arc(m_StaticFriction,
+			m_SavedType,
+			m_Restitution,
+			m_DynamicFriction,
+			m_LocalPosition.x, m_LocalPosition.y, m_LocalPosition.z,
+			m_Dimentions.x, m_Dimentions.y, m_Dimentions.z);
+
+		switch(m_SavedType)
+		{
+		case PxGeometryType::eBOX:
+			m_Geometry = PxBoxGeometry(m_Dimentions);
+			m_SelectedShape = 0;
+			break;
+
+		case PxGeometryType::eSPHERE:
+			m_Geometry = PxSphereGeometry(m_Dimentions.x);
+			m_SelectedShape = 1;
+			break;
+
+		case PxGeometryType::eCAPSULE:
+			m_Geometry = PxCapsuleGeometry(m_Dimentions.y,m_Dimentions.x);
+			m_SelectedShape = 2;
+			break;
+		}
+	}
+
+public:
 	PxShape * m_CollisionShape = nullptr;
 	PxMaterial* m_Material = nullptr;
-	PxGeometry m_Geometry = PxSphereGeometry(1.0f);
+	PxGeometry m_Geometry = PxBoxGeometry(0.5,0.5,0.5);
+
+	PxVec3 m_Dimentions = PxVec3(1,1,1);
+	PxGeometryType::Enum m_SavedType;
 
 	float m_StaticFriction = 1.0;
 	float m_Restitution = 1.0;
@@ -64,10 +125,7 @@ public:
 
 private:
 	int m_SelectedShape = 0;
-	int m_CurrentShape = 0;
-
-
-
+	PxVec3 m_LocalPosition;
 };
 //------------------------------------------------------------------------------
 //

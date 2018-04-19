@@ -194,6 +194,16 @@ void RigidBody::ExposeToEditor()
 		m_RigidBody->setMass(PxReal(m_Mass));
 	}
 
+	if (ImGui::DragFloat("Linear Dampening", &m_LinearDampening, 0.1f, 1.0f) && m_RigidBody)
+	{
+		m_RigidBody->setLinearDamping(PxReal(m_LinearDampening));
+	}
+
+	if (ImGui::DragFloat("Angular Dampening", &m_AngularDampening, 0.1f, 1.0f) && m_RigidBody)
+	{
+		m_RigidBody->setAngularDamping(PxReal(m_AngularDampening));
+	}
+
 	if (ImGui::Checkbox("Is Kinematic", &m_IsKinematic) && m_RigidBody)
 	{
 		m_RigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, m_IsKinematic);
@@ -217,15 +227,18 @@ void Collider::ExposeToEditor()
 			//Box
 		case 0:
 			m_Geometry = PxBoxGeometry(0.5, 0.5, 0.5);
+			m_Dimentions = PxVec3(0.5, 0.5, 0.5);
 			break;
 
 			//Sphere
 		case 1:
 			m_Geometry = PxSphereGeometry(1.0f);
+			m_Dimentions = PxVec3(1.0, 0, 0);
 			break;
 
 		case 2:
 			m_Geometry = PxCapsuleGeometry(0.5, 1.0);
+			m_Dimentions = PxVec3(0.5, 1.0, 0);
 			break;
 
 		}
@@ -249,29 +262,49 @@ void Collider::ExposeToEditor()
 	{
 	case PxGeometryType::eBOX:
 	{
-		PxBoxGeometry boxInfo;
-		m_CollisionShape->getBoxGeometry(boxInfo);
-		ImGui::DragFloat3("Box Size:", &boxInfo.halfExtents.x,0.1, 0.0001f);
-		m_CollisionShape->setGeometry(boxInfo);
+		if(ImGui::DragFloat3("Box Size:", &m_Dimentions.x,0.1, 0.0001f))
+		{
+			PxBoxGeometry boxInfo;
+			boxInfo.halfExtents = m_Dimentions;
+			m_CollisionShape->setGeometry(boxInfo);
+		}
+
+		if(ImGui::DragFloat3("Local Position:", &m_LocalPosition.x, 0.1f))
+			m_CollisionShape->setLocalPose(PxTransform(m_LocalPosition));
+
 	}
 		break;
 
 	case PxGeometryType::eSPHERE:
 	{
-		PxSphereGeometry sphereInfo;
-		m_CollisionShape->getSphereGeometry(sphereInfo);
-		ImGui::DragFloat("Radius:", &sphereInfo.radius,0.1, 0.001f);
-		m_CollisionShape->setGeometry(sphereInfo);
+		if(ImGui::DragFloat("Radius:", &m_Dimentions.x,0.1, 0.001f))
+		{
+			PxSphereGeometry sphereInfo;
+			sphereInfo.radius = m_Dimentions.x;
+			m_CollisionShape->setGeometry(sphereInfo);
+		}
+
+		if (ImGui::DragFloat3("Local Position:", &m_LocalPosition.x, 0.1f))
+			m_CollisionShape->setLocalPose(PxTransform(m_LocalPosition));
+
 	}
 		break;
 
 	case PxGeometryType::eCAPSULE:
 	{
-		PxCapsuleGeometry capsuleInfo;
-		m_CollisionShape->getCapsuleGeometry(capsuleInfo);
-		ImGui::DragFloat("Half Height:", &capsuleInfo.halfHeight,0.1, 0.001);
-		ImGui::DragFloat("Radius:", &capsuleInfo.radius,0.1, 0.001);
-		m_CollisionShape->setGeometry(capsuleInfo);
+		if(ImGui::DragFloat("Half Height:", &m_Dimentions.x,0.1, 0.001) ||
+		ImGui::DragFloat("Radius:", &m_Dimentions.y,0.1, 0.001))
+		{
+			PxCapsuleGeometry capsuleInfo;
+			capsuleInfo.halfHeight = m_Dimentions.x;
+			capsuleInfo.radius = m_Dimentions.y;
+			m_CollisionShape->setGeometry(capsuleInfo);
+		}
+
+		if (ImGui::DragFloat3("Local Position:", &m_LocalPosition.x, 0.1f))
+			m_CollisionShape->setLocalPose(PxTransform(m_LocalPosition));
+
+
 	}
 		break;
 

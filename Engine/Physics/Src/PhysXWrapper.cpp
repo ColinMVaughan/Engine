@@ -189,14 +189,14 @@ void Transform::ExposeToEditor()
 void RigidBody::ExposeToEditor()
 {
 
-	if (ImGui::SliderFloat("Mass", &m_Mass, 0.0f, 1000.0f) && m_RigidBody) 
+	if (ImGui::DragFloat("Mass", &m_Mass, 0.1f, 1.0f) && m_RigidBody) 
 	{
 		m_RigidBody->setMass(PxReal(m_Mass));
 	}
 
 	if (ImGui::Checkbox("Is Kinematic", &m_IsKinematic) && m_RigidBody)
 	{
-		m_RigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+		m_RigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, m_IsKinematic);
 	}
 
 }
@@ -228,10 +228,6 @@ void Collider::ExposeToEditor()
 			m_Geometry = PxCapsuleGeometry(0.5, 1.0);
 			break;
 
-		case 3:
-			m_Geometry = PxPlaneGeometry();
-			break;
-
 		}
 
 		//If we need to change the shape, we must detach and destroy the old one,
@@ -241,6 +237,7 @@ void Collider::ExposeToEditor()
 		m_CollisionShape->release();
 
 		m_CollisionShape = PxGetPhysics().createShape(m_Geometry, *m_Material, true);
+		m_CollisionShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 		actor->attachShape(*m_CollisionShape);
 	}
 
@@ -253,7 +250,9 @@ void Collider::ExposeToEditor()
 	case PxGeometryType::eBOX:
 	{
 		PxBoxGeometry boxInfo;
-		ImGui::SliderFloat3("Box Size:", &boxInfo.halfExtents.x, 0.0001f, 10000.0f);
+		m_CollisionShape->getBoxGeometry(boxInfo);
+		ImGui::DragFloat3("Box Size:", &boxInfo.halfExtents.x,0.1, 0.0001f);
+		m_CollisionShape->setGeometry(boxInfo);
 	}
 		break;
 
@@ -261,16 +260,21 @@ void Collider::ExposeToEditor()
 	{
 		PxSphereGeometry sphereInfo;
 		m_CollisionShape->getSphereGeometry(sphereInfo);
-		ImGui::SliderFloat("Radius:", &sphereInfo.radius, 0.001f, 100.0f);
+		ImGui::DragFloat("Radius:", &sphereInfo.radius,0.1, 0.001f);
 		m_CollisionShape->setGeometry(sphereInfo);
 	}
 		break;
 
 	case PxGeometryType::eCAPSULE:
+	{
+		PxCapsuleGeometry capsuleInfo;
+		m_CollisionShape->getCapsuleGeometry(capsuleInfo);
+		ImGui::DragFloat("Half Height:", &capsuleInfo.halfHeight,0.1, 0.001);
+		ImGui::DragFloat("Radius:", &capsuleInfo.radius,0.1, 0.001);
+		m_CollisionShape->setGeometry(capsuleInfo);
+	}
 		break;
 
-	case PxGeometryType::ePLANE:
-		break;
 	}
 
 }

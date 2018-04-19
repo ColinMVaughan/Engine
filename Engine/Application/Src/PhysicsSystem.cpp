@@ -1,5 +1,7 @@
 #include <PhysicsSystem.h>
 #include <ECS.h>
+#include "RenderSystem.h"
+#include "DebugShapes.h"
 
 PhysicsSystem::PhysicsSystem(ECS::ComponentManager* a_CompManager, EventManager& a_EveManager)
 	: System(a_CompManager, a_EveManager)
@@ -13,6 +15,8 @@ void PhysicsSystem::Start(ECS::Entity & entity)
 	auto transform = entity.GetComponent<Transform>();
 
 	rigid->m_RigidBody->setGlobalPose(*transform->GetTransform());
+	rigid->m_RigidBody->setAngularVelocity(PxVec3(0));
+	rigid->m_RigidBody->setLinearVelocity(PxVec3(0));
 }
 
 void PhysicsSystem::Stop(ECS::Entity & entity)
@@ -48,6 +52,7 @@ void PhysicsSystem::EntityRegistered(ECS::Entity & entity)
 
 	rigid->setMass(rigidbody->m_Mass);
 	rigid->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, rigidbody->m_IsKinematic);
+	rigid->setActorFlag(PxActorFlag::eVISUALIZATION, true);
 
 	m_PhysX->GetScene()->addActor(*rigid);
 
@@ -64,6 +69,8 @@ void PhysicsSystem::EntityRegistered(ECS::Entity & entity)
 CollisionSystem::CollisionSystem(ECS::ComponentManager * a_CompManager, EventManager & a_EveManager)
 	:System(a_CompManager, a_EveManager)
 {
+	LoadDebugCube(CubeCollisionShape);
+	LoadDebugSphere(SphereCollisionShape);
 }
 
 void CollisionSystem::EntityRegistered(ECS::Entity & entity)
@@ -75,10 +82,48 @@ void CollisionSystem::EntityRegistered(ECS::Entity & entity)
 	collider->m_Material = m_Physx->GetPhysics()->createMaterial(collider->m_StaticFriction, collider->m_DynamicFriction, collider->m_Restitution);
 	collider->m_CollisionShape = m_Physx->GetPhysics()->createShape(collider->m_Geometry, *collider->m_Material, true);
 
+	collider->m_CollisionShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 	//check that rigidbody is registered, and has no other shapes attached.
 	if(rigid->m_RigidBody && rigid->m_RigidBody->getNbShapes() < 1)
 	{
 		//Attack shape to rigidbody
 		rigid->m_RigidBody->attachShape(*collider->m_CollisionShape);
 	}
+}
+
+void CollisionSystem::DrawGizmo(ECS::Entity& entity)
+{
+	//Get relevant components
+	auto transform = entity.GetComponent<Transform>();
+	auto collider = entity.GetComponent<Collider>();
+
+	//get transform matrix
+	auto matrix = transform->GetGlobalTransformMatrix();
+	DrawGizmoEvent meshEvent;
+
+	//Depending on the shape, scale the matrix differently
+	switch(collider->m_Geometry.getType())
+	{
+	case PxGeometryType::eBOX:
+	{
+		PxBoxGeometry box;
+		collider->m_CollisionShape->getBoxGeometry(box);
+		matrix.scale(PxVec4(box.halfExtents, 1.0f));
+		meshEvent.mesh = &CubeCollisionShape;
+	}
+		break;
+
+	case PxGeometryType::eSPHERE:
+	{
+		PxSphereGeometry sphere;
+		collider->m_CollisionShape->getSphereGeometry(sphere);
+		matrix.scale(PxVec4(sphere.radius, sphere.radius, sphere.radius, 1.0));
+		meshEvent.mesh = &SphereCollisionShape;
+	}
+		break;
+	}
+
+	//set the matrix and dispatch the mesh to be rendered
+	meshEvent.matrix = matrix.front();
+	entity.DispatchEvent<DrawGizmoEvent>(meshEvent);
 }

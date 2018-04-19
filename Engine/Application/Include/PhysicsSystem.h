@@ -1,6 +1,8 @@
 #pragma once
 #include <PhysXWrapper.h>
 #include <BaseSystem.h>
+#include "Renderer.h"
+#include "NullComponent.h"
 
 //For Handling Physics Simulation
 class PhysicsSystem : public ECS::System<Transform, RigidBody>
@@ -30,6 +32,13 @@ public:
 
 	void EntityRegistered(ECS::Entity& entity) override;
 
+	void DrawGizmo(ECS::Entity& entity);
+
 
 	PhysXWrapper* m_Physx;
+
+private:
+	Mesh CubeCollisionShape;
+	Mesh SphereCollisionShape;
 };
+

@@ -148,7 +148,7 @@ void Editor::DrawMenuBar(double deltaTime)
 		ImGui::EndMenu();
 	}
 
-	//Display FPS
+	//Start and stop the game.
 	if(ImGui::Button("Start"))
 	{
 		GameRunning = true;
@@ -215,6 +215,8 @@ void Editor::DrawEntityInspector()
 
 		}
 
+		//Draws any relevent gizmos of the selected entity
+		m_SystemManager->UpdateGizmos(m_Scene->GetEntity(selected));
 
 		//**************
 		ImGui::EndChild();

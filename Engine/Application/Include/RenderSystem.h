@@ -57,6 +57,20 @@ COMPONENT_REGISTER(MeshFilter, "MeshFilter")
 
 
 
+
+
+
+class MaterialFilter
+{
+
+	
+};
+COMPONENT_REGISTER(MaterialFilter, "MaterilFilter");
+
+
+
+
+
 class DrawGizmoEvent : public IEvent
 {
 public:

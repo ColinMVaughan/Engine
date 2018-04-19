@@ -250,7 +250,7 @@ void Editor::DrawEntityInspector()
 		ImGui::EndChild();
 
 		ImGui::BeginChild("Buttons");
-		if (ImGui::Button("Add Component")) { ImGui::OpenPopup("ComponentList"); }
+		if (ImGui::Button("Add Component",ImVec2(400,100))) { ImGui::OpenPopup("ComponentList"); }
 		if (ImGui::BeginPopup((const char*)"ComponentList"))
 		{
 			ImGui::Text("Components");
@@ -270,8 +270,6 @@ void Editor::DrawEntityInspector()
 		}
 
 
-		ImGui::SameLine();
-		if (ImGui::Button("Remove Component")) {}
 		ImGui::EndChild();
 		ImGui::EndGroup();
 

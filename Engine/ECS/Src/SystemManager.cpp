@@ -44,4 +44,13 @@ namespace ECS
 			system->StopSystem();
 		}
 	}
+
+	void SystemManager::UpdateGizmos(Entity& entity)
+	{
+		for each(BaseSystem* system in SystemList)
+		{
+			if (system->IsEntityRegistered(entity))
+				system->DrawGizmo(entity);
+		}
+	}
 }

@@ -41,6 +41,7 @@ namespace ECS
 		virtual void UnInitalize() {};
 		virtual void EntityRegistered(Entity& entity) {}
 
+		virtual void DrawGizmo(Entity& entity){}
 
 		// returns true if the entity is registered with all the required components.
 		virtual bool HasComponents(unsigned int entityID)
@@ -57,7 +58,7 @@ namespace ECS
 		void UpdateSystem(double deltaTime);
 		void StartSystem();
 		void StopSystem();
-
+		bool IsEntityRegistered(Entity& entity);
 
 		virtual void KeyUp(unsigned char key) {}
 		virtual void KeyDown(unsigned char key) {}

@@ -59,6 +59,8 @@ namespace ECS
 		void StartSystems();
 		void StopSystems();
 
+		void UpdateGizmos(Entity& entity);
+
 		ComponentManager* m_ComponentManager;
 		EventManager* m_EventManager;
 	private:

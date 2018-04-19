@@ -50,3 +50,14 @@ void ECS::BaseSystem::StopSystem()
 	}
 	PostStop();
 }
+
+bool ECS::BaseSystem::IsEntityRegistered(Entity& a_entity)
+{
+	for each(ECS::Entity entity in m_RegisteredEntities)
+	{
+		if (entity.GetID() == a_entity.GetID())
+			return true;
+	}
+
+	return false;
+}

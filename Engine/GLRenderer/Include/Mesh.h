@@ -67,8 +67,9 @@ public:
 	unsigned int InstanceNumber = 0;
 	std::string Filepath;
 
+	unsigned int _NumVertices = 0;
 private:
 	unsigned int _NumFaces = 0;
-	unsigned int _NumVertices = 0;
+
 
 };

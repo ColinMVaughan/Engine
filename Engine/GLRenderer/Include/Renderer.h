@@ -32,7 +32,7 @@ public:
 	Renderer(unsigned windowHeight, unsigned windowWidth,SDL_Window* window, Camera* camera)
 		:m_WindowWidth(windowWidth), m_WindowHeight(windowHeight), 
 		m_Camera(camera),m_Window(window),
-		GBuffer(6), LightpassBuffer(1), CombinedLighingBuffer(1), SSAOBuffer(1), UIBuffer(1), FinalBuffer(&CombinedLighingBuffer){}
+		GBuffer(6), LightpassBuffer(1), CombinedLighingBuffer(1), SSAOBuffer(1), UIBuffer(1),DebugBuffer(1), FinalBuffer(&CombinedLighingBuffer){}
 
 	void Initalize();
 	void InitalizePBREnvironmentMaps(std::string filepath);
@@ -43,10 +43,12 @@ public:
 
 	void PreRender();
 	void Render(Mesh* mesh, Material* material, const float* matrix);
+	void RenderDebug(Mesh& mesh, const float* matrix);
 
 	void CombineLighting();
 	void PointLightPass();
 	void CombineUI();
+	void CombineDebug();
 
 	void InitalizeSSAO();
 	void SSAOPass();
@@ -60,6 +62,8 @@ public:
 	void SetBufferToDisplay(unsigned int index);
 
 	FrameBuffer UIBuffer;
+	FrameBuffer DebugBuffer;
+	Camera* m_Camera;
 private:
 	void InitalizeDefaultMaterial();
 
@@ -67,7 +71,6 @@ private:
 	unsigned m_WindowWidth;
 	unsigned m_WindowHeight;
 
-	 Camera* m_Camera;
 
 	//Mesh and materials
 	std::vector<Mesh*> MeshList;
@@ -97,6 +100,7 @@ private:
 	ShaderProgram UICombinedShader;
 	ShaderProgram LightingCombinedShader;
 	ShaderProgram SSAO;
+	ShaderProgram DebugShader;
 	
 	//Environment maps
 	Texture m_CubeMap;

@@ -57,6 +57,13 @@ COMPONENT_REGISTER(MeshFilter, "MeshFilter")
 
 
 
+class DrawGizmoEvent : public IEvent
+{
+public:
+	Mesh * mesh;
+	const float* matrix;
+};
+
 //-----------------------------------------------------
 //	RenderSystem is used in conjunction with ECS to fit old code into
 //	the new framework.
@@ -72,7 +79,12 @@ private:
 public:
 
 	RenderSystem(ECS::ComponentManager* a_Cmanager, EventManager& a_eManager)
-	:System(a_Cmanager, a_eManager){}
+	:System(a_Cmanager, a_eManager)
+	{
+		//Add event listner for drawing debug/gizmo meshes
+		std:std::function<void(DrawGizmoEvent&)> f2 = [this](DrawGizmoEvent& eve) {DrawDebugMesh(eve); };
+		a_eManager.AddListner<DrawGizmoEvent>(f2);
+	}
 
 	Renderer* GetRenderer()
 	{
@@ -103,10 +115,16 @@ public:
 		m_Renderer->PointLightPass();
 		m_Renderer->SSAOPass();
 		m_Renderer->CombineLighting();
+		m_Renderer->CombineDebug();
 		m_Renderer->CombineUI();
 		m_Renderer->SubmitFrame();
 	}
 	
+
+	void DrawDebugMesh(DrawGizmoEvent& a_event)
+	{
+		m_Renderer->RenderDebug(*a_event.mesh, a_event.matrix);
+	}
 };
 
 

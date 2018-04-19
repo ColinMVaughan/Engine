@@ -79,6 +79,13 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
+	if (!DebugShader.Load("./Assets/Shaders/LineDebug.vert", "./Assets/Shaders/LineDebug.frag"))
+	{
+		std::cout << "Shaders failed to initalize.\n";
+		system("pause");
+		exit(0);
+	}
+
 	//Initalize Gbuffer
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
 	GBuffer.InitDepthTexture(m_WindowWidth, m_WindowHeight);
@@ -119,6 +126,14 @@ void Renderer::Initalize()
 		system("pause");
 		exit(0);
 	}
+	DebugBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	if (!DebugBuffer.CheckFBO())
+	{
+		std::cout << "Debug FBO failed to initalize. \n";
+		system("pause");
+		exit(0);
+	}
+
 	InitalizeSSAO();
 }
 
@@ -282,6 +297,26 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 	
 }
 
+void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
+{
+	DebugBuffer.Bind();
+	DebugShader.Bind();
+
+	DebugShader.SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
+	DebugShader.SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
+	DebugShader.SendUniformMat4("uModel", matrix, false);
+
+	glLineWidth(1.0);
+
+	glBindVertexArray(mesh.VAO);
+	glDrawArrays(GL_LINE_STRIP, 0, mesh.GetNumVertices());
+	glBindVertexArray(0);
+
+	DebugShader.UnBind();
+	DebugBuffer.UnBind();
+
+}
+
 //--------------------------------------------------------
 //			Deffered Point Lighting Pass
 //--------------------------------------------------------
@@ -354,6 +389,26 @@ void Renderer::CombineUI()
 	FinalBuffer->UnBind();
 
 	UICombinedShader.Bind();
+
+	glDisable(GL_BLEND);
+}
+
+void Renderer::CombineDebug()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	UICombinedShader.Bind();
+	UICombinedShader.SendUniform("uTex", 0);
+
+	FinalBuffer->Bind();
+	glBindTexture(GL_TEXTURE_2D, DebugBuffer.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	FinalBuffer->UnBind();
+
+	DebugBuffer.UnBind();
+	DebugBuffer.Clear();
 
 	glDisable(GL_BLEND);
 }

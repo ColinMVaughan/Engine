@@ -43,6 +43,10 @@ public:
 			ASSET.RequestAsset(manager);\
 		}\
 
+
+
+//----------------------------------------------------------------
+// DEPRICATED! USE EditorRequestAsset Function instead
 //------------------------------------------------------------------
 #define EDITOR_REQUEST_ASSET(ASSET_TYPE,ASSET,NAME)									\
 		ImGui::Text(NAME);															\
@@ -69,6 +73,41 @@ public:
 		ImGui::EndDragDropTarget();													\
 		}																			\
 
+
+
+template<typename Asset_Type>
+inline bool EditorRequestAsset(Asset<Asset_Type>& a_Asset, const std::string& a_AssetTypeName, const std::string& a_AssetName = "Asset:")
+{
+	ImGui::Text(a_AssetName.c_str());
+	ImGui::SameLine();
+	ImGui::Selectable(a_Asset.m_AssetName.c_str(), true);
+	/*If something is being dragged/dropped into our window */
+	if (ImGui::BeginDragDropTarget())
+	{
+		/*If this is something we can accept*/
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(a_AssetTypeName.c_str()))
+		{
+			/*Assert that this data is the correct size*/
+			IM_ASSERT(payload->DataSize == sizeof(BaseAssetRequestEvent*));
+
+			BaseAssetRequestEvent* base = nullptr;
+			memcpy(&base, payload->Data, sizeof(BaseAssetRequestEvent*));
+
+			auto assetRequest = static_cast<AssetRequestEvent<Asset_Type>*>(base);
+			a_Asset.m_AssetName = assetRequest->m_AssetName;
+			a_Asset.m_AssetType = a_AssetTypeName;
+			a_Asset.m_Asset = *assetRequest->Asset;
+
+
+			ImGui::EndDragDropTarget();
+			return true;
+		}
+		ImGui::EndDragDropTarget();
+		return false;
+	}
+
+	return false;
+}
 
 
 #endif

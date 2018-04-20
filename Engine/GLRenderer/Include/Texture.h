@@ -6,6 +6,7 @@ class Texture
 {
 public:
 	Texture() = default;
+	Texture(const std::string a_filepath);
 	~Texture();
 
 	bool Load(const std::string &file, GLuint SampleType = GL_LINEAR);

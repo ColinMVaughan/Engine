@@ -4,9 +4,13 @@
 
 #include <iostream>
 
+Texture::Texture(const std::string a_filepath)
+{
+	Load(a_filepath, GL_NEAREST);
+}
+
 Texture::~Texture()
 {
-	Unload();
 }
 
 bool Texture::Load(const std::string &file, GLuint SampleType)
@@ -28,7 +32,7 @@ bool Texture::Load(const std::string &file, GLuint SampleType)
 		else
 			return false;
 
-
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glGenTextures(1, &TexObj);
 		glBindTexture(GL_TEXTURE_2D, TexObj);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, image);
@@ -68,6 +72,7 @@ bool Texture::LoadHDR(const std::string& file)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+		glBindTexture(GL_TEXTURE_2D, 0);
 		stbi_image_free(data);
 	}
 	else
@@ -103,6 +108,7 @@ bool Texture::CreateCubeMap(GLsizei size, bool mipmap)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	}
 
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	return true;
 }
 

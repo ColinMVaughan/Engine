@@ -62,8 +62,49 @@ COMPONENT_REGISTER(MeshFilter, "MeshFilter")
 
 class MaterialFilter
 {
+public:
+	void ExposeToEditor()
+	{
+		if(EditorRequestAsset<Texture>(m_Albedo, "Texture", "Albedo: "))
+			m_Material.Albedo = m_Albedo.m_Asset;
 
-	
+		else if(EditorRequestAsset<Texture>(m_Normal, "Texture", "Normal: "))
+			m_Material.Normal = m_Normal.m_Asset;
+
+		else if(EditorRequestAsset<Texture>(m_AO, "Texture", "AO: "))
+			m_Material.AO = m_AO.m_Asset;
+
+		else if(EditorRequestAsset<Texture>(m_Roughness, "Texture", "Roughness: "))
+			m_Material.Roughness = m_Roughness.m_Asset;
+
+		else if(EditorRequestAsset<Texture>(m_Metallic, "Texture", "Metallic: "))
+			m_Material.Metallic = m_Metallic.m_Asset;
+	}
+
+	COMPONENT_SERIALIZE(m_Albedo, m_Normal, m_AO, m_Roughness, m_Metallic)
+	void serialize_asset(EventManager& manager)
+	{
+		m_Albedo.RequestAsset(manager);
+		m_Normal.RequestAsset(manager);
+		m_AO.RequestAsset(manager);
+		m_Roughness.RequestAsset(manager);
+		m_Metallic.RequestAsset(manager);
+
+		m_Material.Albedo = m_Albedo.m_Asset;
+		m_Material.Normal = m_Normal.m_Asset;
+		m_Material.AO = m_AO.m_Asset;
+		m_Material.Roughness = m_Roughness.m_Asset;
+		m_Material.Metallic = m_Metallic.m_Asset;
+	}
+
+
+	Material m_Material;
+private:
+	Asset<Texture> m_Albedo;
+	Asset<Texture> m_Normal;
+	Asset<Texture> m_AO;
+	Asset<Texture> m_Roughness;
+	Asset<Texture> m_Metallic;	
 };
 COMPONENT_REGISTER(MaterialFilter, "MaterilFilter");
 
@@ -86,7 +127,7 @@ public:
 //	Add system to system Manager, and send avalid Renderer pointer.
 //-----------------------------------------------------
 
-class RenderSystem : public ECS::System<MeshFilter, Material, Transform>
+class RenderSystem : public ECS::System<MeshFilter, MaterialFilter, Transform>
 {
 private:
 	Renderer* m_Renderer;
@@ -122,7 +163,7 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		auto mat =entity.GetComponent<Transform>()->GetGlobalTransformMatrix();
-		m_Renderer->Render(&entity.GetComponent<MeshFilter>()->m_Mesh.m_Asset, entity.GetComponent<Material>(), mat.front());
+		m_Renderer->Render(&entity.GetComponent<MeshFilter>()->m_Mesh.m_Asset, &entity.GetComponent<MaterialFilter>()->m_Material, mat.front());
 	}
 	void PostUpdate(double deltaTime) override
 	{

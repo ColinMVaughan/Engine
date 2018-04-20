@@ -7,6 +7,7 @@
 #include <CoreComponentRegistration.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <SceneLoader.h>
+#include "Asset.h"
 
 Editor::Editor()
 {
@@ -172,6 +173,9 @@ void Editor::DrawMenuBar(double deltaTime)
 //------------------------------------------------------
 void Editor::DrawEntityInspector()
 {
+	static int selected = 0;
+
+
 	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Entity Inspector", &IsEntityInspectorActive, ImGuiWindowFlags_MenuBar))
 	{
@@ -185,11 +189,22 @@ void Editor::DrawEntityInspector()
 				}
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Save"))
+			{
+				if (ImGui::MenuItem("Prefab"))
+				{
+					m_Scene->SaveEntityPrefab(m_Scene->GetEntity(selected));
+				}
+				ImGui::EndMenu();
+			}
+
+
 			ImGui::EndMenuBar();
 		}
 
 		//Enity View
-		static int selected = 0;
+
 		ImGui::BeginChild("Left Pane", ImVec2(150, 0), true);
 
 		//**************
@@ -215,11 +230,20 @@ void Editor::DrawEntityInspector()
 
 		}
 
+
+
 		//Draws any relevent gizmos of the selected entity
 		m_SystemManager->UpdateGizmos(m_Scene->GetEntity(selected));
 
 		//**************
 		ImGui::EndChild();
+		//If the user drags a prefab in, add it to the scene
+		Asset<PrefabEntity> prefab;
+		if (EditorRequestAsset<PrefabEntity>(prefab, "Prefab", ""))
+		{
+			m_Scene->LoadAndSpawnPrefabEntity(prefab.m_Asset.m_Filepath);
+		}
+
 		ImGui::SameLine();
 
 
@@ -250,7 +274,7 @@ void Editor::DrawEntityInspector()
 		ImGui::EndChild();
 
 		ImGui::BeginChild("Buttons");
-		if (ImGui::Button("Add Component",ImVec2(400,100))) { ImGui::OpenPopup("ComponentList"); }
+		if (ImGui::Button("Add Component",ImVec2(300,100))) { ImGui::OpenPopup("ComponentList"); }
 		if (ImGui::BeginPopup((const char*)"ComponentList"))
 		{
 			ImGui::Text("Components");

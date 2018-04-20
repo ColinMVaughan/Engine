@@ -10,6 +10,7 @@
 
 namespace ECS
 {
+
 	class Scene;
 //---------------------------------------------------------
 //						ENTITY
@@ -106,6 +107,9 @@ namespace ECS
 
 		bool SaveScene(std::string filePath);
 		bool LoadScene(std::string filePath);
+
+		bool SaveEntityPrefab(Entity& entity);
+		bool LoadAndSpawnPrefabEntity(std::string prefabPath);
 
 		void UpdateSystems(double deltaTime);
 		void UpdateCoreSystems(double deltaTime);

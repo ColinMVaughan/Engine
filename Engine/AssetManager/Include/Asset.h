@@ -76,11 +76,8 @@ public:
 
 
 template<typename Asset_Type>
-inline bool EditorRequestAsset(Asset<Asset_Type>& a_Asset, const std::string& a_AssetTypeName, const std::string& a_AssetName = "Asset:")
+bool EditorRequestAsset(Asset<Asset_Type>& a_Asset, const std::string& a_AssetTypeName, const std::string& a_AssetName = "Asset:")
 {
-	ImGui::Text(a_AssetName.c_str());
-	ImGui::SameLine();
-	ImGui::Selectable(a_Asset.m_AssetName.c_str(), true);
 	/*If something is being dragged/dropped into our window */
 	if (ImGui::BeginDragDropTarget())
 	{

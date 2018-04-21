@@ -126,7 +126,7 @@ void CollisionSystem::DrawGizmo(ECS::Entity& entity)
 
 	//set the matrix and dispatch the mesh to be rendered
 
-	PxMat44 newMatrix = matrix * PxMat44(collider->m_CollisionShape->getLocalPose());
+	PxMat44 newMatrix = PxMat44(collider->m_CollisionShape->getLocalPose()) * matrix;
 	meshEvent.matrix = newMatrix.front();
 
 	entity.DispatchEvent<DrawGizmoEvent>(meshEvent);

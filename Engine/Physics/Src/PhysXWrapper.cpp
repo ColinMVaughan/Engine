@@ -228,17 +228,20 @@ void Collider::ExposeToEditor()
 		case 0:
 			m_Geometry = PxBoxGeometry(0.5, 0.5, 0.5);
 			m_Dimentions = PxVec3(0.5, 0.5, 0.5);
+			m_SavedType = PxGeometryType::eBOX;
 			break;
 
 			//Sphere
 		case 1:
 			m_Geometry = PxSphereGeometry(1.0f);
 			m_Dimentions = PxVec3(1.0, 0, 0);
+			m_SavedType = PxGeometryType::eSPHERE;
 			break;
 
 		case 2:
 			m_Geometry = PxCapsuleGeometry(0.5, 1.0);
 			m_Dimentions = PxVec3(0.5, 1.0, 0);
+			m_SavedType = PxGeometryType::eCAPSULE;
 			break;
 
 		}

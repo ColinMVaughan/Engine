@@ -24,6 +24,7 @@ void Editor::DoInitalize()
 	//Allows the user to move the camera in debug mode.
 	RegisterKeyboardCallback(m_Scene->AddCoreSystem<DebugCameraControlSystem>());
 	m_Scene->AddSystem<EventSystemTest>();
+	m_Scene->AddSystem<BlockResetSystem>();
 
 	//Create Entity that will act as the editor camera
 	auto EditorCamera = m_Scene->CreateEntity(); //create entity

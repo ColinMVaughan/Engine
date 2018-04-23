@@ -5,6 +5,7 @@ uniform sampler2D Roughness;
 uniform sampler2D Metallic;
 uniform sampler2D Normal;
 uniform sampler2D AO;
+uniform sampler2D Emissive;
 
 in vec2 texcoord;
 in vec3 norm;
@@ -17,6 +18,7 @@ layout (location = 2) out vec3 outPosition;
 layout (location = 3) out vec4 outRoughness;
 layout (location = 4) out vec4 outMetallic;
 layout (location = 5) out vec4 outAo;
+layout (location = 6) out vec4 outEmissive;
 
 vec3 getNormalFromMap()
 {
@@ -38,6 +40,7 @@ vec3 getNormalFromMap()
 void main()
 {
 	outAo.r = texture(AO, texcoord).r;
+	outEmissive.r = texture(Emissive, texcoord).r;
 
 	//standard color output
 	outColor.rgb = texture(Albedo, texcoord).rgb;

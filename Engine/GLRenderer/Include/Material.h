@@ -95,6 +95,8 @@ struct Material
 	float RoughnessScale = 1.0f;
 	std::string roughnessName;
 
+	Texture Emissive;
+
 	std::string m_folderPath;
 
 private:

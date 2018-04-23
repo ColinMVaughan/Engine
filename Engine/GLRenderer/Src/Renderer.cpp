@@ -95,6 +95,7 @@ void Renderer::Initalize()
 	GBuffer.InitColorTexture(3, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);	//Roughness Factor
 	GBuffer.InitColorTexture(4, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);	//Metallic Factor
 	GBuffer.InitColorTexture(5, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);	//AO Factor
+	GBuffer.InitColorTexture(6, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);	//Emissive Factor
 	if (!GBuffer.CheckFBO())
 	{
 		std::cout << "FBO Failed to Initalize.\n";
@@ -257,6 +258,7 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 	GBP->SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
 	GBP->SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
 
+	GBP->SendUniform("Emissive", 5);
 	GBP->SendUniform("AO", 4);
 	GBP->SendUniform("Normal", 3);
 	GBP->SendUniform("Albedo", 2);
@@ -275,6 +277,8 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 		material->Normal.Bind();
 		glActiveTexture(GL_TEXTURE4);
 		material->AO.Bind();
+		glActiveTexture(GL_TEXTURE5);
+		material->Emissive.Bind();
 
 		glBindVertexArray(mesh->VAO);
 		if (mesh->IsInstanced)
@@ -283,6 +287,8 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 			glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumVertices());
 		glBindVertexArray(0);
 
+		material->Emissive.UnBind();
+		glActiveTexture(GL_TEXTURE4);
 		material->AO.UnBind();
 		glActiveTexture(GL_TEXTURE3);
 		material->Normal.UnBind();
@@ -491,7 +497,8 @@ void Renderer::CombineLighting()
 	LightingCombinedShader.SendUniform("brdfLUT", 7);
 
 	LightingCombinedShader.SendUniform("aoMap", 8);
-	LightingCombinedShader.SendUniform("combinedLights", 9);
+	LightingCombinedShader.SendUniform("emissiveMap", 9);
+	LightingCombinedShader.SendUniform("combinedLights", 10);
 	LightingCombinedShader.SendUniform("camPos", m_Camera->GetPosition());
 
 
@@ -513,8 +520,12 @@ void Renderer::CombineLighting()
 	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_2D, SSAOBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(6));
+	glActiveTexture(GL_TEXTURE10);
 	glBindTexture(GL_TEXTURE_2D, LightpassBuffer.GetColorHandle(0));
 	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE9);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);

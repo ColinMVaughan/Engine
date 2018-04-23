@@ -12,6 +12,7 @@ uniform sampler2D positionMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
+uniform sampler2D emissiveMap;
 
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
@@ -95,7 +96,7 @@ void main()
 	float metallic		= texture(metallicMap, texcoord).r;
 	float roughness		= texture(roughnessMap,texcoord).r;
 	float ao			= texture(aoMap, texcoord).r;
-	
+	float emissive		= texture(emissiveMap, texcoord).r;
 	
 	normal = normal * 2.0 - 1.0; //unpack normal.
 	vec3 N = normal;
@@ -127,8 +128,8 @@ void main()
 	vec3 ambiant = (kD * diffuse + specular) * ao;
 	
 	
-	//Combine ambiant color with summed light influence
-	vec3 color = ambiant + CombinedLight;
+	//Combine ambiant color with summed light influence & multiply against emissive influence
+	vec3 color = (ambiant + CombinedLight) * float(1.0f - emissive) + (albedo)*emissive;
 	
 	//Gamma correct color
 	color = color / (color + vec3(1.0));

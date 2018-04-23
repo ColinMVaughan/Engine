@@ -94,6 +94,12 @@ public:
 		ImGui::Selectable(m_Metallic.m_AssetName.c_str(), true);
 		if(EditorRequestAsset<Texture>(m_Metallic, "Texture", "Metallic: "))
 			m_Material.Metallic = m_Metallic.m_Asset;
+
+		ImGui::Text("Emissive: ");
+		ImGui::SameLine();
+		ImGui::Selectable(m_Emissive.m_AssetName.c_str(), true);
+		if (EditorRequestAsset<Texture>(m_Emissive, "Texture", "Metallic: "))
+			m_Material.Emissive = m_Emissive.m_Asset;
 	}
 
 	COMPONENT_SERIALIZE(m_Albedo, m_Normal, m_AO, m_Roughness, m_Metallic)
@@ -110,6 +116,7 @@ public:
 		m_Material.AO = m_AO.m_Asset;
 		m_Material.Roughness = m_Roughness.m_Asset;
 		m_Material.Metallic = m_Metallic.m_Asset;
+		m_Material.Emissive = m_Emissive.m_Asset;
 	}
 
 
@@ -120,6 +127,7 @@ private:
 	Asset<Texture> m_AO;
 	Asset<Texture> m_Roughness;
 	Asset<Texture> m_Metallic;	
+	Asset<Texture> m_Emissive;
 };
 COMPONENT_REGISTER(MaterialFilter, "MaterilFilter");
 
@@ -222,7 +230,12 @@ public:
 	glm::fvec3 Color;
 	bool Registered = false;
 
-	COMPONENT_SERIALIZE(BaseColour[0], BaseColour[1], BaseColour[2], Intensity)
+	template<typename Archive>
+	void serialize(Archive& arc)
+	{
+		arc(BaseColour[0], BaseColour[1], BaseColour[2], Intensity);
+		Color = BaseColour * Intensity;
+	}
 
 private:
 	glm::vec3 BaseColour;
@@ -249,16 +262,16 @@ public:
 		PxVec3 Pos =entity.GetComponent<Transform>()->GetTransform()->p;
 		PointLightComponent* light = entity.GetComponent<PointLightComponent>();
 
-		if (!light->Registered)
-		{
-			m_Renderer->AddPointLight(&light->Color, &light->position, false);
-			light->Registered = true;
-		}
-
 		light->position[0] = Pos.x;
 		light->position[1] = Pos.y;
 		light->position[2] = Pos.z;
 
+	}
+
+	void EntityRegistered(ECS::Entity& entity) override
+	{
+		PointLightComponent* light = entity.GetComponent<PointLightComponent>();
+		m_Renderer->AddPointLight(&light->Color, &light->position, false);
 	}
 
 private:

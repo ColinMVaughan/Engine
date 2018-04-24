@@ -77,8 +77,8 @@ public:
 
 	BlockResetSystem(ECS::ComponentManager* a_comp, EventManager& a_eve):System(a_comp, a_eve)
 	{
-		Position = PxVec3(0.0, 6.0, 0.0);
-		distribution = std::uniform_real_distribution<float>(-4.0f, 4.0f);
+		Position = PxVec3(0.0, 7.0, 0.0);
+		distribution = std::uniform_real_distribution<float>(-6.0f, 6.0f);
 	}
 
 

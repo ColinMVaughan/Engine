@@ -102,7 +102,7 @@ public:
 			m_Material.Emissive = m_Emissive.m_Asset;
 	}
 
-	COMPONENT_SERIALIZE(m_Albedo, m_Normal, m_AO, m_Roughness, m_Metallic)
+	COMPONENT_SERIALIZE(m_Albedo, m_Normal, m_AO, m_Roughness, m_Metallic, m_Emissive)
 	void serialize_asset(EventManager& manager)
 	{
 		m_Albedo.RequestAsset(manager);
@@ -110,6 +110,7 @@ public:
 		m_AO.RequestAsset(manager);
 		m_Roughness.RequestAsset(manager);
 		m_Metallic.RequestAsset(manager);
+		m_Emissive.RequestAsset(manager);
 
 		m_Material.Albedo = m_Albedo.m_Asset;
 		m_Material.Normal = m_Normal.m_Asset;

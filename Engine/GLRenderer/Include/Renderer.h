@@ -32,7 +32,7 @@ public:
 	Renderer(unsigned windowHeight, unsigned windowWidth,SDL_Window* window, Camera* camera)
 		:m_WindowWidth(windowWidth), m_WindowHeight(windowHeight), 
 		m_Camera(camera),m_Window(window),
-		GBuffer(7), LightpassBuffer(1), CombinedLighingBuffer(1), SSAOBuffer(1), UIBuffer(1),DebugBuffer(1), FinalBuffer(&CombinedLighingBuffer){}
+		GBuffer(7), LightpassBuffer(1), CombinedLighingBuffer(1), SSAOBuffer(1), UIBuffer(1),DebugBuffer(1),PostProccessBuffer(1), FinalBuffer(&CombinedLighingBuffer){}
 
 	void Initalize();
 	void InitalizePBREnvironmentMaps(std::string filepath);
@@ -52,6 +52,9 @@ public:
 
 	void InitalizeSSAO();
 	void SSAOPass();
+
+	void InitalizePostProcessing();
+	void PostProccessPass();
 
 	void SubmitFrame();
 
@@ -88,6 +91,7 @@ private:
 	FrameBuffer LightpassBuffer;
 	FrameBuffer CombinedLighingBuffer;
 	FrameBuffer SSAOBuffer;
+	FrameBuffer PostProccessBuffer;
 	FrameBuffer* FinalBuffer;
 
 	//Shaders used for rendering

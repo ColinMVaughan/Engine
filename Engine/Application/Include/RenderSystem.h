@@ -194,6 +194,7 @@ public:
 		m_Renderer->PointLightPass();
 		m_Renderer->SSAOPass();
 		m_Renderer->CombineLighting();
+		//Post Processing pass
 		m_Renderer->CombineDebug();
 		m_Renderer->CombineUI();
 		m_Renderer->SubmitFrame();

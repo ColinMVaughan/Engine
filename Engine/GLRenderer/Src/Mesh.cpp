@@ -242,7 +242,9 @@ bool Mesh::SetInstancing(mat4* dataBuffer, size_t bufferSize)
 
 	GLsizei vec4Size = sizeof(glm::vec4);
 
-	glGenBuffers(1, &VBO_Instance);
+	if(VBO_Instance == 0)
+		glGenBuffers(1, &VBO_Instance);
+
 	glBindVertexArray(VAO);
 
 

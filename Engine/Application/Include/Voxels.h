@@ -53,18 +53,26 @@ public:
 	VoxelContainerFilter() = default;
 	void ExposeToEditor()
 	{
-		EDITOR_REQUEST_ASSET(VoxelContainer, m_VoxelContainer, "VoxelContainer")
+		if(EditorRequestAsset<VoxelContainer>(m_VoxelContainer, "VoxelContainer", "Voxel Container: "))
+		{
+			if(m_Mesh.VAO != 0)
+			{
+				m_Mesh.SetInstancing(&m_VoxelContainer.m_Asset.m_Matricies[0],
+					m_VoxelContainer.m_Asset.m_Matricies.size());
+			}
+		}
 	}
 
 	COMPONENT_SERIALIZE(m_VoxelContainer)
 	SERIALIZE_ASSET(m_VoxelContainer)
 
+	std::vector<PxRigidDynamic*> m_Rigidbodies;
+
 	Asset<VoxelContainer> m_VoxelContainer;
+	Mesh m_Mesh;
 	bool dynamic = false;
 };
 COMPONENT_REGISTER(VoxelContainerFilter, "VoxelContainerFilter")
-
-
 
 
 #endif

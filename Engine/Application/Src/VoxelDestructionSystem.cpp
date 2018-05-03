@@ -56,12 +56,6 @@ void VoxelDestructionSystem::Update(double deltaTime, ECS::Entity& entity)
 	auto mesh = entity.GetComponent<Mesh>();
 	auto voxels = entity.GetComponent<VoxelContainerFilter>();
 
-	if(!mesh->IsInstanced)
-	{
-		if (mesh->VAO == 0)
-			LoadAsCube(*mesh);
-		mesh->SetInstancing(voxels->m_VoxelContainer.m_Asset.m_Matricies.data(), voxels->m_VoxelContainer.m_Asset.m_Matricies.size());
-	}
 
 	//Submit the new Voxel matricies to the gpu.
 	//Currently the entire instance buffer will have to be resubmitted
@@ -77,6 +71,24 @@ void VoxelDestructionSystem::Update(double deltaTime, ECS::Entity& entity)
 void VoxelDestructionSystem::PostUpdate(double deltaTime)
 {
 
+}
+
+void VoxelDestructionSystem::Start(ECS::Entity& entity)
+{
+	auto voxels = entity.GetComponent<VoxelContainerFilter>();
+	auto transform = entity.GetComponent<Transform>();
+
+	//For each block in  the voxel container
+	for each(glm::mat4 matrix in voxels->m_VoxelContainer.m_Asset.m_Matricies)
+	{
+		//create a rigidbody at the position of the associated block
+		PxTransform voxelTransform = PxTransform(PxMat44(matrix[0][0]));
+		transform->GetTransform()->transform(voxelTransform);
+		PxRigidDynamic* body = m_Physics->GetPhysics()->createRigidDynamic(voxelTransform);
+
+		//attach shape to block
+
+	}
 }
 
 
@@ -113,3 +125,22 @@ void VoxelDestructionSystem::KeyDown(unsigned char key)
 	}
 
 }
+
+
+void VoxelDestructionSystem::EntityRegistered(ECS::Entity& entity)
+{
+	//get relevent components
+	auto mesh = entity.GetComponent<MeshFilter>();
+	auto vox = entity.GetComponent<VoxelContainerFilter>();
+
+	//Set up voxel mesh/instancing
+	LoadAsCube(vox->m_Mesh);
+	vox->m_Mesh.SetInstancing(&vox->m_VoxelContainer.m_Asset.m_Matricies[0],
+		vox->m_VoxelContainer.m_Asset.m_Matricies.size());
+
+	//set entity's mesh to this new voxel one.
+	mesh->m_Mesh.m_Asset = vox->m_Mesh;
+	mesh->m_Mesh.m_AssetName = "";
+
+}
+

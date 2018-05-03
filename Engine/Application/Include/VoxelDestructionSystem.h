@@ -31,6 +31,10 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity) override;
 	void PostUpdate(double deltaTime) override;
 
+	void Start(ECS::Entity& entity) override;
+
+	void EntityRegistered(ECS::Entity& entity) override;
+
 
 	void KeyDown(unsigned char key);
 
@@ -53,4 +57,5 @@ private:
 
 	PxShape* m_CollisionShape;	//Every voxel rigidbody will share this shape
 	VoxelContainer* TestCase;
+	PhysXWrapper* m_Physics;
 };

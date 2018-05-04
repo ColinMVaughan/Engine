@@ -43,6 +43,8 @@ public:
 
 	void PreRender();
 	void Render(Mesh* mesh, Material* material, const float* matrix);
+	void RenderVoxel(Mesh* mesh, Texture* texture, const float* matrix);
+
 	void RenderDebug(Mesh& mesh, const float* matrix);
 
 	void CombineLighting();

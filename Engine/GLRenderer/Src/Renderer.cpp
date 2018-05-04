@@ -303,6 +303,35 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 	
 }
 
+void Renderer::RenderVoxel(Mesh * mesh, Texture * texture, const float * matrix)
+{
+	//-------------------------------------------------------------------------------
+	//			Render Geometry to GBuffer
+	//-------------------------------------------------------------------------------
+	ShaderProgram* GBP = &GBufferPassInstanced;
+
+	GBP->Bind();
+	GBP->SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
+	GBP->SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
+	GBP->SendUniformMat4("uModel", matrix, false);
+
+	GBP->SendUniform("Metallic", 0);
+	GBuffer.Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	texture->Bind();
+
+	glBindVertexArray(mesh->VAO);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->GetNumVertices(), mesh->InstanceNumber);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+	texture->UnBind();
+
+	GBP->UnBind();
+	GBuffer.UnBind();
+}
+
 void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
 {
 	DebugBuffer.Bind();

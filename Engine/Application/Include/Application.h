@@ -8,7 +8,7 @@
 #include <PhysicsSystem.h>
 #include <EventManager.h>
 #include "AssetManager.h"
-
+#include "VoxelRenderSystem.h"
 //------------------------------------------------
 //				Application
 //

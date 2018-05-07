@@ -99,13 +99,8 @@ void VoxelContainer::ReadQubicBinaryFile(std::string file)
 }
 
 //Reads the VOX file format to load in voxel data from magicavoxel
-void VoxelContainer::ReadVoxFile(std::string file, Mesh * mesh)
+void VoxelContainer::ReadVoxFile(std::string file)
 {
-	if (!mesh)
-	{
-		std::cout << "Could not read Vox file: Invalid mesh pointer";
-		return;
-	}
 	//----------------------------------------------------------------------
 	//DATA
 	//----------------------------------------------------------------------
@@ -141,18 +136,25 @@ void VoxelContainer::ReadVoxFile(std::string file, Mesh * mesh)
 
 	//Get Header Data
 	//collect size of matrix
-	char ID[4];
 	for (int i = 0; i < 3; ++i)
 	{
 		ID[i] = data[i];
 	}
 	offset += 4;
 
+	//version number
+	offset += 4;
+
 	//Read Chunks
-	while (true)
-	{
-		ReadChunk(data, offset);
-	}
+	//while (true)
+	//{
+	//	ReadChunk(data, offset);
+	//}
+	ReadChunk(data, offset);
+	ReadChunk(data, offset); //SIZE
+	ReadChunk(data, offset); //XYZI
+
+	ReadChunk(data, offset); //RGBA
 
 }
 
@@ -174,7 +176,7 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 	//-----------------------------------------------------------
 
 	//Read chunk id
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		chunkID[i] = data[i + offset];
 	}
@@ -189,7 +191,7 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 	offset += 4;
 
 	//
-	switch (chunkID[0])
+	switch (chunkID[3])
 	{
 	case 'N': //MAIN
 		break;
@@ -199,6 +201,7 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 		break;
 
 	case 'E': //SIZE
+	{
 		int32_t sizeX = *reinterpret_cast<int32_t*>(data + offset);
 		offset += 4;
 
@@ -217,11 +220,12 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 			m_MaterialIndex.push_back(unsigned int());
 		}
 		break;
-
+	}
 	case 'I': //XYZI
+	{
 		int32_t numVoxels = *reinterpret_cast<int32_t*>(data + offset);
 		offset += 4;
-		for (int32_t i = 0; i< numVoxels; ++i)
+		for (int32_t i = 0; i < numVoxels; ++i)
 		{
 			int8_t x = *reinterpret_cast<int8_t*>(data + offset);
 			offset += 1;
@@ -235,14 +239,28 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 			int8_t index = *reinterpret_cast<int8_t*>(data + offset);
 			offset += 1;
 
-			m_Matricies[i] = glm::translate(m_Matricies[i], glm::vec3(x,y,z));
+			m_Matricies[i] = glm::translate(m_Matricies[i], glm::vec3(x, y, z));
 			m_MaterialIndex[i] = index;
+
+			//if this material index is greater than the maximum, set it, otherwise leave it.
+			m_maxMaterialIndex = (index > m_maxMaterialIndex) ? index : m_maxMaterialIndex;
 		}
 		break;
-
+	}
 	case 'A': //RGBA
-		offset += (4 * 256);
+	{
+		for (int i = 0; i < m_maxMaterialIndex; i++)
+		{
+			uint8_t r = *reinterpret_cast<int8_t*>(data + offset);
+			uint8_t g = *reinterpret_cast<int8_t*>(data + offset + 1);
+			uint8_t b = *reinterpret_cast<int8_t*>(data + offset + 2);
+			uint8_t a = *reinterpret_cast<int8_t*>(data + offset + 3);
+			offset += 4;
+
+			m_Palette.push_back(glm::vec3(r, g, b));
+		}
 		break;
+	}
 
 	case 'T': //MATT
 		return false;

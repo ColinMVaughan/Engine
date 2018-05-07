@@ -8,7 +8,7 @@
 #include <tuple>
 #include <ComponentReflection.h>
 #include <AssetRegistration.h>
-
+#include <Asset.h>
 
 
 //--------------------------------------------------------
@@ -17,16 +17,17 @@
 class VoxelContainer
 {
 public:
-	VoxelContainer(std::string file) {/* ReadQubicBinaryFile(file);*/ }
+	VoxelContainer(std::string file) {ReadVoxFile(file);}
 	VoxelContainer() = default;
 
 	void ReadQubicBinaryFile(std::string file);
-	void ReadVoxFile(std::string File, Mesh* mesh);
+	void ReadVoxFile(std::string File);
 
 	bool ReadChunk(char* data, Uint32& offset);
 
 	std::vector<glm::mat4> m_Matricies;
 	std::vector<unsigned int> m_MaterialIndex;
+	std::vector<glm::vec3> m_Palette;
 
 	unsigned int m_Width;
 	unsigned int m_Depth;
@@ -101,6 +102,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP); //V axis
 
 		glBindTexture(GL_TEXTURE_2D, 0);
+		return true;
 	}
 
 	//Material properties, first is colour(r,g,b), second is metallic,roughness,emissive(x,y,z)

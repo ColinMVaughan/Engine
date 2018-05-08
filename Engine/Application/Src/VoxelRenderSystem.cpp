@@ -158,7 +158,7 @@ void VoxelContainer::ReadVoxFile(std::string file)
 
 }
 
-bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
+bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
 {
 	//Chunk Data
 	char chunkID[4];
@@ -202,63 +202,17 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 
 	case 'E': //SIZE
 	{
-		int32_t sizeX = *reinterpret_cast<int32_t*>(data + offset);
-		offset += 4;
-
-		int32_t sizeY = *reinterpret_cast<int32_t*>(data + offset);
-		offset += 4;
-
-		int32_t sizeZ = *reinterpret_cast<int32_t*>(data + offset);
-		offset += 4;
-
-		m_Matricies.reserve(sizeX*sizeY*sizeZ);
-		m_MaterialIndex.reserve(sizeX*sizeY*sizeZ);
-
-		for (int i = 0; i < sizeX*sizeY*sizeZ; ++i)
-		{
-			m_Matricies.push_back(glm::mat4());
-			m_MaterialIndex.push_back(unsigned int());
-		}
+		ReadChunkSIZE(data, offset);
 		break;
 	}
 	case 'I': //XYZI
 	{
-		int32_t numVoxels = *reinterpret_cast<int32_t*>(data + offset);
-		offset += 4;
-		for (int32_t i = 0; i < numVoxels; ++i)
-		{
-			int8_t x = *reinterpret_cast<int8_t*>(data + offset);
-			offset += 1;
-
-			int8_t y = *reinterpret_cast<int8_t*>(data + offset);
-			offset += 1;
-
-			int8_t z = *reinterpret_cast<int8_t*>(data + offset);
-			offset += 1;
-
-			int8_t index = *reinterpret_cast<int8_t*>(data + offset);
-			offset += 1;
-
-			m_Matricies[i] = glm::translate(m_Matricies[i], glm::vec3(x, y, z));
-			m_MaterialIndex[i] = index;
-
-			//if this material index is greater than the maximum, set it, otherwise leave it.
-			m_maxMaterialIndex = (index > m_maxMaterialIndex) ? index : m_maxMaterialIndex;
-		}
+		ReadChunkXYZI(data, offset);
 		break;
 	}
 	case 'A': //RGBA
 	{
-		for (int i = 0; i < m_maxMaterialIndex; i++)
-		{
-			uint8_t r = *reinterpret_cast<int8_t*>(data + offset);
-			uint8_t g = *reinterpret_cast<int8_t*>(data + offset + 1);
-			uint8_t b = *reinterpret_cast<int8_t*>(data + offset + 2);
-			uint8_t a = *reinterpret_cast<int8_t*>(data + offset + 3);
-			offset += 4;
-
-			m_Palette.push_back(glm::vec3(r, g, b));
-		}
+		ReadChunkRGBA(data, offset);
 		break;
 	}
 
@@ -270,6 +224,114 @@ bool VoxelContainer::ReadChunk(char * data, Uint32 & offset)
 
 	return true;
 }
+
+bool VoxelContainer::ReadChunkRGBA(char * data, uint32_t & offset)
+{
+	std::map<unsigned int, std::vector<unsigned int*>> matIndexMap;
+	for (int i = 0; i< m_MaterialIndex.size(); ++i)
+	{
+		matIndexMap[m_MaterialIndex[i]].push_back(&m_MaterialIndex[i]);
+	}
+
+	unsigned int matCounter = 0;
+	for (auto it = matIndexMap.begin(); it != matIndexMap.end(); ++it)
+	{
+		//load the appropriate material
+		unsigned int materialIndex = it->first * 4 + offset;
+		uint8_t r = *reinterpret_cast<int8_t*>(data + materialIndex);
+		uint8_t g = *reinterpret_cast<int8_t*>(data + materialIndex + 1);
+		uint8_t b = *reinterpret_cast<int8_t*>(data + materialIndex + 2);
+		uint8_t a = *reinterpret_cast<int8_t*>(data + materialIndex + 3);
+		m_Palette.push_back(glm::vec3(r, g, b));
+
+		//changed the index of each block using this material to the new index
+		for (int i = 0; i<it->second.size(); ++i)
+		{
+			*it->second[i] = matCounter;
+		}
+
+		matCounter++;
+	}
+
+	return false;
+}
+
+bool VoxelContainer::ReadChunkSIZE(char * data, uint32_t & offset)
+{
+	int32_t sizeX = *reinterpret_cast<int32_t*>(data + offset);
+	offset += 4;
+
+	int32_t sizeY = *reinterpret_cast<int32_t*>(data + offset);
+	offset += 4;
+
+	int32_t sizeZ = *reinterpret_cast<int32_t*>(data + offset);
+	offset += 4;
+
+	m_Matricies.reserve(sizeX*sizeY*sizeZ);
+	m_MaterialIndex.reserve(sizeX*sizeY*sizeZ);
+
+	for (int i = 0; i < sizeX*sizeY*sizeZ; ++i)
+	{
+		m_Matricies.push_back(glm::mat4());
+		m_MaterialIndex.push_back(unsigned int());
+	}
+	return false;
+}
+
+bool VoxelContainer::ReadChunkXYZI(char * data, uint32_t & offset)
+{
+	int32_t numVoxels = *reinterpret_cast<int32_t*>(data + offset);
+	offset += 4;
+	for (int32_t i = 0; i < numVoxels; ++i)
+	{
+		int8_t x = *reinterpret_cast<int8_t*>(data + offset);
+		offset += 1;
+
+		int8_t y = *reinterpret_cast<int8_t*>(data + offset);
+		offset += 1;
+
+		int8_t z = *reinterpret_cast<int8_t*>(data + offset);
+		offset += 1;
+
+		int8_t index = *reinterpret_cast<int8_t*>(data + offset);
+		offset += 1;
+
+		//m_Matricies[i] = glm::translate(m_Matricies[i], glm::vec3(x, y, z));
+		m_MaterialIndex[i] = index;
+
+		//if this material index is greater than the maximum, set it, otherwise leave it.
+		m_maxMaterialIndex = (index > m_maxMaterialIndex) ? index : m_maxMaterialIndex;
+	}
+
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //-----------------------------------------------------------------------------------------------------------------------------
 

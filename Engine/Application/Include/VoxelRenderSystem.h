@@ -23,7 +23,7 @@ public:
 	void ReadQubicBinaryFile(std::string file);
 	void ReadVoxFile(std::string File);
 
-	bool ReadChunk(char* data, Uint32& offset);
+
 
 	std::vector<glm::mat4> m_Matricies;
 	std::vector<unsigned int> m_MaterialIndex;
@@ -37,6 +37,11 @@ public:
 private:
 	void ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
 	void ConstructVoxelMaterial();
+
+	bool ReadChunk(char* data, uint32_t& offset);
+	bool ReadChunkRGBA(char* data, uint32_t& offset);
+	bool ReadChunkSIZE(char* data, uint32_t& offset);
+	bool ReadChunkXYZI(char* data, uint32_t& offset);
 };
 REGISTER_ASSET(".vox", "VoxelContainer", VoxelContainer)
 

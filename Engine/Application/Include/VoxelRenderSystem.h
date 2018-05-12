@@ -17,6 +17,18 @@
 class VoxelContainer
 {
 public:
+
+	struct VoxelData
+	{
+		VoxelData(glm::mat4 mat, unsigned int index) 
+			: m_Transform(mat), m_MaterialIndex(index) {}
+
+		glm::mat4 m_Transform;
+		unsigned int m_MaterialIndex;
+	};
+
+
+public:
 	VoxelContainer(std::string file) {ReadVoxFile(file);}
 	VoxelContainer() = default;
 
@@ -24,20 +36,20 @@ public:
 	void ReadVoxFile(std::string File);
 
 
+	//std::vector<glm::mat4> m_Matricies;
+	//std::vector<unsigned int> m_MaterialIndex;
 
-	std::vector<glm::mat4> m_Matricies;
-	std::vector<unsigned int> m_MaterialIndex;
+	std::vector<VoxelData> m_Voxels;
+
 	std::vector<glm::vec3> m_Palette;
 
 	unsigned int m_Width;
 	unsigned int m_Depth;
 	unsigned int m_Height;
-	unsigned int m_maxMaterialIndex = 0;
+
+	glm::vec3 frameSize;
 
 private:
-	void ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ);
-	void ConstructVoxelMaterial();
-
 	bool ReadChunk(char* data, uint32_t& offset);
 	bool ReadChunkRGBA(char* data, uint32_t& offset);
 	bool ReadChunkSIZE(char* data, uint32_t& offset);
@@ -52,6 +64,16 @@ REGISTER_ASSET(".vox", "VoxelContainer", VoxelContainer)
 //------------------------------------------------------------------------------------
 class VoxelMesh
 {
+
+	struct MaterialProperties
+	{
+		MaterialProperties(glm::vec3 colour, glm::vec3 material)
+			:m_Colour(colour), m_Material(material) {}
+
+		glm::vec3 m_Colour;
+		glm::vec3 m_Material;
+	};
+
 public:
 	void ExposeToEditor()
 	{
@@ -60,19 +82,20 @@ public:
 		if (EditorRequestAsset<VoxelContainer>(m_VoxelContainer, "VoxelContainer", "Voxel Container: "))
 		{
 			m_LightProperties.clear();
-			for (int i = 0; i < m_VoxelContainer.m_Asset.m_MaterialIndex.size(); ++i)
+			for (int i = 0; i < m_VoxelContainer.m_Asset.m_Palette.size(); ++i)
 			{
-				m_LightProperties.push_back(std::make_pair<glm::vec3, glm::vec3>(glm::vec3(0), glm::vec3(0)));
+				m_LightProperties.push_back(MaterialProperties(glm::vec3(m_VoxelContainer.m_Asset.m_Palette[i] / 255.0f), glm::vec3(1.0f)));
 			}
 
 			GenerateMaterialTexture();
+			ConstructVoxelMesh();
 		}
 
 		bool changedMaterial = false; // set flag for if the material changes from the editor
 		for(int i=0; i< m_LightProperties.size(); ++i)
 		{
-			glm::vec3* colour = &std::get<0>(m_LightProperties[i]);
-			glm::vec3* light = &std::get<1>(m_LightProperties[i]);
+			glm::vec3* colour = &m_LightProperties[i].m_Colour;
+			glm::vec3* light = &m_LightProperties[i].m_Material;
 
 			changedMaterial = changedMaterial || ImGui::ColorEdit3(std::string("Colour" + std::to_string(i)).c_str(), &colour->x);
 			if(ImGui::TreeNode(std::string("Lighting Properties" + std::to_string(i)).c_str()))
@@ -99,10 +122,10 @@ public:
 			glGenTextures(1, &m_VoxelMaterial.TexObj);
 
 		glBindTexture(GL_TEXTURE_2D, m_VoxelMaterial.TexObj);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 2, m_LightProperties.size(), 0, GL_RGB, GL_FLOAT, &std::get<0>(m_LightProperties[0]).x);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 2, m_LightProperties.size(), 0, GL_RGB, GL_FLOAT, &m_LightProperties[0].m_Colour.r);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP); //U axis
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP); //V axis
 
@@ -110,8 +133,10 @@ public:
 		return true;
 	}
 
+	bool ConstructVoxelMesh();
+
 	//Material properties, first is colour(r,g,b), second is metallic,roughness,emissive(x,y,z)
-	std::vector<std::tuple<glm::vec3, glm::vec3>> m_LightProperties;
+	std::vector<MaterialProperties> m_LightProperties;
 
 	//Position and material index data for voxels.
 	Asset<VoxelContainer> m_VoxelContainer;
@@ -165,16 +190,7 @@ public:
 		m_Renderer->RenderVoxel(&voxel->m_VoxelMesh, &voxel->m_VoxelMaterial, mat.front());
 
 	}
-	void PostUpdate(double deltaTime) override
-	{
-		m_Renderer->PointLightPass();
-		m_Renderer->SSAOPass();
-		m_Renderer->CombineLighting();
-		//Post Processing pass
-		m_Renderer->CombineDebug();
-		m_Renderer->CombineUI();
-		m_Renderer->SubmitFrame();
-	}
+
 
 };
 

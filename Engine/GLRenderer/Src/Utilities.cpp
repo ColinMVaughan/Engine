@@ -446,10 +446,10 @@ void LoadAsCube(Mesh& a_Mesh)
 	glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
 
 
-
-
 	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
 	glBindVertexArray(GL_NONE);
+
+	a_Mesh._NumVertices = 6 * 6 * 3;
 }
 
 void EnvironmentmapToCubemap(std::string filepath, Texture& CubeMap)

@@ -1,4 +1,5 @@
 #include "VoxelRenderSystem.h"
+#include <Utilities.h>
 #include <iostream>
 #include <fstream>
 #include <glm\gtc\matrix_transform.hpp>
@@ -8,94 +9,94 @@
 
 void VoxelContainer::ReadQubicBinaryFile(std::string file)
 {
-	char* data;
-	Uint32 offset;
+	//char* data;
+	//Uint32 offset;
 
-	Uint32 version;
-	Uint32 colourFormat;
-	Uint32 zAxisOrientation;
-	Uint32 compressed;
-	Uint32 visibilityMaskEncoded;
-	Uint32 numMatricies;
+	//Uint32 version;
+	//Uint32 colourFormat;
+	//Uint32 zAxisOrientation;
+	//Uint32 compressed;
+	//Uint32 visibilityMaskEncoded;
+	//Uint32 numMatricies;
 
-	//Using a pointer to these elements for the sake of readability
-	//and so that I can use these in a loop
-	Uint32* HeaderData[6];
-	HeaderData[0] = &version;
-	HeaderData[1] = &colourFormat;
-	HeaderData[2] = &zAxisOrientation;
-	HeaderData[3] = &compressed;
-	HeaderData[4] = &visibilityMaskEncoded;
-	HeaderData[5] = &numMatricies;
+	////Using a pointer to these elements for the sake of readability
+	////and so that I can use these in a loop
+	//Uint32* HeaderData[6];
+	//HeaderData[0] = &version;
+	//HeaderData[1] = &colourFormat;
+	//HeaderData[2] = &zAxisOrientation;
+	//HeaderData[3] = &compressed;
+	//HeaderData[4] = &visibilityMaskEncoded;
+	//HeaderData[5] = &numMatricies;
 
-	//Open the file and allocate a buffer large enough to accomodate it
-	std::ifstream MyFile;
-	std::streampos size;
-	MyFile.open(file, std::ios::binary|std::ios::ate);
-	if (MyFile.is_open())
-	{
-		size = MyFile.tellg();
-		data = new char[size];
+	////Open the file and allocate a buffer large enough to accomodate it
+	//std::ifstream MyFile;
+	//std::streampos size;
+	//MyFile.open(file, std::ios::binary|std::ios::ate);
+	//if (MyFile.is_open())
+	//{
+	//	size = MyFile.tellg();
+	//	data = new char[size];
 
-		MyFile.seekg(0, std::ios::beg);
-		MyFile.read(data, size);
-		MyFile.close();
-	}
-	else
-	{
-		std::cout << "\nCould Not open Qubic Binary File.";
-		return;
-	}
-	//Loop through header data, increasing offset as we collect the data
-	offset = 0;
-	for (int i = 0; i < 6; ++i)
-	{
-		*HeaderData[i] = *reinterpret_cast<Uint32*>(data + offset);
-		offset += 4;
-	}
+	//	MyFile.seekg(0, std::ios::beg);
+	//	MyFile.read(data, size);
+	//	MyFile.close();
+	//}
+	//else
+	//{
+	//	std::cout << "\nCould Not open Qubic Binary File.";
+	//	return;
+	//}
+	////Loop through header data, increasing offset as we collect the data
+	//offset = 0;
+	//for (int i = 0; i < 6; ++i)
+	//{
+	//	*HeaderData[i] = *reinterpret_cast<Uint32*>(data + offset);
+	//	offset += 4;
+	//}
 
-	std::cout << "\nQB HEADER TEST";
-	std::cout << "\n--------------------";
-	std::cout << "\nVersion: "<<version;
-	std::cout << "\nColour Format: " << colourFormat;
-	std::cout << "\ncompressed: " << zAxisOrientation;
-	std::cout << "\nVisibility Mask Encoded: " << visibilityMaskEncoded;
-	std::cout << "\nNum Matricies: " << numMatricies;
-	std::cout << "\n--------------------";
-	//---------------------------------------------------
-	//Collect Matrix Data
+	//std::cout << "\nQB HEADER TEST";
+	//std::cout << "\n--------------------";
+	//std::cout << "\nVersion: "<<version;
+	//std::cout << "\nColour Format: " << colourFormat;
+	//std::cout << "\ncompressed: " << zAxisOrientation;
+	//std::cout << "\nVisibility Mask Encoded: " << visibilityMaskEncoded;
+	//std::cout << "\nNum Matricies: " << numMatricies;
+	//std::cout << "\n--------------------";
+	////---------------------------------------------------
+	////Collect Matrix Data
 
-	//Get the length of the matrix name and skip past it because i dont care
-	Uint8 nameLength = *reinterpret_cast<Uint8*>(data + offset);
-	offset += (nameLength + 1);
+	////Get the length of the matrix name and skip past it because i dont care
+	//Uint8 nameLength = *reinterpret_cast<Uint8*>(data + offset);
+	//offset += (nameLength + 1);
 
-	//collect size of matrix
-	const Uint32 matrixSizeX = *reinterpret_cast<Uint32*>(data + offset);
-	offset += 4;
-	const Uint32 matrixSizeY = *reinterpret_cast<Uint32*>(data + offset);
-	offset += 4;
-	const Uint32 matrixSizeZ = *reinterpret_cast<Uint32*>(data + offset);
-	offset += 4;
+	////collect size of matrix
+	//const Uint32 matrixSizeX = *reinterpret_cast<Uint32*>(data + offset);
+	//offset += 4;
+	//const Uint32 matrixSizeY = *reinterpret_cast<Uint32*>(data + offset);
+	//offset += 4;
+	//const Uint32 matrixSizeZ = *reinterpret_cast<Uint32*>(data + offset);
+	//offset += 4;
 
-	//Skipping past the position data of the matrix because I dont care
-	offset += 12;
+	////Skipping past the position data of the matrix because I dont care
+	//offset += 12;
 
-	Uint32* Matrix = new Uint32[matrixSizeX * matrixSizeY * matrixSizeZ];
-	for (int z = 0; z < matrixSizeZ; ++z)
-	{
-		for (int y = 0; y < matrixSizeY; ++y)
-		{
-			for (int x = 0; x < matrixSizeX; ++x)
-			{
-				Matrix[x + y*matrixSizeX + z*matrixSizeX*matrixSizeY] = *reinterpret_cast<Uint32*>(data + offset);
-				offset += 4;
-			}
-		}
-	}
+	//Uint32* Matrix = new Uint32[matrixSizeX * matrixSizeY * matrixSizeZ];
+	//for (int z = 0; z < matrixSizeZ; ++z)
+	//{
+	//	for (int y = 0; y < matrixSizeY; ++y)
+	//	{
+	//		for (int x = 0; x < matrixSizeX; ++x)
+	//		{
+	//			Matrix[x + y*matrixSizeX + z*matrixSizeX*matrixSizeY] = *reinterpret_cast<Uint32*>(data + offset);
+	//			offset += 4;
+	//		}
+	//	}
+	//}
 
-	ConstructVoxelMesh(Matrix, nullptr, matrixSizeX, matrixSizeY, matrixSizeZ);
-	delete[] Matrix;
-	delete[] data;
+	//ConstructVoxelMesh(Matrix, nullptr, matrixSizeX, matrixSizeY, matrixSizeZ);
+	//delete[] Matrix;
+	//delete[] data;
 }
 
 //Reads the VOX file format to load in voxel data from magicavoxel
@@ -145,17 +146,17 @@ void VoxelContainer::ReadVoxFile(std::string file)
 	//version number
 	offset += 4;
 
-	//Read Chunks
-	//while (true)
-	//{
-	//	ReadChunk(data, offset);
-	//}
+	//Reads the voxel MAIN chunk
 	ReadChunk(data, offset);
-	ReadChunk(data, offset); //SIZE
-	ReadChunk(data, offset); //XYZI
+	//Reads the voxel SIZE chunk
+	ReadChunk(data, offset);
+	//Reads the voxel XYZI chunk
+	ReadChunk(data, offset);
+	//Reads the voxel RGBA chunk
+	ReadChunk(data, offset);
 
-	ReadChunk(data, offset); //RGBA
-
+	delete[] data;
+	return;
 }
 
 bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
@@ -163,8 +164,8 @@ bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
 	//Chunk Data
 	char chunkID[4];
 	int32_t chunkDataSize;
-	int32_t chunkChildNum;
-
+	//uint32_t chunkChildNum;
+	
 	//Chunk'SIZE'
 	int32_t sizeX;
 	int32_t sizeY;
@@ -187,13 +188,14 @@ bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
 	offset += 4;
 
 	//read number of child chunks
-	chunkChildNum = *reinterpret_cast<int32_t*>(data + offset);
+	unsigned int chunkChildNum = *reinterpret_cast<int32_t*>(data + offset);
 	offset += 4;
 
 	//
 	switch (chunkID[3])
 	{
 	case 'N': //MAIN
+		return false;
 		break;
 
 	case 'K': //PACK
@@ -213,14 +215,21 @@ bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
 	case 'A': //RGBA
 	{
 		ReadChunkRGBA(data, offset);
+		return false;
 		break;
 	}
 
-	case 'T': //MATT
+	case 'T': //MATT (we want to ignore)
 		return false;
 		break;
 
 	}
+
+
+	//for (int i = 0; i < chunkChildNum; ++i)
+	//{
+	//	ReadChunk(data, offset);
+	//}
 
 	return true;
 }
@@ -228,16 +237,16 @@ bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
 bool VoxelContainer::ReadChunkRGBA(char * data, uint32_t & offset)
 {
 	std::map<unsigned int, std::vector<unsigned int*>> matIndexMap;
-	for (int i = 0; i< m_MaterialIndex.size(); ++i)
+	for (int i = 0; i< m_Voxels.size(); ++i)
 	{
-		matIndexMap[m_MaterialIndex[i]].push_back(&m_MaterialIndex[i]);
+		matIndexMap[m_Voxels[i].m_MaterialIndex].push_back(&m_Voxels[i].m_MaterialIndex);
 	}
 
 	unsigned int matCounter = 0;
 	for (auto it = matIndexMap.begin(); it != matIndexMap.end(); ++it)
 	{
 		//load the appropriate material
-		unsigned int materialIndex = it->first * 4 + offset;
+		unsigned int materialIndex = it->first * 4 + offset - 4;
 		uint8_t r = *reinterpret_cast<int8_t*>(data + materialIndex);
 		uint8_t g = *reinterpret_cast<int8_t*>(data + materialIndex + 1);
 		uint8_t b = *reinterpret_cast<int8_t*>(data + materialIndex + 2);
@@ -258,23 +267,15 @@ bool VoxelContainer::ReadChunkRGBA(char * data, uint32_t & offset)
 
 bool VoxelContainer::ReadChunkSIZE(char * data, uint32_t & offset)
 {
-	int32_t sizeX = *reinterpret_cast<int32_t*>(data + offset);
+	m_Width= *reinterpret_cast<int32_t*>(data + offset);
 	offset += 4;
 
-	int32_t sizeY = *reinterpret_cast<int32_t*>(data + offset);
+	m_Height = *reinterpret_cast<int32_t*>(data + offset);
 	offset += 4;
 
-	int32_t sizeZ = *reinterpret_cast<int32_t*>(data + offset);
+	m_Depth = *reinterpret_cast<int32_t*>(data + offset);
 	offset += 4;
 
-	m_Matricies.reserve(sizeX*sizeY*sizeZ);
-	m_MaterialIndex.reserve(sizeX*sizeY*sizeZ);
-
-	for (int i = 0; i < sizeX*sizeY*sizeZ; ++i)
-	{
-		m_Matricies.push_back(glm::mat4());
-		m_MaterialIndex.push_back(unsigned int());
-	}
 	return false;
 }
 
@@ -293,14 +294,11 @@ bool VoxelContainer::ReadChunkXYZI(char * data, uint32_t & offset)
 		int8_t z = *reinterpret_cast<int8_t*>(data + offset);
 		offset += 1;
 
-		int8_t index = *reinterpret_cast<int8_t*>(data + offset);
+		unsigned int index = *reinterpret_cast<uint8_t*>(data + offset);
 		offset += 1;
 
-		//m_Matricies[i] = glm::translate(m_Matricies[i], glm::vec3(x, y, z));
-		m_MaterialIndex[i] = index;
+		m_Voxels.push_back(VoxelData(glm::translate(glm::mat4(), glm::vec3(x, y, z)), index));
 
-		//if this material index is greater than the maximum, set it, otherwise leave it.
-		m_maxMaterialIndex = (index > m_maxMaterialIndex) ? index : m_maxMaterialIndex;
 	}
 
 	return false;
@@ -335,36 +333,36 @@ bool VoxelContainer::ReadChunkXYZI(char * data, uint32_t & offset)
 
 //-----------------------------------------------------------------------------------------------------------------------------
 
-void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
-{
-
-	size_t blockNumber = 0;
-
-	//-------------------------------------------------------------------------
-	// iterate through each potential block in the matrix
-	//--------------------------------------------------------------------------
-	for (int z = 0; z < sizeZ; ++z)
-	{
-		for (int y = 0; y < sizeY; ++y)
-		{
-			for (int x = 0; x < sizeX; ++x)
-			{
-				//get the RGBA value of the block and extract the alpha value
-				Uint32 temp = VoxelMatrix[x + y*sizeX + z*sizeX*sizeY];
-				Uint8* tempPtr = (Uint8*)&temp;
-
-				//if the block is visible, add its offset to the vector
-				if ((int)tempPtr[3] != 0)
-				{
-					glm::mat4 tempMat;
-					tempMat = glm::translate(tempMat, glm::fvec3(x, y, z));
-					m_Matricies.push_back(tempMat);
-
-					blockNumber++;
-				}
-			}
-		}
-	}
+//void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t sizeX, size_t sizeY, size_t sizeZ)
+//{
+//
+//	size_t blockNumber = 0;
+//
+//	//-------------------------------------------------------------------------
+//	// iterate through each potential block in the matrix
+//	//--------------------------------------------------------------------------
+//	for (int z = 0; z < sizeZ; ++z)
+//	{
+//		for (int y = 0; y < sizeY; ++y)
+//		{
+//			for (int x = 0; x < sizeX; ++x)
+//			{
+//				//get the RGBA value of the block and extract the alpha value
+//				Uint32 temp = VoxelMatrix[x + y*sizeX + z*sizeX*sizeY];
+//				Uint8* tempPtr = (Uint8*)&temp;
+//
+//				//if the block is visible, add its offset to the vector
+//				if ((int)tempPtr[3] != 0)
+//				{
+//					glm::mat4 tempMat;
+//					tempMat = glm::translate(tempMat, glm::fvec3(x, y, z));
+//					m_Matricies.push_back(tempMat);
+//
+//					blockNumber++;
+//				}
+//			}
+//		}
+//	}
 
 	//---------------------------------------------------------------------------
 
@@ -406,4 +404,64 @@ void VoxelContainer::ConstructVoxelMesh(Uint32* VoxelMatrix, Mesh* mesh, size_t 
 	//{
 	//	std::cout << "\nSomething went wrong with the instancing";
 	//}
+//}
+
+#define BUFFER_OFFSET(i) ((char *)0 + (i))
+
+
+bool VoxelMesh::ConstructVoxelMesh()
+{
+	GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR)
+	{
+
+	}
+
+
+	if (!m_VoxelMesh.VAO)
+		LoadAsCube(m_VoxelMesh); //create base mesh that we will instance.
+
+	glBindVertexArray(m_VoxelMesh.VAO);
+
+	if (m_VoxelMesh.VBO_Instance == 0)
+		glGenBuffers(1, &m_VoxelMesh.VBO_Instance); //createInstanceBuffer
+
+	GLsizei vec4Size = sizeof(glm::vec4);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VoxelMesh.VBO_Instance);
+	glBufferData(GL_ARRAY_BUFFER, (sizeof(VoxelContainer::VoxelData)) * m_VoxelContainer.m_Asset.m_Voxels.size(), &m_VoxelContainer.m_Asset.m_Voxels[0], GL_DYNAMIC_DRAW);
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer((GLuint)3, 4, GL_FLOAT, GL_FALSE, sizeof(VoxelContainer::VoxelData), BUFFER_OFFSET(offsetof(VoxelContainer::VoxelData, m_Transform)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer((GLuint)4, 4, GL_FLOAT, GL_FALSE, sizeof(VoxelContainer::VoxelData), BUFFER_OFFSET(vec4Size + offsetof(VoxelContainer::VoxelData, m_Transform)));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer((GLuint)5, 4, GL_FLOAT, GL_FALSE, sizeof(VoxelContainer::VoxelData), BUFFER_OFFSET(2 * vec4Size + offsetof(VoxelContainer::VoxelData, m_Transform)));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer((GLuint)6, 4, GL_FLOAT, GL_FALSE, sizeof(VoxelContainer::VoxelData), BUFFER_OFFSET(3 * vec4Size + offsetof(VoxelContainer::VoxelData, m_Transform)));
+
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer((GLuint)7, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(VoxelContainer::VoxelData), BUFFER_OFFSET(offsetof(VoxelContainer::VoxelData, m_MaterialIndex)));
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisor(7, 1);
+
+	glBindVertexArray(0);
+
+	m_VoxelMesh.InstanceNumber = m_VoxelContainer.m_Asset.m_Voxels.size();
+
+
+	if ((err = glGetError()) != GL_NO_ERROR)
+	{
+		// Process/log the error.
+		std::cout << "ebekhf";
+	}
+
+
+	return false;
 }

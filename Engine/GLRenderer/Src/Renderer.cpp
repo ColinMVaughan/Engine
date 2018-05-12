@@ -44,7 +44,7 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
-	if (!GBufferPassInstanced.Load("./Assets/Shaders/InstancedGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
+	if (!GBufferPassInstanced.Load("./Assets/Shaders/InstancedGeometry.vert", "./Assets/Shaders/VoxelGBufferPass.frag"))
 	{
 		std::cout << "Shaders failed to initalize.\n";
 		system("pause");
@@ -85,6 +85,15 @@ void Renderer::Initalize()
 		system("pause");
 		exit(0);
 	}
+
+	if (!VoxelShader.Load("./Assets/Shaders/LineDebug.vert", "./Assets/Shaders/LineDebug.frag"))
+	{
+		std::cout << "Shaders failed to initalize.\n";
+		system("pause");
+		exit(0);
+	}
+
+
 
 	//Initalize Gbuffer
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -315,7 +324,7 @@ void Renderer::RenderVoxel(Mesh * mesh, Texture * texture, const float * matrix)
 	GBP->SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
 	GBP->SendUniformMat4("uModel", matrix, false);
 
-	GBP->SendUniform("Metallic", 0);
+	GBP->SendUniform("MaterialAtlas", 0);
 	GBuffer.Bind();
 
 	glActiveTexture(GL_TEXTURE0);

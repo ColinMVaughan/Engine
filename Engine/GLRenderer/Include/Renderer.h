@@ -107,6 +107,7 @@ private:
 	ShaderProgram LightingCombinedShader;
 	ShaderProgram SSAO;
 	ShaderProgram DebugShader;
+	ShaderProgram VoxelShader;
 	
 	//Environment maps
 	Texture m_CubeMap;

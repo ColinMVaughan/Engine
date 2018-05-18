@@ -24,20 +24,19 @@ public:
 			: m_Transform(mat), m_MaterialIndex(index) {}
 
 		glm::mat4 m_Transform;
-		unsigned int m_MaterialIndex;
+		uint32_t m_MaterialIndex;
 	};
 
 
 public:
-	VoxelContainer(std::string file) {ReadVoxFile(file);}
+	VoxelContainer(std::string file) {ReadOVoxFile(file);}
 	VoxelContainer() = default;
 
 	void ReadQubicBinaryFile(std::string file);
 	void ReadVoxFile(std::string File);
 
+	void ReadOVoxFile(std::string filePath);
 
-	//std::vector<glm::mat4> m_Matricies;
-	//std::vector<unsigned int> m_MaterialIndex;
 
 	std::vector<VoxelData> m_Voxels;
 
@@ -55,7 +54,7 @@ private:
 	bool ReadChunkSIZE(char* data, uint32_t& offset);
 	bool ReadChunkXYZI(char* data, uint32_t& offset);
 };
-REGISTER_ASSET(".vox", "VoxelContainer", VoxelContainer)
+REGISTER_ASSET(".ovox", "VoxelContainer", VoxelContainer)
 
 
 //------------------------------------------------------------------------------------

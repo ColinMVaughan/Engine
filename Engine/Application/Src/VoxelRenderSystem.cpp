@@ -159,6 +159,7 @@ void VoxelContainer::ReadVoxFile(std::string file)
 	return;
 }
 
+
 bool VoxelContainer::ReadChunk(char * data, uint32_t & offset)
 {
 	//Chunk Data
@@ -308,7 +309,112 @@ bool VoxelContainer::ReadChunkXYZI(char * data, uint32_t & offset)
 
 
 
+void VoxelContainer::ReadOVoxFile(std::string filePath)
+{
 
+	char* data;
+	Uint32 offset = 0;
+
+	//Header Data
+	char ID[4];
+
+	//--------------------------------------------------------------------
+	//READING
+	//---------------------------------------------------------------------
+	//Open the file and allocate a buffer large enough to accomodate it
+	std::ifstream MyFile;
+	std::streampos size;
+	MyFile.open(filePath, std::ios::binary | std::ios::ate);
+	if (MyFile.is_open())
+	{
+		size = MyFile.tellg();
+		data = new char[size];
+
+		MyFile.seekg(0, std::ios::beg);
+		MyFile.read(data, size);
+		MyFile.close();
+	}
+	else
+	{
+		std::cout << "\nCould Not open Vox File.";
+		return;
+	}
+
+
+	//----------HEADER DATA------------//
+	//Name (Should be 'OVOX')
+	char name[4];
+	name[0] = *reinterpret_cast<char*>(data + offset);
+	name[1] = *reinterpret_cast<char*>(data + offset + 1);
+	name[2] = *reinterpret_cast<char*>(data + offset + 2);
+	name[3] = *reinterpret_cast<char*>(data + offset + 3);
+	offset += 4;
+
+	//number of channels per colour value (min 1, max 4)
+	uint8_t colourChannelNumber = *reinterpret_cast<uint8_t*>(data + offset);
+	offset += 1;
+
+	//Number of bits per colour channel (min 8, max 32)
+	uint8_t bitsPerChannel = *reinterpret_cast<uint8_t*>(data + offset);
+	offset += 1;
+
+	//Size of the Voxel Frame
+	uint32_t width = *reinterpret_cast<uint32_t*>(data + offset);
+	offset += 4;
+
+	uint32_t height = *reinterpret_cast<uint32_t*>(data + offset);
+	offset += 4;
+
+	uint32_t depth = *reinterpret_cast<uint32_t*>(data + offset);
+	offset += 4;
+
+	//Number of active voxels
+	size_t VoxelNum = *reinterpret_cast<size_t*>(data + offset);
+	offset += sizeof(size_t);
+
+	//Number of colours in the palette
+	size_t paletteSize = *reinterpret_cast<size_t*>(data + offset);
+	offset += sizeof(size_t);
+
+
+	//-------------VOXEL DATA------------------//
+	for (int i = 0; i < VoxelNum; ++i)
+	{
+		
+		uint32_t x = *reinterpret_cast<uint32_t*>(data + offset);
+		uint32_t y = *reinterpret_cast<uint32_t*>(data + offset + 4);
+		uint32_t z = *reinterpret_cast<uint32_t*>(data + offset + 8);
+		offset += 12;
+
+		uint16_t index = *reinterpret_cast<uint16_t*>(data + offset);
+		offset += 2;
+		
+		m_Voxels.push_back(VoxelData(glm::translate(glm::mat4(), glm::vec3(x, y, z)), index));
+	}
+
+
+	//--------------PALETTE DATA-------------------//
+	for (int i = 0; i < paletteSize; ++i)
+	{
+		uint32_t r = *reinterpret_cast<uint32_t*>(data + offset);
+		uint32_t g = *reinterpret_cast<uint32_t*>(data + offset + 4);
+		uint32_t b = *reinterpret_cast<uint32_t*>(data + offset + 8);
+		uint32_t a = *reinterpret_cast<uint32_t*>(data + offset + 12);
+		offset += 16;
+
+
+		uint32_t x = *reinterpret_cast<uint32_t*>(data + offset);
+		uint32_t y = *reinterpret_cast<uint32_t*>(data + offset + 4);
+		uint32_t z = *reinterpret_cast<uint32_t*>(data + offset + 8);
+		offset += 12;
+
+		//Add to Palette
+		m_Palette.push_back(glm::vec3(r, g, b));
+		m_Palette.push_back(glm::vec3(x, y, z));
+	}
+
+	delete[] data;
+}
 
 
 
@@ -428,8 +534,9 @@ bool VoxelMesh::ConstructVoxelMesh()
 
 	GLsizei vec4Size = sizeof(glm::vec4);
 
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_VoxelMesh.VBO_Instance);
-	glBufferData(GL_ARRAY_BUFFER, (sizeof(VoxelContainer::VoxelData)) * m_VoxelContainer.m_Asset.m_Voxels.size(), &m_VoxelContainer.m_Asset.m_Voxels[0], GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (sizeof(VoxelContainer::VoxelData)) * m_VoxelContainer.m_Asset.m_Voxels.size(), reinterpret_cast<void*>(&m_VoxelContainer.m_Asset.m_Voxels[0]), GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer((GLuint)3, 4, GL_FLOAT, GL_FALSE, sizeof(VoxelContainer::VoxelData), BUFFER_OFFSET(offsetof(VoxelContainer::VoxelData, m_Transform)));

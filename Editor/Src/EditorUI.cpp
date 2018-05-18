@@ -19,7 +19,7 @@ void Editor::DoInitalize()
 	//  Some Manditory Scene Setup
 	//-------------------------------------------------
 	//Set Skybox for Scene
-	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/Milkyway_small.hdr");
+	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/GCanyon_C_YumaPoint_3k.hdr");
 
 	//Allows the user to move the camera in debug mode.
 	RegisterKeyboardCallback(m_Scene->AddCoreSystem<DebugCameraControlSystem>());

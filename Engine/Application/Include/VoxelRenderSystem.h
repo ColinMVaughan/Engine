@@ -81,9 +81,9 @@ public:
 		if (EditorRequestAsset<VoxelContainer>(m_VoxelContainer, "VoxelContainer", "Voxel Container: "))
 		{
 			m_LightProperties.clear();
-			for (int i = 0; i < m_VoxelContainer.m_Asset.m_Palette.size(); ++i)
+			for (int i = 0; i < m_VoxelContainer.m_Asset.m_Palette.size(); i+=2)
 			{
-				m_LightProperties.push_back(MaterialProperties(glm::vec3(m_VoxelContainer.m_Asset.m_Palette[i] / 255.0f), glm::vec3(1.0f)));
+				m_LightProperties.push_back(MaterialProperties(glm::vec3(m_VoxelContainer.m_Asset.m_Palette[i] / 255.0f), glm::vec3(m_VoxelContainer.m_Asset.m_Palette[i+1] / 255.0f)));
 			}
 
 			GenerateMaterialTexture();

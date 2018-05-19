@@ -307,7 +307,10 @@ bool VoxelContainer::ReadChunkXYZI(char * data, uint32_t & offset)
 
 
 
-
+//---------------------------------------------
+//
+//
+//---------------------------------------------
 
 void VoxelContainer::ReadOVoxFile(std::string filePath)
 {
@@ -369,12 +372,12 @@ void VoxelContainer::ReadOVoxFile(std::string filePath)
 	offset += 4;
 
 	//Number of active voxels
-	size_t VoxelNum = *reinterpret_cast<size_t*>(data + offset);
-	offset += sizeof(size_t);
+	size_t VoxelNum = *reinterpret_cast<uint32_t*>(data + offset);
+	offset += 4;
 
 	//Number of colours in the palette
-	size_t paletteSize = *reinterpret_cast<size_t*>(data + offset);
-	offset += sizeof(size_t);
+	size_t paletteSize = *reinterpret_cast<uint32_t*>(data + offset);
+	offset += 4;
 
 
 	//-------------VOXEL DATA------------------//

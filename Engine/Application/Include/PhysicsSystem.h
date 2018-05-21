@@ -42,3 +42,14 @@ private:
 	Mesh SphereCollisionShape;
 };
 
+//Dummy system to draw arrows for selectes entities with a transform component.
+class TransformSystem : public ECS::System<Transform>
+{
+public: 
+	TransformSystem(ECS::ComponentManager* a_CompManager, EventManager& a_EveManager);
+
+	void DrawGizmo(ECS::Entity& entity);
+
+private:
+	Mesh ArrowShape;
+};

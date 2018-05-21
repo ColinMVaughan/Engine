@@ -61,6 +61,7 @@ void Application::PostInitalize()
 {
 	m_SystemManager->AddSystem<PhysicsSystem>()->m_PhysX = &m_Physics;
 	m_SystemManager->AddSystem<CollisionSystem>()->m_Physx = &m_Physics;
+	m_SystemManager->AddSystem<TransformSystem>();
 
 	m_SystemManager->AddCoreSystem<PointLightSystem>()->SetRenderer(m_Renderer);
 	m_SystemManager->AddCoreSystem<VoxelRenderSystem>()->SetRenderer(m_Renderer);

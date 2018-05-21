@@ -131,3 +131,25 @@ void CollisionSystem::DrawGizmo(ECS::Entity& entity)
 
 	entity.DispatchEvent<DrawGizmoEvent>(meshEvent);
 }
+
+
+
+
+TransformSystem::TransformSystem(ECS::ComponentManager * a_CompManager, EventManager & a_EveManager)
+	:System(a_CompManager, a_EveManager)
+{
+	LoadDebugArrows(ArrowShape);
+}
+
+void TransformSystem::DrawGizmo(ECS::Entity& entity)
+{
+	auto transform = entity.GetComponent<Transform>();
+	auto matrix = transform->GetGlobalTransformMatrix();
+
+	DrawGizmoEvent meshEvent;
+	meshEvent.mesh = &ArrowShape;
+	meshEvent.matrix = matrix.front();
+
+	entity.DispatchEvent<DrawGizmoEvent>(meshEvent);
+	return;
+}

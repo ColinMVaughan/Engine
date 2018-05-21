@@ -328,7 +328,17 @@ float DebugSphere[] =
 };
 
 
+float DebugArrows[] =
+{
+	0.0f, 0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f,
 
+	0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f
+};
 
 
 
@@ -386,4 +396,21 @@ void LoadDebugCapsule(Mesh & a_Mesh)
 
 void LoadDebugArrows(Mesh& a_Mesh)
 {
+	const int vertexPosSize = sizeof(DebugArrows);
+
+	//Generate vertex array object & vetex buffer objects
+	glGenVertexArrays(1, &a_Mesh.VAO);
+	glGenBuffers(1, &a_Mesh.VBO_Verticies);
+
+	glBindVertexArray(a_Mesh.VAO);
+	glEnableVertexAttribArray(0); //Vertex
+
+	glBindBuffer(GL_ARRAY_BUFFER, a_Mesh.VBO_Verticies);
+	glBufferData(GL_ARRAY_BUFFER, vertexPosSize, &DebugArrows[0], GL_STATIC_DRAW);
+	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+	glBindVertexArray(GL_NONE);
+
+	a_Mesh._NumVertices = sizeof(DebugArrows) / sizeof(*DebugArrows);
 }

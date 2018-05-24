@@ -175,11 +175,6 @@ public:
 			std::cout << "\nDid not send RenderSystem a valid Renderer";
 	}
 
-	void PreUpdate(double deltaTime) override
-	{
-		m_Renderer->PreRender();
-	}
-
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		auto mat = entity.GetComponent<Transform>()->GetGlobalTransformMatrix();

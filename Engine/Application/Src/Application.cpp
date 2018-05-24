@@ -63,9 +63,13 @@ void Application::PostInitalize()
 	m_SystemManager->AddSystem<CollisionSystem>()->m_Physx = &m_Physics;
 	m_SystemManager->AddSystem<TransformSystem>();
 
-	m_SystemManager->AddCoreSystem<PointLightSystem>()->SetRenderer(m_Renderer);
-	m_SystemManager->AddCoreSystem<VoxelRenderSystem>()->SetRenderer(m_Renderer);
+	//Set up the systems used for rendering the frame.
 	m_SystemManager->AddCoreSystem<RenderSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<VoxelRenderSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<PointLightSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<PostProccessSystem>()->SetRenderer(m_Renderer);
+
+
 }
 
 void Application::PreUpdate(double deltaTime)

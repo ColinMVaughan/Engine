@@ -185,15 +185,18 @@ public:
 		auto mat =entity.GetComponent<Transform>()->GetGlobalTransformMatrix();
 		m_Renderer->Render(&entity.GetComponent<MeshFilter>()->m_Mesh.m_Asset, &entity.GetComponent<MaterialFilter>()->m_Material, mat.front());
 	}
-	void PostUpdate(double deltaTime) override
+	void PreUpdate(double deltaTime) override
 	{
-		m_Renderer->PointLightPass();
-		m_Renderer->SSAOPass();
-		m_Renderer->CombineLighting();
+		m_Renderer->PreRender();
+
+		//m_Renderer->PointLightPass();
+		//m_Renderer->SSAOPass();
+		//m_Renderer->CombineLighting();
+
 		//Post Processing pass
-		m_Renderer->CombineDebug();
-		m_Renderer->CombineUI();
-		m_Renderer->SubmitFrame();
+		//m_Renderer->CombineDebug();
+		//m_Renderer->CombineUI();
+		//m_Renderer->SubmitFrame();
 	}
 	
 
@@ -254,16 +257,22 @@ public:
 		m_Renderer = a_Renderer;
 	}
 
+	void PreUpdate(double deltaTime)
+	{
+		m_Renderer->PrePointLightPass();
+	}
+
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
-
 		PxVec3 Pos =entity.GetComponent<Transform>()->GetTransform()->p;
 		PointLightComponent* light = entity.GetComponent<PointLightComponent>();
 
-		light->position[0] = Pos.x;
-		light->position[1] = Pos.y;
-		light->position[2] = Pos.z;
+		m_Renderer->PointLightPass(glm::fvec3(Pos.x, Pos.y, Pos.z), light->Color);
+	}
 
+	void PostUpdate(double deltaTime)
+	{
+		m_Renderer->PostPointLightPass();
 	}
 
 	void EntityRegistered(ECS::Entity& entity) override
@@ -299,8 +308,8 @@ public:
 	}
 
 
-	glm::vec3 Colour;
-	glm::vec3 Direction;
+	glm::vec3 Colour; //Colour of the light
+	glm::vec3 Direction; // normalized direction vector
 	bool CastsShadow = true;
 
 private:
@@ -309,3 +318,35 @@ private:
 	float Intensity = 0;;
 };
 COMPONENT_REGISTER(DirectionalLightComponent, "DirectionalLightComp")
+
+//---------------------------------------------------------------------------
+//POST PROCESS PASS
+//------------------------------------------------------------------------
+
+class PostProccessSystem : public ECS::System<NullComponent>
+{
+public:
+	PostProccessSystem(ECS::ComponentManager* a_Cmanager, EventManager& a_eManager)
+		:System(a_Cmanager, a_eManager) {}
+
+
+	void PostUpdate(double deltaTime) override
+	{
+		m_Renderer->SSAOPass();
+		m_Renderer->CombineLighting();
+
+		//Post Processing pass
+		m_Renderer->CombineDebug();
+		m_Renderer->CombineUI();
+		m_Renderer->SubmitFrame();
+	}
+
+	void SetRenderer(Renderer* renderer)
+	{
+		if (renderer)
+			m_Renderer = renderer;
+	}
+
+private:
+	Renderer* m_Renderer;
+};

@@ -341,6 +341,12 @@ void Renderer::RenderVoxel(Mesh * mesh, Texture * texture, const float * matrix)
 	GBuffer.UnBind();
 }
 
+void Renderer::RenderToShadowMap(Mesh* mesh, const float* matrix)
+{
+
+
+}
+
 void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
 {
 	DebugBuffer.Bind();
@@ -361,12 +367,8 @@ void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
 
 }
 
-//--------------------------------------------------------
-//			Deffered Point Lighting Pass
-//--------------------------------------------------------
-void Renderer::PointLightPass()
+void Renderer::PrePointLightPass()
 {
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
@@ -392,15 +394,12 @@ void Renderer::PointLightPass()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(3));
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(4));
+}
 
-	for (int i = 0; i < m_PointLightPositions.size(); ++i)
-	{
-		PointLightPassShader.SendUniform("lightPosition", *m_PointLightPositions[i]);
-		PointLightPassShader.SendUniform("lightColor", *m_PointLightColors[i]);
 
-		DrawFullScreenQuad();
-	}
 
+void Renderer::PostPointLightPass()
+{
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -415,7 +414,6 @@ void Renderer::PointLightPass()
 	PointLightPassShader.UnBind();
 
 	glDisable(GL_BLEND);
-
 }
 
 void Renderer::CombineUI()

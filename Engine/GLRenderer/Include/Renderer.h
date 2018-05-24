@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "FrameBuffer.h"
 #include "Material.h"
+#include "Utilities.h"
 
 #include <glm/mat4x4.hpp>
 #include <SDL\SDL.h>
@@ -45,10 +46,25 @@ public:
 	void Render(Mesh* mesh, Material* material, const float* matrix);
 	void RenderVoxel(Mesh* mesh, Texture* texture, const float* matrix);
 
+	void RenderToShadowMap(Mesh* mesh, const float* matrix);
+
 	void RenderDebug(Mesh& mesh, const float* matrix);
 
 	void CombineLighting();
-	void PointLightPass();
+
+
+	void PrePointLightPass();
+	inline void PointLightPass(glm::fvec3& lightPos, glm::fvec3& lightColour)
+	{
+
+		PointLightPassShader.SendUniform("lightPosition", lightPos);
+		PointLightPassShader.SendUniform("lightColor", lightColour);
+
+		DrawFullScreenQuad();
+		
+	}
+	void PostPointLightPass();
+
 	void CombineUI();
 	void CombineDebug();
 
@@ -72,7 +88,6 @@ public:
 private:
 	void InitalizeDefaultMaterial();
 
-
 	unsigned m_WindowWidth;
 	unsigned m_WindowHeight;
 
@@ -84,6 +99,9 @@ private:
 	//Lights
 	std::vector<glm::fvec3*> m_PointLightColors;
 	std::vector<glm::fvec3*> m_PointLightPositions;
+
+	std::vector<FrameBuffer> m_ShadowMaps;
+	std::vector<glm::mat4> m_ShadowProjections;
 
 	//updateTimer
 	Timer* m_UpdateTimer;

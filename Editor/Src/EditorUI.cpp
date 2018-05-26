@@ -275,7 +275,7 @@ void Editor::DrawEntityInspector()
 		ImGui::EndChild();
 
 		ImGui::BeginChild("Buttons");
-		if (ImGui::Button("Add Component",ImVec2(300,100))) { ImGui::OpenPopup("ComponentList"); }
+		if (ImGui::Button("Add Component",ImVec2(300,20))) { ImGui::OpenPopup("ComponentList"); }
 		if (ImGui::BeginPopup((const char*)"ComponentList"))
 		{
 			ImGui::Text("Components");

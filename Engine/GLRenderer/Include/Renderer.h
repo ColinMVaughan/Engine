@@ -65,6 +65,8 @@ public:
 	}
 	void PostPointLightPass();
 
+	void AddShadowCaster(FrameBuffer& shadowMap, glm::mat4& direction);
+
 	void CombineUI();
 	void CombineDebug();
 
@@ -92,6 +94,7 @@ private:
 	unsigned m_WindowHeight;
 
 
+
 	//Mesh and materials
 	std::vector<Mesh*> MeshList;
 	std::vector<Material*> MaterialList;
@@ -100,8 +103,10 @@ private:
 	std::vector<glm::fvec3*> m_PointLightColors;
 	std::vector<glm::fvec3*> m_PointLightPositions;
 
-	std::vector<FrameBuffer> m_ShadowMaps;
-	std::vector<glm::mat4> m_ShadowProjections;
+	std::vector<FrameBuffer*> m_ShadowMaps;
+	std::vector<glm::mat4*> m_ShadowProjections;
+	glm::mat4 m_ShadowMapBias;
+	glm::mat4 m_ShadowOrtho;
 
 	//updateTimer
 	Timer* m_UpdateTimer;
@@ -126,6 +131,7 @@ private:
 	ShaderProgram SSAO;
 	ShaderProgram DebugShader;
 	ShaderProgram VoxelShader;
+	ShaderProgram ShadowCastShader;
 	
 	//Environment maps
 	Texture m_CubeMap;

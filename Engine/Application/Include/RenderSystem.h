@@ -7,7 +7,7 @@
 #include <ComponentReflection.h>
 #include <AssetRegistration.h>
 #include "Asset.h"
-
+#include <glm\gtc\matrix_transform.hpp>
 
 //---------------------------------------------------------------------------------
 //							Mesh and Material Components
@@ -188,15 +188,6 @@ public:
 	void PreUpdate(double deltaTime) override
 	{
 		m_Renderer->PreRender();
-
-		//m_Renderer->PointLightPass();
-		//m_Renderer->SSAOPass();
-		//m_Renderer->CombineLighting();
-
-		//Post Processing pass
-		//m_Renderer->CombineDebug();
-		//m_Renderer->CombineUI();
-		//m_Renderer->SubmitFrame();
 	}
 	
 
@@ -294,9 +285,7 @@ class DirectionalLightComponent
 public:
 
 	DirectionalLightComponent()
-	{
-		m_ShadowMap = new FrameBuffer(0);
-	}
+		:m_ShadowMap(0) {}
 
 	void ExposeToEditor()
 	{
@@ -309,15 +298,82 @@ public:
 
 
 	glm::vec3 Colour; //Colour of the light
-	glm::vec3 Direction; // normalized direction vector
-	bool CastsShadow = true;
+	glm::mat4 shadowTransform;
 
+	bool CastsShadow = true;
+	FrameBuffer m_ShadowMap;
 private:
-	FrameBuffer* m_ShadowMap;
 	glm::vec3 BaseColour;
 	float Intensity = 0;;
 };
 COMPONENT_REGISTER(DirectionalLightComponent, "DirectionalLightComp")
+
+
+
+class DirectionalLightSystem : ECS::System<DirectionalLightComponent, Transform>
+{
+public:
+	DirectionalLightSystem(ECS::ComponentManager* cmanager, EventManager& emanager)
+		:System(cmanager, emanager) {}
+
+
+	void EntityRegistered(ECS::Entity& entity) override
+	{
+		auto light = entity.GetComponent<DirectionalLightComponent>();
+
+		//initalize the shadow map
+		light->m_ShadowMap.InitDepthTexture(500, 500);
+
+		//set up Transform for shadow map
+		
+		light->shadowTransform = glm::translate(light->shadowTransform, glm::vec3(0, 0, 5));
+		light->shadowTransform = glm::rotate(light->shadowTransform, 45.0f, glm::vec3(1,0,0));
+
+		//Register the framebuffer and transform matrix
+		m_Renderer->AddShadowCaster(light->m_ShadowMap, light->shadowTransform);
+		
+	}
+
+	void Update(double deltaTime, ECS::Entity& entity) override
+	{
+		//Resolve shadowMap transform
+		auto light = entity.GetComponent<DirectionalLightComponent>();
+
+		light->shadowTransform = glm::mat4();
+		light->shadowTransform = glm::translate(light->shadowTransform, glm::vec3(0, 0, 5));
+		light->shadowTransform = glm::rotate(light->shadowTransform, 45.0f, glm::vec3(1, 0, 0));
+
+		//Directional Light Pass
+		m_Renderer->DirectionalLightPass();
+	}
+
+private:
+	Renderer * m_Renderer;
+};
+
+//Used for rendering shadowMaps
+class ShadowSystem : public ECS::System<Transform, MeshFilter, MaterialFilter>
+{
+public:
+	ShadowSystem(ECS::ComponentManager* cmanager, EventManager& emanager)
+		:System(cmanager, emanager) {}
+
+
+	void Update(double deltaTime, ECS::Entity& entity)
+	{
+		auto transform = entity.GetComponent<Transform>();
+		auto mesh = entity.GetComponent<MeshFilter>();
+
+		m_Renderer->RenderToShadowMap(&mesh->m_Mesh.m_Asset, 
+			transform->GetGlobalTransformMatrix().front());
+	}
+
+private:
+	std::vector<DirectionalLightComponent*> m_RequiredMaps;
+	Renderer* m_Renderer;
+};
+
+
 
 //---------------------------------------------------------------------------
 //POST PROCESS PASS

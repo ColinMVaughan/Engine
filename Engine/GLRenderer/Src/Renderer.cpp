@@ -145,6 +145,13 @@ void Renderer::Initalize()
 	}
 
 	InitalizeSSAO();
+
+
+	m_ShadowMapBias = glm::mat4(0.5f, 0.0f, 0.0f, 0.5f,
+								0.0f, 0.5f, 0.0f, 0.5f,
+								0.0f, 0.0f, 0.5f, 0.5f,
+								0.0f, 0.0f, 0.0f, 1.0f);
+
 }
 
 void Renderer::InitalizeDefaultMaterial()
@@ -343,8 +350,25 @@ void Renderer::RenderVoxel(Mesh * mesh, Texture * texture, const float * matrix)
 
 void Renderer::RenderToShadowMap(Mesh* mesh, const float* matrix)
 {
+	ShadowCastShader.Bind();
 
+	for (int i = 0; i < m_ShadowMaps.size(); ++i)
+	{
+		glm::mat4 viewToShadowMap = m_ShadowMapBias * m_ShadowOrtho * *m_ShadowProjections[i] * m_Camera->m_Transform;
+		
+		m_ShadowMaps[i]->Bind();
 
+		ShadowCastShader.SendUniformMat4("uView", &m_ShadowProjections[i][0][0][0], false);
+		ShadowCastShader.SendUniformMat4("uProj", &m_ShadowOrtho[0][0], false);
+		ShadowCastShader.SendUniformMat4("uModel", matrix, false);
+
+		glBindVertexArray(mesh->VAO);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->GetNumVertices(), mesh->InstanceNumber);
+		glBindVertexArray(0);
+	
+		m_ShadowMaps[i]->UnBind();
+	}
+	ShadowCastShader.UnBind();
 }
 
 void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
@@ -414,6 +438,12 @@ void Renderer::PostPointLightPass()
 	PointLightPassShader.UnBind();
 
 	glDisable(GL_BLEND);
+}
+
+void Renderer::AddShadowCaster(FrameBuffer & shadowMap, glm::mat4 & direction)
+{
+	m_ShadowMaps.push_back(&shadowMap);
+	m_ShadowProjections.push_back(&direction);
 }
 
 void Renderer::CombineUI()

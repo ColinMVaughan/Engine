@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.0)
+project(Application)
+
+
+file(GLOB HEADERS "UserCode/Include/*.h")
+file(GLOB SOURCES "UserCode/Src/*.cpp")
+		
+add_library(UserCode SHARED ${HEADERS} ${SOURCES})
+target_compile_features(UserCode PUBLIC cxx_std_17)
+target_link_libraries(UserCode Application Physics GLRenderer ECS AssetManager Events ImGUI Serialization)
+
+target_include_directories(UserCode PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/UserCode/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+		
+install(TARGETS UserCode 
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES ${HEADERS} DESTINATION Include/UserCode)

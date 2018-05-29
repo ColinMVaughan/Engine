@@ -1,0 +1,29 @@
+cmake_minimum_required(VERSION 3.0)
+project(Editor)
+
+set_property( GLOBAL PROPERTY USE_FOLDERS ON)
+enable_testing()
+
+add_subdirectory(Engine)
+add_subdirectory(Testing)
+
+file(GLOB HEADERS "Editor/Include/*.h")
+file(GLOB SOURCES "Editor/Src/*.cpp")
+		
+add_executable(Editor ${SOURCES} ${HEADERS})
+target_compile_features(Editor PUBLIC cxx_std_17)
+set_target_properties(Editor PROPERTIES FOLDER "Engine")
+target_link_libraries(Editor Application Physics GLRenderer ECS Events Serialization)
+
+target_include_directories(Editor PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Editor/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+		
+install(TARGETS Editor 
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES ${HEADERS} DESTINATION Include/Editor)

@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.5)
+Project(AssetManager)
+
+file(GLOB SOURCES "SRC/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+
+add_library(AssetManager STATIC ${SOURCES} ${HEADERS})
+target_compile_features(AssetManager PUBLIC cxx_std_17)
+set_target_properties(AssetManager PROPERTIES FOLDER "Engine")
+target_link_libraries(AssetManager Events ImGUI)
+
+target_include_directories(Events PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+		
+install(TARGETS AssetManager 
+				ARCHIVE DESTINATION Lib 
+				LIBRARY DESTINATION Lib 
+				INCLUDES DESTINATION Include) 
+			
+			
+install(FILES ${HEADERS} DESTINATION Include/AssetManager)

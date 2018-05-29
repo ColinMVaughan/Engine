@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.5)
+Project(Events)
+
+file(GLOB SOURCES "Src/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+add_library(Events STATIC ${SOURCES} ${HEADERS})
+target_compile_features(Events PUBLIC cxx_std_17)
+set_target_properties(Events PROPERTIES FOLDER "Engine")
+
+target_include_directories(Events PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+
+install(TARGETS Events 
+				ARCHIVE DESTINATION Lib
+				LIBRARY DESTINATION Lib
+				INCLUDES DESTINATION Include)
+					
+install(FILES ${HEADERS} DESTINATION Include/Events)

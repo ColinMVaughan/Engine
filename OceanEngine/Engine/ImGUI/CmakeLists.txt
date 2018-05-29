@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.5)
+
+file(GLOB SOURCES "Src/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+add_library(ImGUI STATIC ${SOURCES} ${HEADERS})
+
+target_include_directories(ImGUI PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+
+set_target_properties(ImGUI PROPERTIES FOLDER "Engine")
+install(TARGETS ImGUI 
+				ARCHIVE DESTINATION Lib
+				LIBRARY DESTINATION Lib
+				INCLUDES DESTINATION Include)
+					
+install(FILES ${HEADERS} DESTINATION Include/ImGUI)

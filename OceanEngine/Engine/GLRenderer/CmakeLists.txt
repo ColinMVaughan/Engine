@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.0)
+project(GLRenderer)
+
+
+file(GLOB SOURCES "Src/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+
+add_library(GLRenderer STATIC ${SOURCES} ${HEADERS})
+
+find_package(OpenGL)
+
+target_link_libraries(GLRenderer ${OPENGL_LIBRARIES}
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2.lib 
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2main.lib
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2test.lib
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/glew32.lib
+ImGUI
+Serialization)
+
+set_target_properties(GLRenderer PROPERTIES FOLDER "Engine")
+
+target_include_directories(GLRenderer PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+			$<INSTALL_INTERFACE:Include>)
+			
+target_include_directories(GLRenderer PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Include/>
+			$<INSTALL_INTERFACE:Dependencies/Include>)
+
+install(TARGETS GLRenderer 
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES ${HEADERS} DESTINATION Include/GLRenderer)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/SDL2.dll ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Lib/glew32.dll DESTINATION bin)

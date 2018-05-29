@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.0)
+project(Application)
+
+add_subdirectory(Events)
+add_subdirectory(ECS)
+add_subdirectory(AssetManager)
+add_subdirectory(GLRenderer)
+add_subdirectory(Physics)
+add_subdirectory(ImGUI)
+add_subdirectory(Serialization)
+
+file(GLOB HEADERS "Application/Include/*.h")
+file(GLOB SOURCES "Application/Src/*.cpp")
+		
+add_library(Application STATIC ${HEADERS} ${SOURCES})
+target_compile_features(Application PUBLIC cxx_std_17)
+set_target_properties(Application PROPERTIES FOLDER "Engine")
+target_link_libraries(Application Physics GLRenderer ECS AssetManager Events ImGUI Serialization)
+
+target_include_directories(Application PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Application/Include>
+		$<INSTALL_INTERFACE:Include>
+		)
+		
+install(TARGETS Application 
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES ${HEADERS} DESTINATION Include/Application)

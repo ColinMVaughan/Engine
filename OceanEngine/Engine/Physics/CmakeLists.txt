@@ -1,0 +1,50 @@
+cmake_minimum_required(VERSION 3.0)
+project(Physics)
+
+file(GLOB SOURCES "Src/*.cpp")
+file(GLOB HEADERS "Include/*.h")
+
+add_library(Physics STATIC ${SOURCES} ${HEADERS})
+
+set(PhysLibType "DEBUG")
+set(PhysLibPlatform "_x86")
+set(PhysLibraryPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/${PhysLibType}${PhysLibPlatform}")
+
+
+target_link_libraries(Physics ImGUI
+${PhysLibraryPath}/PhysX3${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PxFoundation${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PxPvdSDK${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PhysX3Extensions${PhysLibType}.lib
+${PhysLibraryPath}/PhysX3Gpu${PhysLibType}${PhysLibPlatform}.lib
+${PhysLibraryPath}/PhysX3CharacterKinematic${PhysLibType}${PhysLibPlatform}.lib)
+
+set_target_properties(Physics PROPERTIES FOLDER "Engine")
+
+target_include_directories(Physics PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+			$<INSTALL_INTERFACE:Include>)
+			
+target_include_directories(Physics PUBLIC 
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Include/>
+			$<INSTALL_INTERFACE:Dependencies/PhysX/Include>)
+
+			
+install(TARGETS Physics 
+		ARCHIVE DESTINATION Lib
+		LIBRARY DESTINATION Lib
+		INCLUDES DESTINATION Include)
+		
+install(FILES ${HEADERS} DESTINATION Include/Physics)
+
+set(PhysDLLPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Bin/${PhysLibType}${PhysLibPlatform}")
+
+install(FILES 
+${PhysDLLPath}/PhysX3${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/PhysX3Common${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/PxFoundation${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/PxPvdSDK${PhysLibType}${PhysLibPlatform}.dll
+${PhysDLLPath}/nvToolsExt32_1.dll
+${PhysDLLPath}/PhysX3CharacterKinematic${PhysLibType}${PhysLibPlatform}.dll
+DESTINATION bin)

@@ -1,5 +1,6 @@
 #Ignore file for CMake project
 
 [Bb]uild/
+OceanEngine/[Bb]uild/
 [Ii]nstall/
 .vs/

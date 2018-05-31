@@ -393,8 +393,8 @@ public:
 
 		//Post Processing pass
 		m_Renderer->CombineDebug();
-		m_Renderer->CombineUI();
-		m_Renderer->SubmitFrame();
+		//m_Renderer->CombineUI();
+		//m_Renderer->SubmitFrame();
 	}
 
 	void SetRenderer(Renderer* renderer)

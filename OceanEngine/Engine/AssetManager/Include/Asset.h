@@ -16,12 +16,15 @@ public:
 		request.m_AssetName = m_AssetName;
 		request.m_AssetTypeName = m_AssetType;
 
+		if (request.m_AssetName == "")
+			return;
+
 		BaseAssetRequestEvent* baseRequest = &request;
 
 		manager.DispatchEvent<BaseAssetRequestEvent>(*baseRequest);
 
 		m_Asset = *request.Asset;
-		//m_AssetName = request.m_AssetName;
+		m_AssetName = request.m_AssetName;
 	}
 
 	template<typename Archive>

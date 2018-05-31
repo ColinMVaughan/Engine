@@ -27,7 +27,7 @@ void ECS::AddComponentFromString(const std::string& name, Scene* scene, Entity e
 	//If the component can not be found in the core engine list, check user components
 	DynamicDetail::DynamicComponentRegistry& d_reg = DynamicDetail::GetDynamicComponentRegistry();
 	DynamicDetail::DynamicComponentRegistry::iterator d_it = d_reg.find(name);
-	if (d_it != reg.end())
+	if (d_it != d_reg.end())
 	{
 		//Get the function pointer associated with the component
 		DynamicDetail::DynamicComponentFunc func = d_it->second;
@@ -90,7 +90,7 @@ bool ECS::SerializeComponent(const std::string & name, Scene * scene, Entity ent
 {
 	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
 	detail::ComponentRegistry::iterator it = reg.find(name);
-	if (it == reg.end())
+	if (it != reg.end())
 	{
 		detail::CreateComponentFunc func = it->second;
 		return func(scene, entity, detail::ComponentAction::Save);
@@ -111,7 +111,7 @@ bool ECS::UnSerializeComponent(const std::string & name, Scene * scene, Entity e
 {
 	detail::ComponentRegistry& reg = detail::GetComponentRegistry();
 	detail::ComponentRegistry::iterator it = reg.find(name);
-	if (it == reg.end())
+	if (it != reg.end())
 	{
 		detail::CreateComponentFunc func = it->second;
 		return func(scene, entity, detail::ComponentAction::Load);

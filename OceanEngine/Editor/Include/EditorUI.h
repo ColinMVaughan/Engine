@@ -14,9 +14,6 @@ public:
 
 private:
 
-	void DrawEntityInspector();
-	void DrawResourceManager();
-	void DrawRenderSettings();
 
 	void DrawEditor();
 

@@ -129,13 +129,6 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
-	UIBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
-	if (!UIBuffer.CheckFBO())
-	{
-		std::cout << "UI FBO failed to initalize. \n";
-		system("pause");
-		exit(0);
-	}
 	DebugBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	if (!DebugBuffer.CheckFBO())
 	{
@@ -727,7 +720,8 @@ void Renderer::SSAOPass()
 
 void Renderer::SubmitFrame()
 {
-	FinalBuffer->MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	//FinalBuffer->MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
+	UIBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//UIBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//SSAOBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);

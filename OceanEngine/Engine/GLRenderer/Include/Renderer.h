@@ -51,7 +51,16 @@ public:
 	void RenderDebug(Mesh& mesh, const float* matrix);
 
 	void CombineLighting();
-
+	void CreateUIBuffer(unsigned int width, unsigned int height)
+	{
+		UIBuffer.InitColorTexture(0, width, height, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		if (!UIBuffer.CheckFBO())
+		{
+			std::cout << "UI FBO failed to initalize. \n";
+			system("pause");
+			exit(0);
+		}
+	}
 
 	void PrePointLightPass();
 	inline void PointLightPass(glm::fvec3& lightPos, glm::fvec3& lightColour)
@@ -86,6 +95,7 @@ public:
 
 	FrameBuffer UIBuffer;
 	FrameBuffer DebugBuffer;
+	FrameBuffer* FinalBuffer;
 	Camera* m_Camera;
 private:
 	void InitalizeDefaultMaterial();
@@ -117,7 +127,7 @@ private:
 	FrameBuffer CombinedLighingBuffer;
 	FrameBuffer SSAOBuffer;
 	FrameBuffer PostProccessBuffer;
-	FrameBuffer* FinalBuffer;
+
 
 	//Shaders used for rendering
 	ShaderProgram StaticGeometry;

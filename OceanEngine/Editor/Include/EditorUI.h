@@ -13,10 +13,22 @@ public:
 	void PostUpdate(double deltaTime) override;
 
 private:
-	void DrawMenuBar(double deltaTime);
+
 	void DrawEntityInspector();
 	void DrawResourceManager();
 	void DrawRenderSettings();
+
+	void DrawEditor();
+
+
+	bool DrawSplitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f);
+	void DrawMenuBar(double deltaTime);
+	void DrawEntityListWindow();
+	void DrawInspectorWindow();
+	void DrawSceneWindow();
+	void DrawAssetsWindow();
+
+
 
 	void TriggerDLLReload();
 	void TriggerDLLUnload();
@@ -31,5 +43,7 @@ private:
 	bool GameRunning = false;
 	bool GameCompiling = false;
 	HotReloadHandler CodeReload;
+
+	int WindowSizeX, WindowSizeY;
 
 };

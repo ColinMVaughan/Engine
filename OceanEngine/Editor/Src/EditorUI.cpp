@@ -48,7 +48,13 @@ void Editor::DoInitalize()
 	//Load all assets in the asset directory
 	m_AssetManager->LoadAllAssets();
 
-	//CodeReload.LoadDLL();
+	CodeReload.LoadDLL();
+	auto reg = ECS::DynamicDetail::GetDynamicSystemRegistry();
+	for (auto it = reg.begin(); it != reg.end(); it++)
+	{
+		it->second(m_Scene, ECS::detail::AddSystem);
+	}
+
 }
 
 void Editor::PreUpdate(double deltaTime)
@@ -103,11 +109,15 @@ void Editor::DoUpdate(double deltaTime)
 	//	DrawResourceManager();
 	//if (IsRenderSettingsActive)
 	//	DrawRenderSettings();
+	if (!GameCompiling)
+	{
+		if (GameRunning)
+			m_Scene->UpdateSystems(deltaTime);
+		else
+			m_Scene->UpdateCoreSystems(deltaTime);
+	}
 
-	if (GameRunning)
-		m_Scene->UpdateSystems(deltaTime);
-	else
-		m_Scene->UpdateCoreSystems(deltaTime);
+
 
 
 }
@@ -333,6 +343,7 @@ void Editor::DrawEditor()
 void Editor::DrawEntityListWindow()
 {
 	ImGui::Spacing();
+	ImGui::Indent(5.0);
 	ImGui::Text("Entity List");
 
 
@@ -455,6 +466,9 @@ void Editor::DrawInspectorWindow()
 	ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.13, 0.13, 0.13, 1));
 	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3, 0.3, 0.3, 1));
 
+
+	if (!GameCompiling)
+	{
 	//LIST ATTACHED COMPONENTS
 	for (auto it = registry.begin(); it != registry.end(); ++it)
 	{
@@ -469,8 +483,7 @@ void Editor::DrawInspectorWindow()
 
 	}
 
-	if (!GameCompiling)
-	{
+
 		for (auto it = usercodeRegistry.begin(); it != usercodeRegistry.end(); ++it)
 		{
 			auto AddComponentFunc = it->second;
@@ -538,8 +551,9 @@ void Editor::DrawSceneWindow()
 {
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.21, 0.21, 0.21, 1.0));
 
+	//------------------------------------------------------------------------------------------
 	//Actions
-	ImGui::BeginChild("Actions", ImVec2(ImGui::GetContentRegionAvail().x, 40));
+	ImGui::BeginChild("Actions", ImVec2(ImGui::GetContentRegionAvail().x * 0.5, 40));
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.21, 0.21, 0.21, 1.0));
 	ImGui::Indent(1.0);
 	ImGui::Spacing();
@@ -562,7 +576,9 @@ void Editor::DrawSceneWindow()
 	if (ImGui::Button("Compile", ImVec2(60, 20)))
 	{
 		TriggerDLLUnload();
-		ImGui::OpenPopup("Reload...");
+		TriggerDLLReload();
+		//ImGui::OpenPopup("Reload...");
+
 	}
 
 	if (ImGui::BeginPopupModal("Reload...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
@@ -580,6 +596,25 @@ void Editor::DrawSceneWindow()
 
 	ImGui::PopStyleColor();
 	ImGui::EndChild();
+	//---------------------------------------------------------------------------------
+
+	ImGui::SameLine();
+
+	//---------------------------------------------------------------------------------
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.12, 0.12, 0.12, 1));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.12, 0.12, 0.12, 1));
+
+	ImGui::BeginChild("SceneSelect", ImVec2(ImGui::GetContentRegionAvail().x, 40));
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Indent(8.0);
+	ImGui::BeginCombo("", "Default Scene");
+	ImGui::EndChild();
+
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
+	//--------------------------------------------------------------------------------
 
 
 	ImGui::Spacing();
@@ -630,12 +665,15 @@ bool Editor::DrawSplitter(bool split_vertically, float thickness, float* size1, 
 
 void Editor::TriggerDLLReload()
 {
-	
-	bool reloaded = CodeReload.LoadDLL();
-	//m_Scene->LoadScene("");
-	GameCompiling = false;
-	
+	//Trigger a Rebuild of the User code project
+	system("MSBuild ../UserCode.vcxproj /p:Configuration=Debug /p:BuildProjectReferences=false /t:Build");
 
+	bool reloaded = CodeReload.LoadDLL();
+	auto reg = ECS::DynamicDetail::GetDynamicSystemRegistry();
+	for (auto it = reg.begin(); it != reg.end(); it++)
+	{
+		it->second(m_Scene, ECS::detail::AddSystem);
+	}
 
 	//Recreate Camera (This is temporary, we will find a better spot for this code)
 	auto EditorCamera = m_Scene->CreateEntity(); //create entity
@@ -648,15 +686,18 @@ void Editor::TriggerDLLReload()
 	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
 	EditorCamera.AddComponent<DebugControl>();
 
+	m_Scene->LoadScene("./Assets/DemoScene.scene");
+	GameCompiling = false;
+
 	return;
 }
 
 void Editor::TriggerDLLUnload()
 {
-	//m_Scene->SaveScene("");
+	m_Scene->SaveScene("./Assets/DemoScene.scene");
 	GameCompiling = true;
 	GameRunning = false;
 	
-	//m_Scene->Clear();
-	//CodeReload.UnloadDLL();
+	m_Scene->Clear();
+	CodeReload.UnloadDLL();
 }

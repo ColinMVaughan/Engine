@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Detail.h"
+#include "DynamicCodeDetail.h"
 
 class Component
 {
@@ -24,6 +25,12 @@ namespace ECS
 
 	void destroy(const Component* comp);
 }
+
+#ifdef _USRDLL
+
+#define COMPONENT_REGISTER(TYPE, NAME) 
+
+#else
 
 //Registers the component type with a string in the global component register.
 //Registered components can be added to entities from the editor, have their
@@ -53,6 +60,39 @@ namespace ECS
 																		\
 	}																	\
 } }									
+
+#endif
+
+
+//Registers the component type with a string in the global component register.
+//Registered components can be added to entities from the editor, have their
+//data exposed to the editor, and be serialized.
+
+//PARAMETERS:
+//TYPE = the class type of the component
+//NAME = a string corrisponding with the name of the component
+#define USER_COMPONENT_REGISTER(TYPE, NAME)									\
+	namespace ECS{														\
+	namespace DynamicDetail {													\
+	namespace															\
+	{																	\
+																		\
+		template<class T>												\
+		class DynamicComponentRegistration;									\
+																		\
+		template<>														\
+		class DynamicComponentRegistration<TYPE>								\
+		{																\
+			static const ::ECS::DynamicDetail::DynamicRegistryEntry<TYPE>& reg;		\
+		};																\
+																		\
+		const ::ECS::DynamicDetail::DynamicRegistryEntry<TYPE>&						\
+			DynamicComponentRegistration<TYPE>::reg =							\
+			::ECS::DynamicDetail::DynamicRegistryEntry<TYPE>::Instance(NAME);			\
+																		\
+	}																	\
+} }		
+
 
 
 // Allows the engine to serialize the data of the component during saving / loading.

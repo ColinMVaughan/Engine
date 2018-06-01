@@ -65,41 +65,47 @@ class MaterialFilter
 public:
 	void ExposeToEditor()
 	{
-		ImGui::Text("Albedo: ");
-		ImGui::SameLine();
-		ImGui::Selectable(m_Albedo.m_AssetName.c_str(), true);
-		if(EditorRequestAsset<Texture>(m_Albedo, "Texture", "Albedo: "))
-			m_Material.Albedo = m_Albedo.m_Asset;
+		if (ImGui::TreeNodeEx("Textures"))
+		{
 
-		ImGui::Text("Normal: ");
-		ImGui::SameLine();
-		ImGui::Selectable(m_Normal.m_AssetName.c_str(), true);
-		if(EditorRequestAsset<Texture>(m_Normal, "Texture", "Normal: "))
-			m_Material.Normal = m_Normal.m_Asset;
+			ImGui::Text("Albedo: ");
+			ImGui::SameLine();
+			ImGui::Selectable(m_Albedo.m_AssetName.c_str(), true);
+			if (EditorRequestAsset<Texture>(m_Albedo, "Texture", "Albedo: "))
+				m_Material.Albedo = m_Albedo.m_Asset;
 
-		ImGui::Text("AO: ");
-		ImGui::SameLine();
-		ImGui::Selectable(m_AO.m_AssetName.c_str(), true);
-		if(EditorRequestAsset<Texture>(m_AO, "Texture", "AO: "))
-			m_Material.AO = m_AO.m_Asset;
+			ImGui::Text("Normal: ");
+			ImGui::SameLine();
+			ImGui::Selectable(m_Normal.m_AssetName.c_str(), true);
+			if (EditorRequestAsset<Texture>(m_Normal, "Texture", "Normal: "))
+				m_Material.Normal = m_Normal.m_Asset;
 
-		ImGui::Text("Roughness: ");
-		ImGui::SameLine();
-		ImGui::Selectable(m_Roughness.m_AssetName.c_str(), true);
-		if(EditorRequestAsset<Texture>(m_Roughness, "Texture", "Roughness: "))
-			m_Material.Roughness = m_Roughness.m_Asset;
+			ImGui::Text("AO: ");
+			ImGui::SameLine();
+			ImGui::Selectable(m_AO.m_AssetName.c_str(), true);
+			if (EditorRequestAsset<Texture>(m_AO, "Texture", "AO: "))
+				m_Material.AO = m_AO.m_Asset;
 
-		ImGui::Text("Metallic: ");
-		ImGui::SameLine();
-		ImGui::Selectable(m_Metallic.m_AssetName.c_str(), true);
-		if(EditorRequestAsset<Texture>(m_Metallic, "Texture", "Metallic: "))
-			m_Material.Metallic = m_Metallic.m_Asset;
+			ImGui::Text("Roughness: ");
+			ImGui::SameLine();
+			ImGui::Selectable(m_Roughness.m_AssetName.c_str(), true);
+			if (EditorRequestAsset<Texture>(m_Roughness, "Texture", "Roughness: "))
+				m_Material.Roughness = m_Roughness.m_Asset;
 
-		ImGui::Text("Emissive: ");
-		ImGui::SameLine();
-		ImGui::Selectable(m_Emissive.m_AssetName.c_str(), true);
-		if (EditorRequestAsset<Texture>(m_Emissive, "Texture", "Metallic: "))
-			m_Material.Emissive = m_Emissive.m_Asset;
+			ImGui::Text("Metallic: ");
+			ImGui::SameLine();
+			ImGui::Selectable(m_Metallic.m_AssetName.c_str(), true);
+			if (EditorRequestAsset<Texture>(m_Metallic, "Texture", "Metallic: "))
+				m_Material.Metallic = m_Metallic.m_Asset;
+
+			ImGui::Text("Emissive: ");
+			ImGui::SameLine();
+			ImGui::Selectable(m_Emissive.m_AssetName.c_str(), true);
+			if (EditorRequestAsset<Texture>(m_Emissive, "Texture", "Metallic: "))
+				m_Material.Emissive = m_Emissive.m_Asset;
+
+			ImGui::TreePop();
+		}
 	}
 
 	COMPONENT_SERIALIZE(m_Albedo, m_Normal, m_AO, m_Roughness, m_Metallic, m_Emissive)

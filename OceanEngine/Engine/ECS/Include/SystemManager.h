@@ -43,8 +43,6 @@ namespace ECS
 			BaseSystem* tempPtr = returnPtr;
 			
 			CoreSystemList.push_back(tempPtr);
-			SystemList.push_back(tempPtr);
-
 			return returnPtr;
 		}
 
@@ -55,7 +53,6 @@ namespace ECS
 			BaseSystem* tempPtr = returnPtr;
 
 			UserSystemList.push_back(tempPtr);
-			SystemList.push_back(tempPtr);
 
 			return returnPtr;
 		}
@@ -66,9 +63,11 @@ namespace ECS
 		//------------------------------
 		void UpdateSystems(double deltaTime, Entity entityList[], size_t entityCount);
 		void UpdateCoreSystems(double deltaTime);
+		void UpdateUserSystems(double deltaTime);
+
 		void RegisterEntity(Entity& entity);
 
-		void ClearUserSystems();
+		void RemoveUserSystems();
 		void ClearAllRegisteredEntities();
 
 		void StartSystems();

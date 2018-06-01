@@ -19,6 +19,7 @@
 #include <type_traits>
 #include "ECS.h"
 
+
 class Component;
 
 //Template detection boilerplate

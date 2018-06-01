@@ -460,6 +460,7 @@ void ECS::Scene::Clear()
 {
 	m_ComponentManager->ClearAllComponents();
 	m_SystemManager->ClearAllRegisteredEntities();
+	m_SystemManager->RemoveUserSystems();
 
 	m_EntityList.clear();
 	m_EntityNames.clear();

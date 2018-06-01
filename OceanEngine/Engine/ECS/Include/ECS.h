@@ -249,6 +249,8 @@ namespace ECS
 	inline void Scene::UpdateSystems(double deltaTime)
 	{
 		m_SystemManager->UpdateSystems(deltaTime, m_EntityList.data(), m_EntityList.size());
+		m_SystemManager->UpdateUserSystems(deltaTime);
+		m_SystemManager->UpdateCoreSystems(deltaTime);
 	}
 
 	inline void Scene::UpdateCoreSystems(double deltaTime)

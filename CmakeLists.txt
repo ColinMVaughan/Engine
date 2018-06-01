@@ -3,7 +3,7 @@ project(UserCode)
 
 set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_subdirectory(OceanEngine EXCLUDE_FROM_ALL)
+add_subdirectory(OceanEngine)
 
 
 file(GLOB HEADERS "UserCode/Include/*.h")
@@ -11,6 +11,8 @@ file(GLOB SOURCES "UserCode/Src/*.cpp")
 		
 add_library(UserCode SHARED ${SOURCES} ${HEADERS})
 target_compile_features(UserCode PUBLIC cxx_std_17)
+
+
 
 target_link_libraries(UserCode Application Physics GLRenderer ECS Events Serialization)
 

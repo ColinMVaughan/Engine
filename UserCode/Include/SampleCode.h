@@ -22,8 +22,11 @@ public:
 		:System(cManager, eManager) {}
 
 
-
+	void PreUpdate(double deltaTime);
 	void Update(double deltaTime, ECS::Entity& entity);
 	//void EntityRegistered(ECS::Entity& entity);
+
+private:
+	double time = 0;
 };
 USER_SYSTEM_REGISTER(LightShiftSystem, "LightShiftSystem")

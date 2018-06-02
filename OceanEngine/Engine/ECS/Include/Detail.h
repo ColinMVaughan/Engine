@@ -76,7 +76,7 @@ namespace ECS
 
 		enum SystemAction
 		{
-			AddSystem = 0
+			AddSystem = 0, AddUserSystem
 		};
 
 		typedef bool (*CreateComponentFunc)(Scene*,Entity, ComponentAction);
@@ -147,6 +147,9 @@ namespace ECS
 			{
 			case AddSystem:
 				scene->AddSystem<T>();
+				break;
+			case AddUserSystem:
+				scene->AddUserSystem<T>();
 				break;
 			}
 

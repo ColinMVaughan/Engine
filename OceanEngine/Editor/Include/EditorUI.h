@@ -24,13 +24,13 @@ private:
 	void DrawInspectorWindow();
 	void DrawSceneWindow();
 	void DrawAssetsWindow();
-
+	void DrawMaterialWindow();
 
 
 	void TriggerDLLReload();
 	void TriggerDLLUnload();
 
-	bool IsEntityListActive = false;
+	bool IsMaterialEditorActive = false;
 	bool IsEntityInspectorActive = false;
 	bool IsResourceManagerActive = false;
 	bool IsRenderSettingsActive = false;
@@ -42,5 +42,6 @@ private:
 	HotReloadHandler CodeReload;
 
 	int WindowSizeX, WindowSizeY;
+	double m_DeltaTime;
 
 };

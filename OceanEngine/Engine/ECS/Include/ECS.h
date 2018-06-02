@@ -91,6 +91,9 @@ namespace ECS
 		T* AddCoreSystem();
 
 		template<typename T>
+		T* AddUserSystem();
+
+		template<typename T>
 		T* GetComponent(Entity a_entity);
 
 		template<typename T>
@@ -165,6 +168,12 @@ namespace ECS
 	inline T * Scene::AddCoreSystem()
 	{
 		return m_SystemManager->AddCoreSystem<T>();
+	}
+
+	template<typename T>
+	inline T * Scene::AddUserSystem()
+	{
+		return m_SystemManager->AddUserSystem<T>();
 	}
 
 	template <typename T>

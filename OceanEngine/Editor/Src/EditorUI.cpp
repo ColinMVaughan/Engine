@@ -52,13 +52,14 @@ void Editor::DoInitalize()
 	auto reg = ECS::DynamicDetail::GetDynamicSystemRegistry();
 	for (auto it = reg.begin(); it != reg.end(); it++)
 	{
-		it->second(m_Scene, ECS::detail::AddSystem);
+		it->second(m_Scene, ECS::detail::AddUserSystem);
 	}
 
 }
 
 void Editor::PreUpdate(double deltaTime)
 {
+	m_DeltaTime = deltaTime;
 	NewEvent = false;
 	while (SDL_PollEvent(&InputEvent))
 	{
@@ -125,6 +126,9 @@ void Editor::DoUpdate(double deltaTime)
 void Editor::PostUpdate(double deltaTime)
 {
 	DrawEditor();
+
+	if (IsMaterialEditorActive)
+		DrawMaterialWindow();
 
 	//m_Renderer->UIBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -194,9 +198,8 @@ void Editor::DrawMenuBar(double deltaTime)
 	//View Menu Item
 	if (ImGui::BeginMenu("View"))
 	{
-		//if (ImGui::MenuItem("Entity Inspector", NULL, IsEntityInspectorActive)) { IsEntityInspectorActive = !IsEntityInspectorActive; }
-		//if (ImGui::MenuItem("System Inspector", NULL, IsEntityListActive)) { IsEntityListActive = !IsEntityListActive; }
-		//if (ImGui::MenuItem("Resource Inspector", NULL, IsResourceManagerActive)) { IsResourceManagerActive = !IsResourceManagerActive; }
+		if (ImGui::MenuItem("Material Editor", NULL, IsMaterialEditorActive)) { IsMaterialEditorActive = !IsMaterialEditorActive; }
+
 		ImGui::EndMenu();
 	}
 
@@ -422,9 +425,10 @@ void Editor::DrawInspectorWindow()
 
 	ImGui::Spacing();
 
-	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 1));
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 1));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.12, 0.12, 0.12, 1));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.12, 0.12, 0.12, 1));
 
+	ImGui::Indent(5.0);
 	if (ImGui::BeginCombo("", "+ Add Component..."))
 	{
 		//LIST AVAILABLE COMPONENTS
@@ -547,6 +551,42 @@ float aspectRatio(float imageX, float imageY, float screenX, float screenY)
 	return scaleFactor;
 }
 
+
+ImVec4 LerpColour(ImVec4& colour1, ImVec4& colour2, double t)
+{
+	ImVec4 returnColour;
+
+	returnColour.x = colour1.x + t * (colour2.x - colour1.x);
+	returnColour.y = colour1.y + t * (colour2.y - colour1.y);
+	returnColour.z = colour1.z + t * (colour2.z - colour1.z);
+	returnColour.w = colour1.w + t * (colour2.w - colour1.w);
+
+	return returnColour;
+}
+ImVec4 PulseColour(ImVec4& colour1, ImVec4& colour2, double deltaTime, bool run)
+{
+	static double pulseTime = 0.0;
+
+	if (!run)
+		return colour1;
+
+	pulseTime +=deltaTime;
+
+	const float pi = 3.14;
+	const float frequency = 1; // Frequency in Hz
+
+	return LerpColour(colour1, colour2, 0.5*(1 + sin(2 * pi * frequency * pulseTime)));
+}
+
+ImVec4 SwitchColour( ImVec4 colour1, ImVec4 colour2, bool SwitchCol)
+{
+	if (SwitchCol)
+	{
+		return colour2;
+	}
+	return colour1;
+}
+
 void Editor::DrawSceneWindow()
 {
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.21, 0.21, 0.21, 1.0));
@@ -555,38 +595,44 @@ void Editor::DrawSceneWindow()
 	//Actions
 	ImGui::BeginChild("Actions", ImVec2(ImGui::GetContentRegionAvail().x * 0.5, 40));
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.21, 0.21, 0.21, 1.0));
-	ImGui::Indent(1.0);
 	ImGui::Spacing();
 	ImGui::Spacing();
 
+	ImGui::Indent(5.0);
+	ImGui::PushStyleColor(ImGuiCol_Button, PulseColour(ImVec4(0.21, 0.21, 0.21, 1.0), ImVec4(0, 0.75, 0.85, 1),m_DeltaTime, GameRunning));
 	if (ImGui::Button("Play", ImVec2(50, 20)))
 	{
 		GameRunning = true;
 		m_SystemManager->StartSystems();
 	}
+	ImGui::PopStyleColor();
 	ImGui::SameLine();
 
+
+	ImGui::PushStyleColor(ImGuiCol_Button, SwitchColour(ImVec4(0.21, 0.21, 0.21, 1.0), ImVec4(0.96, 0.18, 0.18, 1), GameRunning));
 	if (ImGui::Button("Stop", ImVec2(50, 20)))
 	{
 		GameRunning = false;
 		m_SystemManager->StopSystems();
 	}
+	ImGui::PopStyleColor();
 	ImGui::SameLine();
 
+	ImGui::PushStyleColor(ImGuiCol_Button, PulseColour(ImVec4(0.21, 0.21, 0.21, 1.0), ImVec4(0, 0.75, 0.85, 1), m_DeltaTime, GameCompiling));
 	if (ImGui::Button("Compile", ImVec2(60, 20)))
 	{
 		TriggerDLLUnload();
 		TriggerDLLReload();
 		//ImGui::OpenPopup("Reload...");
-
 	}
+	ImGui::PopStyleColor();
 
 	if (ImGui::BeginPopupModal("Reload...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Waiting for User Code to compile...");
 		if (ImGui::Button("Reload", ImVec2(50, 0)))
 		{
-			TriggerDLLReload();
+			//TriggerDLLReload();
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -672,7 +718,7 @@ void Editor::TriggerDLLReload()
 	auto reg = ECS::DynamicDetail::GetDynamicSystemRegistry();
 	for (auto it = reg.begin(); it != reg.end(); it++)
 	{
-		it->second(m_Scene, ECS::detail::AddSystem);
+		it->second(m_Scene, ECS::detail::AddUserSystem);
 	}
 
 	//Recreate Camera (This is temporary, we will find a better spot for this code)
@@ -700,4 +746,68 @@ void Editor::TriggerDLLUnload()
 	
 	m_Scene->Clear();
 	CodeReload.UnloadDLL();
+}
+
+
+
+void Editor::DrawMaterialWindow()
+{
+	ImGui::Begin("CreateMaterialWindow");
+	
+	ImGui::BeginChild("Material Preview",ImVec2(ImGui::GetContentRegionAvail().x * 0.33, ImGui::GetContentRegionAvail().y));
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+
+	ImGui::BeginChild("Material Settings",ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
+	
+	//If the user drags a prefab in, add it to the scene
+	Asset<Texture> albedo;
+	if (EditorRequestAsset<Texture>(albedo, "Albedo", ""))
+	{
+	}
+	ImGui::Selectable("Albedo");
+
+
+	//If the user drags a prefab in, add it to the scene
+	Asset<Texture> normal;
+	if (EditorRequestAsset<Texture>(normal, "Normal", ""))
+	{
+	}
+	ImGui::Selectable("Normal");
+
+	//If the user drags a prefab in, add it to the scene
+	Asset<Texture> metallic;
+	if (EditorRequestAsset<Texture>(metallic, "Normal", ""))
+	{
+	}
+	ImGui::Selectable("Metallic");
+
+	//If the user drags a prefab in, add it to the scene
+	Asset<Texture> roughness;
+	if (EditorRequestAsset<Texture>(roughness, "Roughness", ""))
+	{
+	}
+	ImGui::Selectable("Roughness");
+
+	//If the user drags a prefab in, add it to the scene
+	Asset<Texture> emissive;
+	if (EditorRequestAsset<Texture>(emissive, "Emissive", ""))
+	{
+	}
+	ImGui::Selectable("Emissive");
+
+
+	//If the user drags a prefab in, add it to the scene
+	Asset<Texture> ao;
+	if (EditorRequestAsset<Texture>(ao, "AO", ""))
+	{
+	}
+	ImGui::Selectable("AO");
+
+
+	ImGui::EndChild();
+
+	
+	ImGui::End();
 }

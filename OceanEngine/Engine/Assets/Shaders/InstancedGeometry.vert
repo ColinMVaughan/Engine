@@ -7,11 +7,14 @@ uniform mat4 uProj;
 layout(location = 0) in vec3 in_vert;
 layout(location = 1) in vec2 in_uv;
 layout(location = 2) in vec3 in_normal;
+
 layout(location = 3) in mat4 in_offset;
+layout(location = 7) in uint in_index;
 
 out vec2 texcoord;
 out vec3 norm;
 out vec3 pos;
+out flat uint materialIndex;
 
 void main()
 {
@@ -24,4 +27,6 @@ void main()
 	gl_Position = uProj * viewSpace;
 	
 	pos = modelSpace.xyz;
+	
+	materialIndex = in_index;
 }

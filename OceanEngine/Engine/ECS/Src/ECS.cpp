@@ -84,7 +84,7 @@ bool ECS::Scene::SaveScene(std::string filePath)
 	m_BinaryOutput = &archive;
 
 	//For each entity, search for it's components and add their index & data
-	for (int i = 1; i < numEntities; ++i)
+	for (int i = 0; i < numEntities; ++i)
 	{
 		//Write the name of the entity to file
 		std::string entityName = GetEntity(i).GetName();

@@ -26,6 +26,7 @@ private:
 	void DrawAssetsWindow();
 	void DrawMaterialWindow();
 
+	void OpenScene();
 
 	void TriggerDLLReload();
 	void TriggerDLLUnload();

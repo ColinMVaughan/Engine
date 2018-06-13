@@ -811,3 +811,12 @@ void Editor::DrawMaterialWindow()
 	
 	ImGui::End();
 }
+
+void Editor::OpenScene()
+{
+	m_Scene->LoadScene("");
+	auto ent = m_Scene->GetEntity(0); //get the camera entity (should only be transform)
+
+	m_Renderer->SetCamera(ent.AddComponent<Camera>());
+	ent.AddComponent<DebugControl>();
+}

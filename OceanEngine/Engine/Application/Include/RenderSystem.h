@@ -146,6 +146,8 @@ class DrawGizmoEvent : public IEvent
 {
 public:
 	Mesh * mesh;
+	glm::vec3 colour = glm::vec3(1, 1, 1);
+	GLenum drawMode = GL_LINE_STRIP;
 	const float* matrix;
 };
 
@@ -199,7 +201,7 @@ public:
 
 	void DrawDebugMesh(DrawGizmoEvent& a_event)
 	{
-		m_Renderer->RenderDebug(*a_event.mesh, a_event.matrix);
+		m_Renderer->RenderDebug(*a_event.mesh, a_event.matrix, a_event.colour, a_event.drawMode);
 	}
 };
 

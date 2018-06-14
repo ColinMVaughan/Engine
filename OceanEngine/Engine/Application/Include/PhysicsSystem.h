@@ -3,6 +3,7 @@
 #include <BaseSystem.h>
 #include "Renderer.h"
 #include "NullComponent.h"
+#include "RenderSystem.h"
 
 //For Handling Physics Simulation
 class PhysicsSystem : public ECS::System<Transform, RigidBody>
@@ -52,4 +53,10 @@ public:
 
 private:
 	Mesh ArrowShape;
+	physx::PxMat44 rotatex;
+	physx::PxMat44 rotatez;
+
+	DrawGizmoEvent Y_meshEvent;
+	DrawGizmoEvent X_meshEvent;
+	DrawGizmoEvent Z_meshEvent;
 };

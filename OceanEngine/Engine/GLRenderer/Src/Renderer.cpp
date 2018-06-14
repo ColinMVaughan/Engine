@@ -364,7 +364,7 @@ void Renderer::RenderToShadowMap(Mesh* mesh, const float* matrix)
 	ShadowCastShader.UnBind();
 }
 
-void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
+void Renderer::RenderDebug(Mesh& mesh, const float* matrix, glm::vec3 colour, GLenum drawMode)
 {
 	DebugBuffer.Bind();
 	DebugShader.Bind();
@@ -372,11 +372,12 @@ void Renderer::RenderDebug(Mesh& mesh, const float* matrix)
 	DebugShader.SendUniformMat4("uView", &glm::inverse(m_Camera->m_Transform)[0][0], false);
 	DebugShader.SendUniformMat4("uProj", &m_Camera->m_Projection[0][0], false);
 	DebugShader.SendUniformMat4("uModel", matrix, false);
+	DebugShader.SendUniform("inColour", colour);
 
 	glLineWidth(1.0);
 
 	glBindVertexArray(mesh.VAO);
-	glDrawArrays(GL_LINE_STRIP, 0, mesh.GetNumVertices());
+	glDrawArrays(drawMode, 0, mesh.GetNumVertices());
 	glBindVertexArray(0);
 
 	DebugShader.UnBind();

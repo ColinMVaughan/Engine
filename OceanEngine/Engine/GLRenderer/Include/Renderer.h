@@ -48,7 +48,7 @@ public:
 
 	void RenderToShadowMap(Mesh* mesh, const float* matrix);
 
-	void RenderDebug(Mesh& mesh, const float* matrix);
+	void RenderDebug(Mesh& mesh, const float* matrix, glm::vec3 colour, GLenum renderMode = GL_LINE_STRIP);
 
 	void CombineLighting();
 	void CreateUIBuffer(unsigned int width, unsigned int height)

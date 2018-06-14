@@ -1,6 +1,6 @@
 #include <PhysicsSystem.h>
 #include <ECS.h>
-#include "RenderSystem.h"
+//#include "RenderSystem.h"
 #include "DebugShapes.h"
 
 
@@ -138,18 +138,46 @@ void CollisionSystem::DrawGizmo(ECS::Entity& entity)
 TransformSystem::TransformSystem(ECS::ComponentManager * a_CompManager, EventManager & a_EveManager)
 	:System(a_CompManager, a_EveManager)
 {
-	LoadDebugArrows(ArrowShape);
+	//LoadDebugArrows(ArrowShape);
+	ArrowShape.LoadFromFile("./Assets/Models/DebugShapes/Arrow.obj");
+
+	Y_meshEvent.mesh = &ArrowShape;
+	Y_meshEvent.drawMode = GL_TRIANGLES;
+	Y_meshEvent.colour = glm::vec3(0, 1, 0);
+
+	X_meshEvent.mesh = &ArrowShape;
+	X_meshEvent.drawMode = GL_TRIANGLES;
+	X_meshEvent.colour = glm::vec3(1, 0, 0);
+
+	Z_meshEvent.mesh = &ArrowShape;
+	Z_meshEvent.drawMode = GL_TRIANGLES;
+	Z_meshEvent.colour = glm::vec3(0, 0, 1);
+
+	physx::PxQuat rot(1.5708f, physx::PxVec3(1,0,0));
+	rotatex = physx::PxMat44(rot);
+
+	physx::PxQuat rot2(1.5708f, physx::PxVec3(0, 0, 1));
+	rotatez = physx::PxMat44(rot2);
+
+
+	return;
 }
 
 void TransformSystem::DrawGizmo(ECS::Entity& entity)
 {
-	auto transform = entity.GetComponent<Transform>();
-	auto matrix = transform->GetGlobalTransformMatrix();
+	auto matrix = entity.GetComponent<Transform>()->GetGlobalTransformMatrix();
 
-	DrawGizmoEvent meshEvent;
-	meshEvent.mesh = &ArrowShape;
-	meshEvent.matrix = matrix.front();
 
-	entity.DispatchEvent<DrawGizmoEvent>(meshEvent);
+	Y_meshEvent.matrix = matrix.front();
+	entity.DispatchEvent<DrawGizmoEvent>(Y_meshEvent);
+
+
+	X_meshEvent.matrix = (matrix * rotatex).front();
+	entity.DispatchEvent<DrawGizmoEvent>(X_meshEvent);
+
+
+	Z_meshEvent.matrix = (matrix * rotatez).front();
+	entity.DispatchEvent<DrawGizmoEvent>(Z_meshEvent);
+
 	return;
 }

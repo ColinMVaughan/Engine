@@ -2,6 +2,7 @@
 #define CORE_COMP_REG_H
 #include <ComponentReflection.h>
 #include <Renderer.h>
+#include <CameraSystem.h>
 #include <PhysicsSystem.h>
 #include "AssetRegistration.h"
 #include "PrefabEntity.h"
@@ -11,7 +12,7 @@
 
 COMPONENT_REGISTER(Transform, "Transform")
 COMPONENT_REGISTER(DebugControl, "DebugControl")
-COMPONENT_REGISTER(Camera, "Camera")
+COMPONENT_REGISTER(CameraComponent, "CameraComponent")
 COMPONENT_REGISTER(RigidBody, "RigidBody")
 COMPONENT_REGISTER(Collider, "Collider")
 

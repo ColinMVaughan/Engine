@@ -86,7 +86,10 @@ private:
 
 //Macro Inteded to be used for registering listner member functions within System
 #define REGISTER_EVENT_LISTNER(EventType, Function, Manager) \
-		Manager.AddListner<EventType>(std::bind(&Function, this, std::placeholders::_1));\
+			std::function<void(EventType&)> f2 = [this](EventType& eve) {Function(eve); };\
+			Manager.AddListner<EventType>(f2);
+
+//Manager.AddListner<EventType>(std::bind(&Function, this, std::placeholders::_1));\
 
 
 

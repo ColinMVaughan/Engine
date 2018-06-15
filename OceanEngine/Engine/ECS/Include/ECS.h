@@ -118,7 +118,7 @@ namespace ECS
 		void UpdateCoreSystems(double deltaTime);
 
 		void Clear();
-
+		void UnloadUserSystems();
 
 		unsigned int GetNumEntities();
 		Entity& GetEntity(unsigned int index);

@@ -289,7 +289,7 @@ bool ECS::Scene::LoadScene(std::string filePath)
 
 
 	//Start with one to skip over the default user camera, which will have no effect on the game/scene.
-	for (int i = 1; i < numEntities; ++i)
+	for (int i = 0; i < numEntities; ++i)
 	{
 		char* entname = reinterpret_cast<char*>(fileData + offset);
 		offset += (strlen(entname) +1);
@@ -460,9 +460,13 @@ void ECS::Scene::Clear()
 {
 	m_ComponentManager->ClearAllComponents();
 	m_SystemManager->ClearAllRegisteredEntities();
-	m_SystemManager->RemoveUserSystems();
 
 	m_EntityList.clear();
 	m_EntityNames.clear();
 	EntityCounter = 0;
+}
+
+void ECS::Scene::UnloadUserSystems()
+{
+	m_SystemManager->RemoveUserSystems();
 }

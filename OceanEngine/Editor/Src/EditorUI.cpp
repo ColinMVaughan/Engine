@@ -28,6 +28,7 @@ void Editor::DoInitalize()
 
 	//Allows the user to move the camera in debug mode.
 	RegisterKeyboardCallback(m_Scene->AddCoreSystem<DebugCameraControlSystem>());
+	m_Scene->AddCoreSystem<CameraSystem>()->SetRendrer(m_Renderer);
 	m_Scene->AddSystem<EventSystemTest>();
 	m_Scene->AddSystem<BlockResetSystem>();
 
@@ -35,12 +36,10 @@ void Editor::DoInitalize()
 	auto EditorCamera = m_Scene->CreateEntity(); //create entity
 
 	//add camera component and register it with the renderer
-	auto cam = EditorCamera.AddComponent<Camera>();
-	cam->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
-	m_Renderer->SetCamera(cam); 
-
+	auto cam = EditorCamera.AddComponent<CameraComponent>();
 	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
 	EditorCamera.AddComponent<DebugControl>();
+	EditorCamera.DispatchEvent<SetEditorCameraEvent>(SetEditorCameraEvent(cam));
 
 	//set the style to the dark theme
 	ImGui::StyleColorsDark();
@@ -153,7 +152,7 @@ void Editor::DrawMenuBar(double deltaTime)
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("Save Scene")) { m_Scene->SaveScene("./Assets/DemoScene.Scene"); }
-		if (ImGui::MenuItem("Open Scene")) { m_Scene->LoadScene("./Assets/DemoScene.Scene"); }
+		if (ImGui::MenuItem("Open Scene")) { OpenScene("./Assets/DemoScene.Scene"); }
 		if (ImGui::MenuItem("Quit")) { Running = false; }
 		ImGui::EndMenu();
 	}
@@ -721,18 +720,7 @@ void Editor::TriggerDLLReload()
 		it->second(m_Scene, ECS::detail::AddUserSystem);
 	}
 
-	//Recreate Camera (This is temporary, we will find a better spot for this code)
-	auto EditorCamera = m_Scene->CreateEntity(); //create entity
-
-	//add camera component and register it with the renderer
-	auto cam = EditorCamera.AddComponent<Camera>();
-	cam->m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
-	m_Renderer->SetCamera(cam);
-
-	EditorCamera.AddComponent<Transform>(); //Add transform for positioning camera
-	EditorCamera.AddComponent<DebugControl>();
-
-	m_Scene->LoadScene("./Assets/DemoScene.scene");
+	OpenScene("./Assets/DemoScene.scene");
 	GameCompiling = false;
 
 	return;
@@ -745,6 +733,7 @@ void Editor::TriggerDLLUnload()
 	GameRunning = false;
 	
 	m_Scene->Clear();
+	m_Scene->UnloadUserSystems();
 	CodeReload.UnloadDLL();
 }
 
@@ -812,11 +801,18 @@ void Editor::DrawMaterialWindow()
 	ImGui::End();
 }
 
-void Editor::OpenScene()
+void Editor::OpenScene(std::string path)
 {
-	m_Scene->LoadScene("");
+	m_Scene->Clear();
+	m_Scene->LoadScene(path);
 	auto ent = m_Scene->GetEntity(0); //get the camera entity (should only be transform)
 
-	m_Renderer->SetCamera(ent.AddComponent<Camera>());
-	ent.AddComponent<DebugControl>();
+
+
+	//Set the camera to be the editor camera
+	SetEditorCameraEvent eve;
+	eve.camera = ent.GetComponent<CameraComponent>();
+	ent.DispatchEvent<SetEditorCameraEvent>(eve);
+
+
 }

@@ -26,7 +26,7 @@ private:
 	void DrawAssetsWindow();
 	void DrawMaterialWindow();
 
-	void OpenScene();
+	void OpenScene(std::string path);
 
 	void TriggerDLLReload();
 	void TriggerDLLUnload();

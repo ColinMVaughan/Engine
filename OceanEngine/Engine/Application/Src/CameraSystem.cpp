@@ -17,7 +17,7 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 {
 	//Get Transform and camera components of entity
 	auto transform = entity.GetComponent<Transform>();
-	auto camera = entity.GetComponent<Camera>();
+	//auto camera = entity.GetComponent<Camera>();
 
 	//Rotate camera by whatever ammout
 	transform->GetTransform()->q = PxQuat(PxIdentity);
@@ -30,7 +30,7 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 
 	// Convert physx::PxMat44 to glm::mat4 and send updated transform to camera component
 	// (I would like to change this in the fututre)
-	camera->m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
+	//camera->m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
 	return;
 }
 

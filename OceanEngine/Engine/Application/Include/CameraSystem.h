@@ -14,10 +14,35 @@
 class CameraComponent
 {
 public:
+	enum CameraTag{Editor = 0, Default, Main};
+	CameraTag m_Tag;
+
+public:
+
+	void ExposeToEditor()
+	{
+		static int selected = 0;
+		if(ImGui::BeginCombo("Camera Type",nullptr))
+		{
+			if (ImGui::Selectable("Default")) { m_Tag = CameraTag::Default; }
+			if (ImGui::Selectable("Main Camera")) { m_Tag = CameraTag::Main; }
+			
+			ImGui::EndCombo();
+		}
+	}
+
 	COMPONENT_SERIALIZE(m_CameraID)
 
 	Camera m_Camera;
 	int m_CameraID;
+};
+
+class SetMainCameraEvent : public IEvent
+{
+public: 
+	SetMainCameraEvent() = default;
+	SetMainCameraEvent(CameraComponent* cam) :m_Camera(cam) {}
+	CameraComponent * m_Camera;
 };
 
 class SetEditorCameraEvent : public IEvent
@@ -60,14 +85,29 @@ public:
 		camera->m_Camera.m_Transform = glm::make_mat4(transform->GetGlobalTransformMatrix().front());
 	}
 
+
 	void Start(ECS::Entity& entity) override
 	{
-		
+		auto camera = entity.GetComponent<CameraComponent>();
+
+		if (camera->m_Tag == CameraComponent::Main)
+			m_MainCamera = camera;
+	}
+
+	void PostStart() override
+	{
+		if (m_MainCamera)
+			m_Renderer->SetCamera(&m_MainCamera->m_Camera);
 	}
 
 	void Stop(ECS::Entity& entity) override
 	{
 
+	}
+
+	void PostStop() override
+	{
+		m_Renderer->SetCamera(&m_EditorCamera->m_Camera);
 	}
 
 	void EntityRegistered(ECS::Entity& entity) override
@@ -93,7 +133,13 @@ public:
 	void SetEditorCamera(SetEditorCameraEvent& a_event)
 	{
 		m_EditorCamera = a_event.camera;
+		m_MainCamera = m_EditorCamera;
 		m_Renderer->SetCamera(&m_EditorCamera->m_Camera);
+	}
+
+	void SetMainCamera(SetMainCameraEvent& a_event)
+	{
+		m_MainCamera = a_event.m_Camera;
 	}
 
 	void SetRendrer(Renderer* rendPtr)

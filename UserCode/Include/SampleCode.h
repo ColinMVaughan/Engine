@@ -110,7 +110,7 @@ public:
 
 	void draw()
 	{
-		for (int t = 0.0f, t < 1.0f, t += 0.05)
+		for (int t = 0.0f; t < 1.0f; t += 0.05)
 		{
 
 		}

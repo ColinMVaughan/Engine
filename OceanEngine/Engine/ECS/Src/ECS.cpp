@@ -335,7 +335,6 @@ bool ECS::Scene::LoadScene(std::string filePath)
 				ECS::UnSerializeComponent(componentNames[componentIndex], this, entity);
 
 				offset += componentSize;
-				std::cout << "Bla\n";
 			}
 
 		}

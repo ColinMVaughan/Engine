@@ -414,3 +414,27 @@ void LoadDebugArrows(Mesh& a_Mesh)
 
 	a_Mesh._NumVertices = sizeof(DebugArrows) / sizeof(*DebugArrows);
 }
+
+void LoadDebugLineStrip(Mesh & a_Mesh, glm::vec3 * points, unsigned int pointsSize)
+{
+	const int vertexSize = sizeof(glm::vec3) * pointsSize;
+
+	if (a_Mesh.VAO == 0)
+	{
+		//Generate vertex array object & vetex buffer objects
+		glGenVertexArrays(1, &a_Mesh.VAO);
+		glGenBuffers(1, &a_Mesh.VBO_Verticies);
+	}
+
+	glBindVertexArray(a_Mesh.VAO);
+	glEnableVertexAttribArray(0); //Vertex
+
+	glBindBuffer(GL_ARRAY_BUFFER, a_Mesh.VBO_Verticies);
+	glBufferData(GL_ARRAY_BUFFER, vertexSize, &points[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+	glBindVertexArray(GL_NONE);
+
+	a_Mesh._NumVertices = pointsSize;
+}

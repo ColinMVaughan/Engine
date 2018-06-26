@@ -452,6 +452,7 @@ void LoadAsCube(Mesh& a_Mesh)
 	a_Mesh._NumVertices = 6 * 6 * 3;
 }
 
+
 void EnvironmentmapToCubemap(std::string filepath, Texture& CubeMap)
 {
 	unsigned int captureFBO, captureRBO;

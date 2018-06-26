@@ -4,6 +4,8 @@
 #include <ComponentReflection.h>
 #include <SystemReflection.h>
 #include <RenderSystem.h>
+#include <DebugShapes.h>
+#include <string>
 
 class ShiftComponent
 {
@@ -40,6 +42,13 @@ public:
 	std::vector<glm::vec3> nodes;
 	uint8_t current_node;
 
+
+	void ExposeToEditor()
+	{
+		for (int i = 0; i < nodes.size(); ++i)
+			ImGui::DragFloat3((std::string("Node ") + std::to_string(i)).c_str(), &nodes[i].x, 0.1f);
+	}
+
 	glm::vec3 GetSplinePoint(float t)
 	{
 		int p0, p1, p2, p3;
@@ -69,13 +78,28 @@ public:
 
 private:
 };
+USER_COMPONENT_REGISTER(SplineComponent, "SplineComponent")
 
 
-class SplineMoveSystem : public ECS::System<Transform, PointLightComponent>
+class SplineMoveSystem : public ECS::System<Transform, SplineComponent>
 {
 public:
 	SplineMoveSystem(ECS::ComponentManager* cManager, EventManager& eManager)
-		:System(cManager, eManager) {}
+		:System(cManager, eManager) 
+	{
+		m_DrawSplineEvent.colour = glm::vec3(1, 0, 0);
+		m_DrawSplineEvent.drawMode = GL_LINES;
+		m_DrawSplineEvent.matrix = &mat[0][0];
+		m_DrawSplineEvent.mesh = &m_pathMesh;
+
+
+
+		m_DrawNodeEvent.colour = glm::vec3(0, 1, 0);
+		m_DrawNodeEvent.drawMode = GL_TRIANGLES;
+
+		LoadDebugSphere(m_nodeMesh);
+		m_DrawNodeEvent.mesh = &m_nodeMesh;
+	}
 
 
 	void Update(double deltaTime, ECS::Entity& entity) override
@@ -105,14 +129,52 @@ public:
 		glm::vec3 position(p.x, p.y, p.z);
 
 		spline->nodes.push_back(position);
+		spline->nodes.push_back(position + glm::vec3(1.0,0,0));
+		spline->nodes.push_back(position + glm::vec3(2.0, 0, 0));
+		spline->nodes.push_back(position + glm::vec3(3.0, 0, 0));
+		spline->nodes.push_back(position + glm::vec3(4.0, 0, 0));
 	}
 
 
-	void draw()
+	void DrawGizmo(ECS::Entity& entity) override
 	{
-		for (int t = 0.0f; t < 1.0f; t += 0.05)
-		{
+		auto spline = entity.GetComponent<SplineComponent>();
+		auto transform = entity.GetComponent<Transform>();
+		pathDrawBuffer.clear();
 
+		for(float t = 0.0f; t < (float)spline->nodes.size() - 3.05f; t += 0.05f)
+
+		//for (float t = 0.0f; t < 0.95f; t += 0.05)
+		{
+			pathDrawBuffer.push_back(spline->GetSplinePoint(t));
+			pathDrawBuffer.push_back(spline->GetSplinePoint(t + 0.05f));
+		}
+
+		//Load the path into a vertex buffer
+		LoadDebugLineStrip(m_pathMesh, &pathDrawBuffer[0], pathDrawBuffer.size());
+		entity.DispatchEvent<DrawGizmoEvent>(m_DrawSplineEvent);
+
+
+
+		for (int i = 0; i < spline->nodes.size(); ++i)
+		{
+			glm::mat4 tempMat;
+
+			tempMat = glm::translate(tempMat, glm::vec3(spline->nodes[i]));
+			tempMat = glm::scale(tempMat, glm::vec3(0.1, 0.1, 0.1));
+			m_DrawNodeEvent.matrix = &tempMat[0][0];
+
+			entity.DispatchEvent<DrawGizmoEvent>(m_DrawNodeEvent);
 		}
 	}
+
+	std::vector<glm::vec3> pathDrawBuffer;
+	DrawGizmoEvent m_DrawSplineEvent;
+	DrawGizmoEvent m_DrawNodeEvent;
+
+	glm::mat4 mat;
+	Mesh m_pathMesh;
+	Mesh m_nodeMesh;
 };
+
+USER_SYSTEM_REGISTER(SplineMoveSystem, "SplineMoveSystem")

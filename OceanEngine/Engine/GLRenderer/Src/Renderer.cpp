@@ -374,7 +374,7 @@ void Renderer::RenderDebug(Mesh& mesh, const float* matrix, glm::vec3 colour, GL
 	DebugShader.SendUniformMat4("uModel", matrix, false);
 	DebugShader.SendUniform("inColour", colour);
 
-	glLineWidth(1.0);
+	glLineWidth(5.0);
 
 	glBindVertexArray(mesh.VAO);
 	glDrawArrays(drawMode, 0, mesh.GetNumVertices());

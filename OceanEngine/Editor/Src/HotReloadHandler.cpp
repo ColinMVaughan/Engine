@@ -8,16 +8,12 @@ typedef void(__cdecl *ExportCompFunc)(ECS::DynamicDetail::DynamicComponentRegist
 typedef void(__cdecl *LoadDLLFunc)(ImGuiContext*);
 
 
-
-
-
 bool HotReloadHandler::LoadDLL()
 {
 
-
-	ExportSysFunc exportSystems;
-	ExportCompFunc exportComponents;
-	LoadDLLFunc loadDll;
+	ExportSysFunc exportSystems; //function for retrieving user created systems
+	ExportCompFunc exportComponents; //function for retrieving user created components
+	LoadDLLFunc loadDll; //function for loading the dll and assigning the IMGUI context for the editor
 
 	BOOL freeResult, runtimeLinkSuccess = FALSE;
 
@@ -40,17 +36,12 @@ bool HotReloadHandler::LoadDLL()
 		if (exportComponents == NULL)
 			return false;
 
+		//Call the three loading functions
 		(loadDll)(ImGui::GetCurrentContext());
 		(exportSystems)(ECS::DynamicDetail::GetDynamicSystemRegistry());
 		(exportComponents)(ECS::DynamicDetail::GetDynamicComponentRegistry());
 
-
-
 		ECS::DynamicDetail::DynamicSystemRegistry* registry = &ECS::DynamicDetail::GetDynamicSystemRegistry();
-		//auto it = registry->find("UserComponent");
-
-		//if (it != registry->end())
-		//	return true;
 
 
 		return true;
@@ -59,7 +50,10 @@ bool HotReloadHandler::LoadDLL()
 	return false;
 }
 
-
+//----------------------------------
+// Frees the dll usercode library.
+// Returns true on success.
+//---------------------------------
 bool HotReloadHandler::UnloadDLL()
 {
 	BOOL freeResult = FALSE;

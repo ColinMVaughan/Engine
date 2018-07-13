@@ -58,6 +58,11 @@ void Editor::DoInitalize()
 
 }
 
+
+//-------------------------------------------
+// Handles user input within the editor's scene window
+//
+//------------------------------------------
 void Editor::PreUpdate(double deltaTime)
 {
 	m_DeltaTime = deltaTime;
@@ -96,21 +101,13 @@ void Editor::PreUpdate(double deltaTime)
 	}
 }
 
+//--------------------------------------
+// Runs Enigne logic / systems
+//-------------------------------------
 void Editor::DoUpdate(double deltaTime)
 {
 	ImGui_ImplSdlGL3_NewFrame(m_Window);
 	
-	//Draw Menu Bar
-	//DrawMenuBar(deltaTime);
-
-
-	//Draw Optional Windows
-	//if (IsEntityInspectorActive)
-	//	DrawEntityInspector();
-	//if (IsResourceManagerActive)
-	//	DrawResourceManager();
-	//if (IsRenderSettingsActive)
-	//	DrawRenderSettings();
 	if (!GameCompiling)
 	{
 		if (GameRunning)
@@ -118,9 +115,6 @@ void Editor::DoUpdate(double deltaTime)
 		else
 			m_Scene->UpdateCoreSystems(deltaTime);
 	}
-
-
-
 
 }
 
@@ -709,12 +703,16 @@ bool Editor::DrawSplitter(bool split_vertically, float thickness, float* size1, 
 }
 
 
-
+//----------------------------------
+// Calls the commandline MSBuild tools to compile and link the current usercode.
+// Transfer map of Reflection function pointers. 
+//----------------------------------
 void Editor::TriggerDLLReload()
 {
 	//Trigger a Rebuild of the User code project
 	system("MSBuild ../UserCode.vcxproj /p:Configuration=Debug /p:BuildProjectReferences=false /t:Build");
 
+	//Add the registered user systems to the scene.
 	bool reloaded = CodeReload.LoadDLL();
 	auto reg = ECS::DynamicDetail::GetDynamicSystemRegistry();
 	for (auto it = reg.begin(); it != reg.end(); it++)
@@ -728,6 +726,11 @@ void Editor::TriggerDLLReload()
 	return;
 }
 
+//-------------------------------
+// Saves the current scene [to a temp file]. 
+// Unloads the usercode dll and clears the current scene of all componets/entities, and user Systems.
+// Sets IsCompiling flag.
+//-------------------------------
 void Editor::TriggerDLLUnload()
 {
 	m_Scene->SaveScene("./Assets/DemoScene.scene");
@@ -740,7 +743,11 @@ void Editor::TriggerDLLUnload()
 }
 
 
-
+//-------------------------------------------
+// Test window for previewing materaials. 
+// Currently does nothing, but will be used alsongside the new "Material Asset"
+// 
+//-------------------------------------------
 void Editor::DrawMaterialWindow()
 {
 	ImGui::Begin("CreateMaterialWindow");

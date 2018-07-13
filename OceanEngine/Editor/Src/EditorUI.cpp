@@ -177,7 +177,7 @@ void Editor::DrawMenuBar(double deltaTime)
 			ECS::Entity& e = m_Scene->CreateEntity();
 
 			ECS::AddComponentFromString("MeshFilter", m_Scene, e);
-			ECS::AddComponentFromString("MaterailFilter", m_Scene, e);
+			ECS::AddComponentFromString("MaterialFilter", m_Scene, e);
 			ECS::AddComponentFromString("Transform", m_Scene, e);
 		}
 		if (ImGui::MenuItem("PointLight"))

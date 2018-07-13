@@ -40,7 +40,7 @@ class SplineComponent
 {
 public:
 	std::vector<glm::vec3> nodes;
-	uint8_t current_node;
+	float time = 0.1f;
 
 
 	void ExposeToEditor()
@@ -64,8 +64,8 @@ public:
 		float tt = t * t;
 		float ttt = tt * t;
 
-		float q1 = -ttt + 2.0f*tt + 2.0f;
-		float q2 = 3.0f*ttt - 5.0f*tt + 2.0;
+		float q1 = -ttt + 2.0f*tt - t;
+		float q2 = 3.0f*ttt - 5.0f*tt + 2.0f;
 		float q3 = -3.0f * ttt + 4.0f*tt + t;
 		float q4 = ttt - tt;
 
@@ -104,10 +104,19 @@ public:
 
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
+		//Get Components
+		auto spline = entity.GetComponent<SplineComponent>();
+		auto transform = entity.GetComponent<Transform>();
+
+		//if the current t is greater than the max node - 1, it will be out of range and raise an exception
+		if (spline->time >= spline->nodes.size() - 3)
+			spline->time = 0.1f; //reset T
+
+		auto newPos = spline->GetSplinePoint(spline->time);
+		*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), transform->GetTransform()->q);
 
 
-		float t0 = 0.0f;
-		//float t1 = GetT(t0)
+		spline->time += deltaTime;
 	}
 
 

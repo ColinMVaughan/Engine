@@ -194,6 +194,13 @@ private:
 	PxQuat rotation;
 
 	PxVec2 rotations;
+
+
+	//---------------------
+	float MyZoom = 1.0f; // Construct zoom
+	glm::vec3 Pos; //Construct position
+	glm::vec2 Rotation;// construct rotations
+	
 };
 
 #endif

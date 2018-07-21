@@ -136,7 +136,7 @@ private:
 	Asset<Texture> m_Metallic;	
 	Asset<Texture> m_Emissive;
 };
-COMPONENT_REGISTER(MaterialFilter, "MaterilFilter");
+COMPONENT_REGISTER(MaterialFilter, "MaterialFilter");
 
 
 

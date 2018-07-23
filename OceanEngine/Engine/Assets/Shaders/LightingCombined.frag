@@ -9,10 +9,9 @@ uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
 uniform sampler2D positionMap;
 
-uniform sampler2D metallicMap;
-uniform sampler2D roughnessMap;
+uniform sampler2D materialMap;
 uniform sampler2D aoMap;
-uniform sampler2D emissiveMap;
+
 
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
@@ -93,10 +92,12 @@ void main()
 		discard;
 	}
 	
-	float metallic		= texture(metallicMap, texcoord).r;
-	float roughness		= texture(roughnessMap,texcoord).r;
+	float roughness		= texture(materialMap,texcoord).r;
+	float metallic		= texture(materialMap, texcoord).g;
+	float emissive		= texture(materialMap, texcoord).b;
+		
 	float ao			= texture(aoMap, texcoord).r;
-	float emissive		= texture(emissiveMap, texcoord).r;
+
 	
 	normal = normal * 2.0 - 1.0; //unpack normal.
 	vec3 N = normal;

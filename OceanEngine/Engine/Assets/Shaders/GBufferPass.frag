@@ -15,10 +15,8 @@ layout (location = 0) out vec4 outColor;
 layout (location = 1) out vec3 outNormals;
 layout (location = 2) out vec3 outPosition;
 
-layout (location = 3) out vec4 outRoughness;
-layout (location = 4) out vec4 outMetallic;
-layout (location = 5) out vec4 outAo;
-layout (location = 6) out vec4 outEmissive;
+layout (location = 3) out vec4 outMaterial; //r=roughness, g=metallic, b=emissive
+
 
 vec3 getNormalFromMap()
 {
@@ -39,20 +37,19 @@ vec3 getNormalFromMap()
 
 void main()
 {
-	outAo.r = texture(AO, texcoord).r;
-	outEmissive.r = texture(Emissive, texcoord).r;
 
-	//standard color output
+	//albedo color output
 	outColor.rgb = texture(Albedo, texcoord).rgb;
 	outColor.a = 1.0;
 
 	//roughness output
-	outRoughness.rgb = texture(Roughness, texcoord).rgb;
-	outRoughness.a = 1.0;
+	outMaterial.r = texture(Roughness, texcoord).r;
 
 	//Metallic output
-	outMetallic.rgb = texture(Metallic, texcoord).rgb;
-	outMetallic.a = 1.0;
+	outMaterial.g = texture(Metallic, texcoord).r;
+	
+	//Emissive output
+	outMaterial.b = texture(Emissive, texcoord).r;
 
 	//Pack Normals
 		//in-> [-1,1]
@@ -61,5 +58,6 @@ void main()
 
 	//viewSpace Positions
 	outPosition = pos;
+	
 
 }

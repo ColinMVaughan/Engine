@@ -13,8 +13,7 @@ uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
 uniform sampler2D positionMap;
 
-uniform sampler2D metallicMap;
-uniform sampler2D roughnessMap;
+uniform sampler2D materialMap;
 
 //lights
 uniform vec3 lightPosition;
@@ -95,8 +94,8 @@ void main()
 		discard;
 	}
 	
-	float metallic		= texture(metallicMap, texcoord).r;
-	float roughness		= texture(roughnessMap,texcoord).r;
+	float metallic		= texture(materialMap, texcoord).g;
+	float roughness		= texture(materialMap,texcoord).r;
 	
 	
 	normal = normal * 2.0 - 1.0; //unpack normal.

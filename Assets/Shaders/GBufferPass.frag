@@ -15,7 +15,7 @@ layout (location = 0) out vec4 outColor;
 layout (location = 1) out vec3 outNormals;
 layout (location = 2) out vec3 outPosition;
 
-layout (location = 3) out vec4 outMaterial; //r=roughness, g=metallic, b=emissive
+layout (location = 3) out vec3 outMaterial; //r=roughness, g=metallic, b=emissive
 
 
 vec3 getNormalFromMap()

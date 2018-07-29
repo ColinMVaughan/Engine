@@ -7,15 +7,29 @@
 
 #include <glm\mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ControlEvents.h>
 
 
-
-
+//----------------------------------------------------------------------------
+//						Camera Component
+//
+// Camera component allows the user to switch between different cameras.
+// Cameras will be set to either 
+//
+// -Editor (the debug camera), 
+// -Default (a camera that can be switched to during gameplay),
+// -Main (the current active camera during gameplay)
+//
+//
+// 
+//
+//----------------------------------------------------------------------------
 class CameraComponent
 {
 public:
 	enum CameraTag{Editor = 0, Default, Main};
 	CameraTag m_Tag;
+	float m_Exposure = 1.0f;
 
 public:
 
@@ -29,6 +43,8 @@ public:
 			
 			ImGui::EndCombo();
 		}
+
+		ImGui::SliderFloat("Exposure", &m_Exposure, 0.1f, 3.0f);
 	}
 
 	COMPONENT_SERIALIZE(m_CameraID)
@@ -181,10 +197,9 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity) override;
 	void PostUpdate(double deltaTime) override;
 
-	void KeyDown(unsigned char key) override;
-	void KeyUp(unsigned char key) override;
-
-	void MouseMoved(float xVelocity, float yVelocity);
+	void MyKeyDown(KeyPressedEvent& eve);
+	void MyKeyUp(KeyReleasedEvent& eve);
+	void MyMouseMoved(MouseMovedEvent& eve);
 
 private:
 	PxVec3 MovementDirection;

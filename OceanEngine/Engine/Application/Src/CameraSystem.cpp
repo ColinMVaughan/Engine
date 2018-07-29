@@ -5,6 +5,10 @@ DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cman
 {
 	MoveDirection = PxVec3(0);
 	rotations = PxVec2(0);
+
+	REGISTER_EVENT_LISTNER(KeyPressedEvent, MyKeyDown, a_eManager)
+	REGISTER_EVENT_LISTNER(KeyReleasedEvent, MyKeyUp, a_eManager)
+	REGISTER_EVENT_LISTNER(MouseMovedEvent, MyMouseMoved, a_eManager)
 }
 
 void DebugCameraControlSystem::PreUpdate(double deltaTime)
@@ -72,42 +76,42 @@ void DebugCameraControlSystem::PostUpdate(double deltaTime)
 
 
 //Checks that the relivent modifier key has been pressed.
-void DebugCameraControlSystem::KeyDown(unsigned char key)
+void DebugCameraControlSystem::MyKeyDown(KeyPressedEvent& key)
 {
 	float Speed = 0.5f;
 
-	switch (key)
-	{
-	case 'W':
-		MoveDirection.z -= Speed;
-		break;
-	case 'A':
-		MoveDirection.x -= Speed;
-		break;
-	case 'S':
-		MoveDirection.z += Speed;
-		break;
-	case'D':
-		MoveDirection.x += Speed;
-		break;
-	case 'E':
-		MoveDirection.y += Speed;
-		break;
-	case 'Q':
-		MoveDirection.y -= Speed;
-		break;
+	//switch (key)
+	//{
+	//case 'W':
+	//	MoveDirection.z -= Speed;
+	//	break;
+	//case 'A':
+	//	MoveDirection.x -= Speed;
+	//	break;
+	//case 'S':
+	//	MoveDirection.z += Speed;
+	//	break;
+	//case'D':
+	//	MoveDirection.x += Speed;
+	//	break;
+	//case 'E':
+	//	MoveDirection.y += Speed;
+	//	break;
+	//case 'Q':
+	//	MoveDirection.y -= Speed;
+	//	break;
 
 
-	case 'Z':
-		MyZoom -= Speed;
-		break;
-	case 'X':
-		MyZoom += Speed;
-		break;
-	}
+	//case 'Z':
+	//	MyZoom -= Speed;
+	//	break;
+	//case 'X':
+	//	MyZoom += Speed;
+	//	break;
+	//}
 }
 
-void DebugCameraControlSystem::KeyUp(unsigned char key)
+void DebugCameraControlSystem::MyKeyUp(KeyReleasedEvent& key)
 {
 
 }
@@ -115,9 +119,9 @@ void DebugCameraControlSystem::KeyUp(unsigned char key)
 // If the Mouse is moved, Rotate the Camera's View Matrix 
 // and change the foreward direction used for movement
 // 
-void DebugCameraControlSystem::MouseMoved(float xVelocity, float yVelocity)
+void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 {
-	rotations.x += xVelocity;
-	rotations.y += yVelocity;
+	//rotations.x += xVelocity;
+	//rotations.y += yVelocity;
 
 }

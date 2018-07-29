@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 
-	editor->m_Window = SDL_CreateWindow("Ocean Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1480, 910, WindowFlags);
+	editor->m_Window = SDL_CreateWindow("Ocean Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, WindowFlags);
 	SDL_GLContext glContext = SDL_GL_CreateContext(editor->m_Window);
 
 	//-----------------------------------------------------------
@@ -64,6 +64,15 @@ int main(int argc, char **argv)
 	ImGui::CreateContext();
 	ImGui_ImplSdlGL3_Init(editor->m_Window);
 
+	auto& io = ImGui::GetIO();
+	//io.Fonts->AddFontDefault();
+	ImFontConfig config;
+	config.OversampleH = 3;
+	config.OversampleV = 3;
+
+
+	ImFont* font = io.Fonts->AddFontFromFileTTF("./Assets/Roboto-Regular.ttf", 16.5f, &config);
+
 	//-----------------------------------------------------------
 	//	Init & Run Application
 	//------------------------------------------------------------
@@ -71,6 +80,7 @@ int main(int argc, char **argv)
 	while (editor->Running)
 	{
 		editor->Update();
+
 	}
 	editor->Unload();
 

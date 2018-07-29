@@ -1,3 +1,11 @@
+//=========================================================================
+//	Editor is used to set up and test your scenes. It also allows for 
+//	compiled c++ code to be hotloaded into the engine at runtime
+//
+//	
+//
+//=========================================================================
+
 #pragma once
 #include <Application.h>
 #include "HotReloadHandler.h"
@@ -15,9 +23,8 @@ public:
 private:
 
 
+	//Methods for drawing the various editor windows.//
 	void DrawEditor();
-
-
 	bool DrawSplitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f);
 	void DrawMenuBar(double deltaTime);
 	void DrawEntityListWindow();
@@ -26,11 +33,15 @@ private:
 	void DrawAssetsWindow();
 	void DrawMaterialWindow();
 
+	//Opens serialized scene file.//
 	void OpenScene(std::string path);
 
+	//Hot-Reloads User code//
 	void TriggerDLLReload();
 	void TriggerDLLUnload();
 
+
+	
 	bool IsMaterialEditorActive = false;
 	bool IsEntityInspectorActive = false;
 	bool IsResourceManagerActive = false;

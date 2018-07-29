@@ -74,14 +74,19 @@ void ImGui_ImplSdlGL3_RenderDrawData(ImDrawData* draw_data)
 	glEnable(GL_SCISSOR_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+
 	// Setup viewport, orthographic projection matrix
 	glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
+	float L = 0.0f;
+	float R = 0.0f + io.DisplaySize.x;
+	float T = 0.0f;
+	float B = 0.0f + io.DisplaySize.y;
 	const float ortho_projection[4][4] =
 	{
-		{ 2.0f / io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },
-	{ 0.0f,                  2.0f / -io.DisplaySize.y, 0.0f, 0.0f },
-	{ 0.0f,                  0.0f,                  -1.0f, 0.0f },
-	{ -1.0f,                  1.0f,                   0.0f, 1.0f },
+		{ 2.0f / (R - L),   0.0f,         0.0f,   0.0f },
+	{ 0.0f,         2.0f / (T - B),   0.0f,   0.0f },
+	{ 0.0f,         0.0f,        -1.0f,   0.0f },
+	{ (R + L) / (L - R),  (T + B) / (B - T),  0.0f,   1.0f },
 	};
 	glUseProgram(g_ShaderHandle);
 	glUniform1i(g_AttribLocationTex, 0);

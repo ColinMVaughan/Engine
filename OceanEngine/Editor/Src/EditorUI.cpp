@@ -94,6 +94,9 @@ void Editor::PreUpdate(double deltaTime)
 			if(LookMode)
 				MouseMoved(InputEvent.motion);
 			break;
+		case SDL_MOUSEWHEEL:
+
+			break;
 		case SDL_QUIT:
 			Running = false;
 			break;

@@ -65,6 +65,13 @@ namespace ECS
 		virtual void KeyDown(unsigned char key) {}
 		virtual void MouseMoved(float xVelocity, float yVelicity) {}
 
+		//Registers event listner with the event manager
+		template<typename EventType>
+		void RegisterEventListner(EventManager& eManager, std::function<void(EventType&)> callbackFunction)
+		{
+			eManager.AddListner<EventType>(callbackFunction);
+		}
+
 
 	private:
 		std::vector<Entity> m_RegisteredEntities;

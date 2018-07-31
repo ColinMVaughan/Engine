@@ -6,9 +6,11 @@ DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cman
 	MoveDirection = PxVec3(0);
 	rotations = PxVec2(0);
 
-	REGISTER_EVENT_LISTNER(KeyPressedEvent, MyKeyDown, a_eManager)
-	REGISTER_EVENT_LISTNER(KeyReleasedEvent, MyKeyUp, a_eManager)
-	REGISTER_EVENT_LISTNER(MouseMovedEvent, MyMouseMoved, a_eManager)
+	//REGISTER_EVENT_LISTNER(KeyPressedEvent, MyKeyDown, a_eManager)
+	//REGISTER_EVENT_LISTNER(KeyReleasedEvent, MyKeyUp, a_eManager)
+	//REGISTER_EVENT_LISTNER(MouseMovedEvent, MyMouseMoved, a_eManager)
+
+	RegisterEventListner<KeyPressedEvent>(a_eManager, [this](KeyPressedEvent& eve) {MyKeyDown(eve); });
 }
 
 void DebugCameraControlSystem::PreUpdate(double deltaTime)

@@ -11,6 +11,8 @@ DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cman
 	//REGISTER_EVENT_LISTNER(MouseMovedEvent, MyMouseMoved, a_eManager)
 
 	RegisterEventListner<KeyPressedEvent>(a_eManager, [this](KeyPressedEvent& eve) {MyKeyDown(eve); });
+	RegisterEventListner<KeyReleasedEvent>(a_eManager, [this](KeyReleasedEvent& eve) {MyKeyUp(eve); });
+	RegisterEventListner<MouseMovedEvent>(a_eManager, [this](MouseMovedEvent& eve) {MyMouseMoved(eve); });
 }
 
 void DebugCameraControlSystem::PreUpdate(double deltaTime)
@@ -82,35 +84,35 @@ void DebugCameraControlSystem::MyKeyDown(KeyPressedEvent& key)
 {
 	float Speed = 0.5f;
 
-	//switch (key)
-	//{
-	//case 'W':
-	//	MoveDirection.z -= Speed;
-	//	break;
-	//case 'A':
-	//	MoveDirection.x -= Speed;
-	//	break;
-	//case 'S':
-	//	MoveDirection.z += Speed;
-	//	break;
-	//case'D':
-	//	MoveDirection.x += Speed;
-	//	break;
-	//case 'E':
-	//	MoveDirection.y += Speed;
-	//	break;
-	//case 'Q':
-	//	MoveDirection.y -= Speed;
-	//	break;
+	switch (key.InputEvent.keysym.sym)
+	{
+	case 'W':
+		MoveDirection.z -= Speed;
+		break;
+	case 'A':
+		MoveDirection.x -= Speed;
+		break;
+	case 'S':
+		MoveDirection.z += Speed;
+		break;
+	case'D':
+		MoveDirection.x += Speed;
+		break;
+	case 'E':
+		MoveDirection.y += Speed;
+		break;
+	case 'Q':
+		MoveDirection.y -= Speed;
+		break;
 
 
-	//case 'Z':
-	//	MyZoom -= Speed;
-	//	break;
-	//case 'X':
-	//	MyZoom += Speed;
-	//	break;
-	//}
+	case 'Z':
+		MyZoom -= Speed;
+		break;
+	case 'X':
+		MyZoom += Speed;
+		break;
+	}
 }
 
 void DebugCameraControlSystem::MyKeyUp(KeyReleasedEvent& key)
@@ -123,7 +125,9 @@ void DebugCameraControlSystem::MyKeyUp(KeyReleasedEvent& key)
 // 
 void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 {
-	//rotations.x += xVelocity;
-	//rotations.y += yVelocity;
+	const float speed = 0.005f;
+
+	rotations.x += motion.InputEvent.xrel * speed;
+	rotations.y += motion.InputEvent.yrel * speed;
 
 }

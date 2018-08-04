@@ -10,6 +10,7 @@
 #include "Asset.h"
 #include <DynamicCodeDetail.h>
 #include <imgui_internal.h>
+#include "ControlEvents.h"
 
 Editor::Editor()
 {
@@ -67,6 +68,9 @@ void Editor::PreUpdate(double deltaTime)
 {
 	m_DeltaTime = deltaTime;
 	NewEvent = false;
+
+	//Check input and dispatch input events
+
 	while (SDL_PollEvent(&InputEvent))
 	{
 		NewEvent = true;
@@ -83,19 +87,20 @@ void Editor::PreUpdate(double deltaTime)
 			break;
 
 		case SDL_KEYDOWN:
-			if(LookMode)
-				KeyDown(InputEvent.key);
+			if (LookMode)
+				m_Scene->DispatchEvent<KeyPressedEvent>(KeyPressedEvent(InputEvent));
 			break;
 		case SDL_KEYUP:
-			if(LookMode)
-				KeyUp(InputEvent.key);
+			if (LookMode)
+				m_Scene->DispatchEvent<KeyReleasedEvent>(KeyReleasedEvent(InputEvent));
 			break;
 		case SDL_MOUSEMOTION:
-			if(LookMode)
-				MouseMoved(InputEvent.motion);
+			if (LookMode)
+				m_Scene->DispatchEvent<MouseMovedEvent>(MouseMovedEvent(InputEvent));
 			break;
 		case SDL_MOUSEWHEEL:
-
+			if (LookMode)
+				m_Scene->DispatchEvent<ScrollWheelEvent>(ScrollWheelEvent(InputEvent));
 			break;
 		case SDL_QUIT:
 			Running = false;

@@ -60,6 +60,7 @@ namespace has_detail
 
 	template<class U>
 	using has_serialization_asset = decltype(std::declval<U>().serialize_asset(std::declval<EventManager&>()));
+
 }
 
 

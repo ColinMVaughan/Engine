@@ -39,8 +39,8 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity) override;
 	void PostUpdate(double deltaTime) override;
 
-	void KeyDown(unsigned char key) override;
-	void KeyUp(unsigned char key) override;
+	void KeyDown(unsigned char key);
+	void KeyUp(unsigned char key);
 
 	void MouseMoved(float xVelocity, float yVelocity);
 

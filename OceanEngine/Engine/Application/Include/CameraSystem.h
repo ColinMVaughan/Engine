@@ -213,7 +213,7 @@ private:
 
 	PxVec2 rotations;
 
-	enum MotionType{NONE=0, MOTION_TRANSLATE = 2, MOTION_ROTATE = 4} m_MotionType;
+	enum MotionType{MOTION_NONE=0, MOTION_TRANSLATE = 2, MOTION_ROTATE = 4} m_MotionType;
 
 	//---------------------
 	float MyZoom = 1.0f; // Construct zoom

@@ -5,15 +5,18 @@ DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cman
 {
 	MoveDirection = PxVec3(0);
 	rotations = PxVec2(0);
+	m_MotionType = MOTION_NONE;
 
 	//REGISTER_EVENT_LISTNER(KeyPressedEvent, MyKeyDown, a_eManager)
 	//REGISTER_EVENT_LISTNER(KeyReleasedEvent, MyKeyUp, a_eManager)
 	//REGISTER_EVENT_LISTNER(MouseMovedEvent, MyMouseMoved, a_eManager)
 
 	RegisterEventListner<KeyPressedEvent>(a_eManager, [this](KeyPressedEvent& eve) {MyKeyDown(eve); });
-	RegisterEventListner<KeyReleasedEvent>(a_eManager, [this](KeyReleasedEvent& eve) {MyKeyUp(eve); });
+	//RegisterEventListner<KeyReleasedEvent>(a_eManager, [this](KeyReleasedEvent& eve) {MyKeyUp(eve); });
 	RegisterEventListner<MouseMovedEvent>(a_eManager, [this](MouseMovedEvent& eve) {MyMouseMoved(eve); });
 	RegisterEventListner<ScrollWheelEvent>(a_eManager, [this](ScrollWheelEvent& eve) {MouseScroll(eve); });
+	RegisterEventListner<MouseClickedEvent>(a_eManager, [this](MouseClickedEvent& eve) {ButtonDown(eve); });
+	RegisterEventListner<MouseReleasedEvent>(a_eManager, [this](MouseReleasedEvent& eve) {ButtonUp(eve); });
 }
 
 void DebugCameraControlSystem::PreUpdate(double deltaTime)
@@ -42,9 +45,9 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 
 
 	//---------------------------------------------------
-	PxMat44 Zoom;
-	PxMat44 Rot;
-	PxMat44 Translate;
+	PxMat44 Zoom = PxMat44(physx::PxIdentity);
+	PxMat44 Rot = PxMat44(physx::PxIdentity);
+	PxMat44 Translate = PxMat44(physx::PxIdentity);
 
 	PxQuat quatRot = PxQuat(rotations.x, PxVec3(0, 1, 0)) * PxQuat(rotations.y, PxVec3(1, 0, 0));
 
@@ -53,10 +56,11 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 	Rot = PxMat44(quatRot);
 	Translate.setPosition(MoveDirection);
 
-	PxMat44 finalMat = Rot * Zoom;
+	PxMat44 finalMat = Translate * Rot * Zoom;
+	//finalMat = Translate * finalMat;
 
 	//*transform->GetTransform() = PxTransform(Translate);
-	transform->GetTransform()->p = finalMat.transform(MoveDirection);
+	transform->GetTransform()->p = finalMat.transform(PxVec3(0));
 	transform->GetTransform()->q = quatRot;
 
 	//--------------------------------------------------
@@ -119,18 +123,19 @@ void DebugCameraControlSystem::MyKeyUp(KeyReleasedEvent& key)
 // 
 void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 {
-	const float speed = 0.005f;
+	const float rotationSpeed = 0.005f;
+	const float dragSpeed = 0.005f;
 
 	switch (m_MotionType)
 	{
 	case MOTION_TRANSLATE:
-		MoveDirection.y = motion.InputEvent.yrel * speed;
-		MoveDirection.x = motion.InputEvent.xrel * speed;
+		MoveDirection.y += motion.InputEvent.yrel * dragSpeed;
+		MoveDirection.x -= motion.InputEvent.xrel * dragSpeed; //set to minus to give a dragging effect
 		break;
 
 	case MOTION_ROTATE:
-		rotations.x += motion.InputEvent.xrel * speed;
-		rotations.y += motion.InputEvent.yrel * speed;
+		rotations.x += motion.InputEvent.xrel * rotationSpeed;
+		rotations.y += motion.InputEvent.yrel * rotationSpeed;
 		break;
 	}
 
@@ -140,23 +145,22 @@ void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 void DebugCameraControlSystem::MouseScroll(ScrollWheelEvent & eve)
 {
 	const float speed = 1.0f;
-	MyZoom += eve.InputEvent.y * speed;
+	MyZoom -= eve.InputEvent.y * speed;
 }
 
 void DebugCameraControlSystem::ButtonDown(MouseClickedEvent & eve)
 {
 	if (eve.InputEvent.button == SDL_BUTTON_RIGHT)
-		m_MotionType |= MOTION_ROTATE;
+		m_MotionType = MOTION_TRANSLATE;
 
 	if (eve.InputEvent.button == SDL_BUTTON_LEFT)
-		m_MotionType = MOTION_TRANSLATE;
+		m_MotionType = MOTION_ROTATE;
+
 }
 
 void DebugCameraControlSystem::ButtonUp(MouseReleasedEvent & eve)
 {
-	if (eve.InputEvent.button == SDL_BUTTON_RIGHT)
-		m_MotionType = MOTION_ROTATE;
+	if (eve.InputEvent.button == SDL_BUTTON_LEFT || eve.InputEvent.button == SDL_BUTTON_RIGHT)
+		m_MotionType = MOTION_NONE;
 
-	if (eve.InputEvent.button == SDL_BUTTON_LEFT)
-		m_MotionType = MOTION_TRANSLATE;
 }

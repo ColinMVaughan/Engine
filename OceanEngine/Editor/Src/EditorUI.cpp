@@ -78,19 +78,26 @@ void Editor::PreUpdate(double deltaTime)
 		switch (InputEvent.type)
 		{
 		case SDL_MOUSEBUTTONDOWN:
-			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
-				LookMode = true;
+			if (LookMode)
+				m_Scene->DispatchEvent<MouseClickedEvent>(MouseClickedEvent(InputEvent));
 			break;
+
 		case SDL_MOUSEBUTTONUP:
-			if (InputEvent.button.button == SDL_BUTTON_RIGHT)
-				LookMode = false;
+			if (LookMode)
+				m_Scene->DispatchEvent<MouseReleasedEvent>(MouseReleasedEvent(InputEvent));
 			break;
 
 		case SDL_KEYDOWN:
+			if (InputEvent.key.keysym.sym == SDLK_LALT)
+				LookMode = true;
+
 			if (LookMode)
 				m_Scene->DispatchEvent<KeyPressedEvent>(KeyPressedEvent(InputEvent));
 			break;
 		case SDL_KEYUP:
+			if (InputEvent.key.keysym.sym == SDLK_LALT)
+				LookMode = false;
+
 			if (LookMode)
 				m_Scene->DispatchEvent<KeyReleasedEvent>(KeyReleasedEvent(InputEvent));
 			break;

@@ -13,6 +13,7 @@ DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cman
 	RegisterEventListner<KeyPressedEvent>(a_eManager, [this](KeyPressedEvent& eve) {MyKeyDown(eve); });
 	RegisterEventListner<KeyReleasedEvent>(a_eManager, [this](KeyReleasedEvent& eve) {MyKeyUp(eve); });
 	RegisterEventListner<MouseMovedEvent>(a_eManager, [this](MouseMovedEvent& eve) {MyMouseMoved(eve); });
+	RegisterEventListner<ScrollWheelEvent>(a_eManager, [this](ScrollWheelEvent& eve) {MouseScroll(eve); });
 }
 
 void DebugCameraControlSystem::PreUpdate(double deltaTime)
@@ -105,13 +106,6 @@ void DebugCameraControlSystem::MyKeyDown(KeyPressedEvent& key)
 		MoveDirection.y -= Speed;
 		break;
 
-
-	case 'Z':
-		MyZoom -= Speed;
-		break;
-	case 'X':
-		MyZoom += Speed;
-		break;
 	}
 }
 
@@ -127,7 +121,42 @@ void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 {
 	const float speed = 0.005f;
 
-	rotations.x += motion.InputEvent.xrel * speed;
-	rotations.y += motion.InputEvent.yrel * speed;
+	switch (m_MotionType)
+	{
+	case MOTION_TRANSLATE:
+		MoveDirection.y = motion.InputEvent.yrel * speed;
+		MoveDirection.x = motion.InputEvent.xrel * speed;
+		break;
 
+	case MOTION_ROTATE:
+		rotations.x += motion.InputEvent.xrel * speed;
+		rotations.y += motion.InputEvent.yrel * speed;
+		break;
+	}
+
+
+}
+
+void DebugCameraControlSystem::MouseScroll(ScrollWheelEvent & eve)
+{
+	const float speed = 1.0f;
+	MyZoom += eve.InputEvent.y * speed;
+}
+
+void DebugCameraControlSystem::ButtonDown(MouseClickedEvent & eve)
+{
+	if (eve.InputEvent.button == SDL_BUTTON_RIGHT)
+		m_MotionType |= MOTION_ROTATE;
+
+	if (eve.InputEvent.button == SDL_BUTTON_LEFT)
+		m_MotionType = MOTION_TRANSLATE;
+}
+
+void DebugCameraControlSystem::ButtonUp(MouseReleasedEvent & eve)
+{
+	if (eve.InputEvent.button == SDL_BUTTON_RIGHT)
+		m_MotionType = MOTION_ROTATE;
+
+	if (eve.InputEvent.button == SDL_BUTTON_LEFT)
+		m_MotionType = MOTION_TRANSLATE;
 }

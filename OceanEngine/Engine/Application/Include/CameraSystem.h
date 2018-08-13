@@ -200,6 +200,9 @@ public:
 	void MyKeyDown(KeyPressedEvent& eve);
 	void MyKeyUp(KeyReleasedEvent& eve);
 	void MyMouseMoved(MouseMovedEvent& eve);
+	void MouseScroll(ScrollWheelEvent& eve);
+	void ButtonDown(MouseClickedEvent& eve);
+	void ButtonUp(MouseReleasedEvent& eve);
 
 private:
 	PxVec3 MovementDirection;
@@ -210,6 +213,7 @@ private:
 
 	PxVec2 rotations;
 
+	enum MotionType{NONE=0, MOTION_TRANSLATE = 2, MOTION_ROTATE = 4} m_MotionType;
 
 	//---------------------
 	float MyZoom = 1.0f; // Construct zoom

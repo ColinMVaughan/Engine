@@ -34,10 +34,11 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 
 	PxQuat quatRot = PxQuat(rotations.x, PxVec3(0, 1, 0)) * PxQuat(rotations.y, PxVec3(1, 0, 0));
 
+
 	//Set up position, rotation, and zoom matricies
 	Zoom.setPosition(PxVec3(0.0f, 0.0f, MyZoom));
 	Rot = PxMat44(quatRot);
-	Translate.setPosition(MoveDirection);
+	Translate.setPosition(quatRot.rotate(MoveDirection));
 
 	PxMat44 finalMat = Translate * Rot * Zoom;
 

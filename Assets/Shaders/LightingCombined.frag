@@ -19,6 +19,8 @@ uniform sampler2D 	brdfLUT;
 
 uniform sampler2D combinedLights;
 
+uniform float Exposure;
+
 const float PI = 3.14159265359;
 
 
@@ -132,9 +134,15 @@ void main()
 	//Combine ambiant color with summed light influence & multiply against emissive influence
 	vec3 color = (ambiant + CombinedLight) * float(1.0f - emissive) + (albedo)*emissive;
 	
-	//Gamma correct color
-	color = color / (color + vec3(1.0));
-	color = pow(color,vec3(1.0/2.2));
+	//Gamma correct & tonemap color /w exposure
+	//color = color / (color + vec3(1.0));
+	vec3 mapped = vec3(1.0) - exp(-color * Exposure);
+	mapped.x = max(0, mapped.x - 0.004);
+	mapped.y = max(0, mapped.y - 0.004);
+	mapped.z = max(0, mapped.z - 0.004);
+    mapped = (mapped * (6.2*mapped + 0.5))/(mapped*(6.2*mapped + 1.7) + 0.06);
 	
-	FragColor = vec4(color,1.0);
+	//mapped = pow(mapped,vec3(1.0/2.2));
+	
+	FragColor = vec4(mapped,1.0);
 }

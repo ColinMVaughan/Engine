@@ -9,6 +9,8 @@ public:
 	~FrameBuffer();
 
 	void InitDepthTexture(unsigned width, unsigned height);
+	void InitDepthTexture(unsigned width, unsigned height, GLint WrapType);
+
 	void InitColorTexture(unsigned index, unsigned width, unsigned height, GLint internalFormat, GLint filter, GLint Wrap);
 	bool CheckFBO();
 

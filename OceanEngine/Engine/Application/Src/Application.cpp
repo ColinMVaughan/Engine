@@ -67,6 +67,8 @@ void Application::PostInitalize()
 	m_SystemManager->AddCoreSystem<RenderSystem>()->SetRenderer(m_Renderer);
 	m_SystemManager->AddCoreSystem<VoxelRenderSystem>()->SetRenderer(m_Renderer);
 	m_SystemManager->AddCoreSystem<PointLightSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<ShadowSystem>()->SetRenderer(m_Renderer);
+	m_SystemManager->AddCoreSystem<DirectionalLightSystem>()->SetRenderer(m_Renderer);
 	m_SystemManager->AddCoreSystem<PostProccessSystem>()->SetRenderer(m_Renderer);
 
 

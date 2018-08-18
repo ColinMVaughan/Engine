@@ -41,6 +41,34 @@ void FrameBuffer::InitDepthTexture(unsigned width, unsigned height)
 
 }
 
+void FrameBuffer::InitDepthTexture(unsigned width, unsigned height, GLint wrapType)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, _FBO);
+
+	//Create DeapthTexture
+	glGenTextures(1, &_DepthAttachment);
+	glBindTexture(GL_TEXTURE_2D, _DepthAttachment);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, width, height);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
+
+	if (wrapType == GL_CLAMP_TO_BORDER)
+	{
+		float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	}
+
+
+
+	//Bind texture to fbo
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _DepthAttachment, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
+
+
+}
+
 void FrameBuffer::InitColorTexture(unsigned index, unsigned width, unsigned height, GLint internalFormat, GLint filter, GLint Wrap)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _FBO);

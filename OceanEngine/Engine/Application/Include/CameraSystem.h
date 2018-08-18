@@ -29,7 +29,6 @@ class CameraComponent
 public:
 	enum CameraTag{Editor = 0, Default, Main};
 	CameraTag m_Tag;
-	float m_Exposure = 1.0f;
 
 public:
 
@@ -44,7 +43,7 @@ public:
 			ImGui::EndCombo();
 		}
 
-		ImGui::SliderFloat("Exposure", &m_Exposure, 0.1f, 3.0f);
+		ImGui::SliderFloat("Exposure", &m_Camera.Exposure, 0.1f, 3.0f);
 	}
 
 	COMPONENT_SERIALIZE(m_CameraID)

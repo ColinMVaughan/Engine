@@ -25,6 +25,7 @@ public:
 
 	glm::mat4 m_Projection;
 	glm::mat4 m_Transform;
+	float Exposure = 1.0f;
 };
 
 class Renderer
@@ -46,7 +47,9 @@ public:
 	void Render(Mesh* mesh, Material* material, const float* matrix);
 	void RenderVoxel(Mesh* mesh, Texture* texture, const float* matrix);
 
+	inline void PreShadowMapRender() { glViewport(0, 0, 500, 500); for (int i = 0; i < m_ShadowMaps.size(); ++i) { m_ShadowMaps[i].Clear(); } }
 	void RenderToShadowMap(Mesh* mesh, const float* matrix);
+	inline void PostShadowMapRender() { glViewport(0,0,m_WindowWidth, m_WindowHeight); }
 
 	void RenderDebug(Mesh& mesh, const float* matrix, glm::vec3 colour, GLenum renderMode = GL_LINE_STRIP);
 
@@ -74,7 +77,7 @@ public:
 	}
 	void PostPointLightPass();
 
-	void AddShadowCaster(FrameBuffer& shadowMap, glm::mat4& direction);
+	bool AddShadowCaster(FrameBuffer** shadowMap, glm::mat4& direction, glm::mat4& projection);
 
 	void CombineUI();
 	void CombineDebug();
@@ -88,7 +91,19 @@ public:
 	void SubmitFrame();
 
 	void InitalizeShadowMapping();
-	void DirectionalLightPass();
+	void PreDirectionalLightPass();
+	inline void DirectionalLightPass(glm::fvec3 direction, glm::fvec3 lightColour, FrameBuffer& shadowMap, glm::mat4 someMatrixProbably)
+	{
+		DirectionalLightPassShader.SendUniform("lightDirection", direction);
+		DirectionalLightPassShader.SendUniform("lightColor", lightColour);
+		DirectionalLightPassShader.SendUniformMat4("lightSpaceMatrix", &someMatrixProbably[0][0], false);
+		DirectionalLightPassShader.SendUniform("shadowMap", 4);
+
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, shadowMap.GetDepthHandle());
+		DrawFullScreenQuad();
+	}
+	void PostDirectionalLightPass();
 
 	void SetCamera(Camera* cam);
 	void SetBufferToDisplay(unsigned int index);
@@ -113,10 +128,12 @@ private:
 	std::vector<glm::fvec3*> m_PointLightColors;
 	std::vector<glm::fvec3*> m_PointLightPositions;
 
-	std::vector<FrameBuffer*> m_ShadowMaps;
+	//shadows
+	std::vector<FrameBuffer> m_ShadowMaps;
+	std::vector<glm::mat4*> m_ShadowTransforms;
 	std::vector<glm::mat4*> m_ShadowProjections;
 	glm::mat4 m_ShadowMapBias;
-	glm::mat4 m_ShadowOrtho;
+	//glm::mat4 m_ShadowOrtho;
 
 	//updateTimer
 	Timer* m_UpdateTimer;

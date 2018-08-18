@@ -300,6 +300,21 @@ public:
 		ImGui::ColorEdit3("Light Colour", &BaseColour.x);
 		ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 1000.0f);
 		ImGui::Checkbox("Casts Shadow", &CastsShadow);
+		ImGui::DragFloat("Distance", &distance);
+
+		if (m_ShadowMap != nullptr)
+		{
+			if (ImGui::TreeNodeEx("Shadow Map"))
+			{
+				ImTextureID frame = (void*)m_ShadowMap->GetDepthHandle();
+				ImGui::BeginChild("Frame");
+				ImGui::Image(frame, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().x), ImVec2(0, 0), ImVec2(1, 1));
+				ImGui::EndChild();
+
+				ImGui::TreePop();
+			}
+		}
+
 
 		Colour = BaseColour * Intensity;
 	}
@@ -307,9 +322,11 @@ public:
 
 	glm::vec3 Colour; //Colour of the light
 	glm::mat4 shadowTransform;
+	glm::mat4 shadowProjection;
+	float distance = 50.0;
 
 	bool CastsShadow = true;
-	FrameBuffer m_ShadowMap;
+	FrameBuffer* m_ShadowMap = nullptr;
 private:
 	glm::vec3 BaseColour;
 	float Intensity = 0;;
@@ -318,7 +335,7 @@ COMPONENT_REGISTER(DirectionalLightComponent, "DirectionalLightComp")
 
 
 
-class DirectionalLightSystem : ECS::System<DirectionalLightComponent, Transform>
+class DirectionalLightSystem : public ECS::System<DirectionalLightComponent, Transform>
 {
 public:
 	DirectionalLightSystem(ECS::ComponentManager* cmanager, EventManager& emanager)
@@ -329,31 +346,48 @@ public:
 	{
 		auto light = entity.GetComponent<DirectionalLightComponent>();
 
-		//initalize the shadow map
-		light->m_ShadowMap.InitDepthTexture(500, 500);
 
 		//set up Transform for shadow map
 		
-		light->shadowTransform = glm::translate(light->shadowTransform, glm::vec3(0, 0, 5));
-		light->shadowTransform = glm::rotate(light->shadowTransform, 45.0f, glm::vec3(1,0,0));
+		//light->shadowTransform = glm::translate(light->shadowTransform, glm::vec3(0, 0, 5));
+		//light->shadowTransform = glm::rotate(light->shadowTransform, 45.0f, glm::vec3(1,0,0));
+		light->shadowProjection = glm::ortho(-50.0, 50.0, -50.0, 50.0, 0.01, 100.0);
 
-		//Register the framebuffer and transform matrix
-		m_Renderer->AddShadowCaster(light->m_ShadowMap, light->shadowTransform);
-		
+		//Send the renderer the shadow matricies, and request a framebuffer pointer for the shadowmap
+		if (m_Renderer->AddShadowCaster(&light->m_ShadowMap, light->shadowTransform, light->shadowProjection))
+			light->m_ShadowMap->InitDepthTexture(500, 500, GL_CLAMP_TO_BORDER);
+		else
+			std::cout << "Something fucked up with the shadowmap generation.\n";
+	}
+
+	void PreUpdate(double deltaTime) override
+	{
+		m_Renderer->PreDirectionalLightPass();
 	}
 
 	void Update(double deltaTime, ECS::Entity& entity) override
 	{
 		//Resolve shadowMap transform
 		auto light = entity.GetComponent<DirectionalLightComponent>();
+		auto transform = entity.GetComponent<Transform>();
 
-		light->shadowTransform = glm::mat4();
-		light->shadowTransform = glm::translate(light->shadowTransform, glm::vec3(0, 0, 5));
-		light->shadowTransform = glm::rotate(light->shadowTransform, 45.0f, glm::vec3(1, 0, 0));
+
+		PxVec3 pos = transform->GetTransform()->q.rotate(PxVec3(0, 0, 50)); //get position of the shadow caster based on rotation
+		PxVec3 direction = transform->GetTransform()->q.rotate(PxVec3(0, 0, 50)); //get the direction of the light rays for shading
+		light->shadowTransform = glm::lookAt(glm::vec3(pos.x, pos.y, pos.z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); //construct the view matrix of the shadow camera
+		light->shadowProjection = glm::ortho(-light->distance, light->distance, -light->distance, light->distance, 0.01f, 100.0f);
 
 		//Directional Light Pass
-		m_Renderer->DirectionalLightPass();
+		m_Renderer->DirectionalLightPass(glm::normalize(glm::vec3(direction.x, direction.y, direction.z)), light->Colour, 
+			*light->m_ShadowMap, light->shadowProjection * light->shadowTransform);
 	}
+
+	void PostUpdate(double deltaTime)
+	{
+		m_Renderer->PostDirectionalLightPass();
+	}
+
+	void SetRenderer(Renderer* a_renderer) { m_Renderer = a_renderer; }
 
 private:
 	Renderer * m_Renderer;
@@ -366,15 +400,27 @@ public:
 	ShadowSystem(ECS::ComponentManager* cmanager, EventManager& emanager)
 		:System(cmanager, emanager) {}
 
+	void PreUpdate(double deltaTime) override
+	{
+		m_Renderer->PreShadowMapRender();
+	}
 
 	void Update(double deltaTime, ECS::Entity& entity)
 	{
 		auto transform = entity.GetComponent<Transform>();
 		auto mesh = entity.GetComponent<MeshFilter>();
 
+
 		m_Renderer->RenderToShadowMap(&mesh->m_Mesh.m_Asset, 
 			transform->GetGlobalTransformMatrix().front());
 	}
+
+	void PostUpdate(double deltaTime) override
+	{
+		m_Renderer->PostShadowMapRender();
+	}
+
+	void SetRenderer(Renderer* a_renderer) { m_Renderer = a_renderer; }
 
 private:
 	std::vector<DirectionalLightComponent*> m_RequiredMaps;

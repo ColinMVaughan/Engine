@@ -58,7 +58,7 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
-	if (!DirectionalLightPassShader.Load("./Assets/Shaders/PassThorugh.vert", "./Assets/Shaders/PBR_Lightpass.frag"))
+	if (!DirectionalLightPassShader.Load("./Assets/Shaders/PassThorugh.vert", "./Assets/Shaders/PBR_Directional_Lightpass.frag"))
 	{
 		std::cout << "Shaders failed to initalize.\n";
 		system("pause");
@@ -93,14 +93,19 @@ void Renderer::Initalize()
 		exit(0);
 	}
 
-
+	if (!ShadowCastShader.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/ShadowCast.frag"))
+	{
+		std::cout << "Shader failed to initalize.\n";
+		system("Pause");
+		exit(0);
+	}
 
 	//Initalize Gbuffer
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
 	GBuffer.InitDepthTexture(m_WindowWidth, m_WindowHeight);
 	GBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);	//Flat Color  ///Might fuck things up!!!
 	GBuffer.InitColorTexture(1, m_WindowWidth, m_WindowHeight, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE);	//Normals (xyz)
-	GBuffer.InitColorTexture(2, m_WindowWidth, m_WindowHeight, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE);	//ViewSpace Positions (xyz)
+	GBuffer.InitColorTexture(2, m_WindowWidth, m_WindowHeight, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE);	//ModelSpace Positions (xyz)
 	GBuffer.InitColorTexture(3, m_WindowWidth, m_WindowHeight, GL_RGB8, GL_NEAREST, GL_CLAMP_TO_EDGE);	//Material (roughness, metallic,emissive)
 
 	if (!GBuffer.CheckFBO())
@@ -111,7 +116,7 @@ void Renderer::Initalize()
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
-	LightpassBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	LightpassBuffer.InitColorTexture(0, m_WindowWidth, m_WindowHeight, GL_RGBA16F, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	if (!LightpassBuffer.CheckFBO())
 	{
 		std::cout << "FBO Failed to Initalize.\n";
@@ -235,6 +240,7 @@ void Renderer::PreRender()
 	StaticGeometry.SendUniformMat4("view", &glm::inverse(m_Camera->m_Transform)[0][0], false);
 	StaticGeometry.SendUniformMat4("projection", &m_Camera->m_Projection[0][0], false);
 	StaticGeometry.SendUniform("environmentMap", 0);
+	StaticGeometry.SendUniform("Exposure", m_Camera->Exposure);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMap.TexObj);
 	DrawCube();
@@ -342,23 +348,29 @@ void Renderer::RenderVoxel(Mesh * mesh, Texture * texture, const float * matrix)
 void Renderer::RenderToShadowMap(Mesh* mesh, const float* matrix)
 {
 	ShadowCastShader.Bind();
+	glCullFace(GL_FRONT);
 
 	for (int i = 0; i < m_ShadowMaps.size(); ++i)
 	{
-		glm::mat4 viewToShadowMap = m_ShadowMapBias * m_ShadowOrtho * *m_ShadowProjections[i] * m_Camera->m_Transform;
+		glm::mat4 viewToShadowMap = m_ShadowMapBias * *m_ShadowProjections[i] * *m_ShadowTransforms[i] * m_Camera->m_Transform;
 		
-		m_ShadowMaps[i]->Bind();
+		m_ShadowMaps[i].Bind();
 
-		ShadowCastShader.SendUniformMat4("uView", &m_ShadowProjections[i][0][0][0], false);
-		ShadowCastShader.SendUniformMat4("uProj", &m_ShadowOrtho[0][0], false);
+		glm::mat4& transform = *m_ShadowTransforms[i];
+		glm::mat4& project = *m_ShadowProjections[i];
+
+		ShadowCastShader.SendUniformMat4("uView", &transform[0][0], false);
+		ShadowCastShader.SendUniformMat4("uProj", &project[0][0], false);
 		ShadowCastShader.SendUniformMat4("uModel", matrix, false);
 
 		glBindVertexArray(mesh->VAO);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->GetNumVertices(), mesh->InstanceNumber);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumVertices());
 		glBindVertexArray(0);
 	
-		m_ShadowMaps[i]->UnBind();
+		m_ShadowMaps[i].UnBind();
 	}
+
+	glCullFace(GL_BACK);
 	ShadowCastShader.UnBind();
 }
 
@@ -428,10 +440,20 @@ void Renderer::PostPointLightPass()
 	glDisable(GL_BLEND);
 }
 
-void Renderer::AddShadowCaster(FrameBuffer & shadowMap, glm::mat4 & direction)
+bool Renderer::AddShadowCaster(FrameBuffer ** shadowMap, glm::mat4 & direction, glm::mat4& projection)
 {
-	m_ShadowMaps.push_back(&shadowMap);
-	m_ShadowProjections.push_back(&direction);
+	if (*shadowMap == nullptr)
+	{
+		m_ShadowMaps.push_back(FrameBuffer(0));
+		*shadowMap = &m_ShadowMaps.back();
+
+		m_ShadowTransforms.push_back(&direction);
+		m_ShadowProjections.push_back(&projection);
+
+		if(*shadowMap != nullptr)
+			return true;
+	}
+	return false;
 }
 
 void Renderer::CombineUI()
@@ -473,54 +495,6 @@ void Renderer::CombineDebug()
 	glDisable(GL_BLEND);
 }
 
-//--------------------------------------------------------
-//			Deffered Directional Lighting Pass
-//--------------------------------------------------------
-void Renderer::DirectionalLightPass()
-{
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
-
-	DirectionalLightPassShader.Bind();
-
-	DirectionalLightPassShader.SendUniform("albedoMap", 0);
-	DirectionalLightPassShader.SendUniform("normalMap", 1);
-	DirectionalLightPassShader.SendUniform("positionMap", 2);
-
-	DirectionalLightPassShader.SendUniform("materialMap", 3);
-
-	DirectionalLightPassShader.SendUniform("camPos", m_Camera->GetPosition());
-
-
-	LightpassBuffer.Bind();
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(3));
-
-	for (int i = 0; i < m_PointLightPositions.size(); ++i)
-	{
-		DirectionalLightPassShader.SendUniform("lightColor", *m_PointLightColors[i]);
-		DrawFullScreenQuad();
-	}
-
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-	LightpassBuffer.UnBind();
-	DirectionalLightPassShader.UnBind();
-
-	glDisable(GL_BLEND);
-
-}
 
 //--------------------------------------------------------
 //				IBL + Composite Lighting
@@ -539,16 +513,15 @@ void Renderer::CombineLighting()
 	LightingCombinedShader.SendUniform("positionMap", 2);
 
 	LightingCombinedShader.SendUniform("materialMap", 3);
-	//LightingCombinedShader.SendUniform("metallicMap", 4);
 
 	LightingCombinedShader.SendUniform("irradianceMap", 4);
 	LightingCombinedShader.SendUniform("prefilterMap", 5);
 	LightingCombinedShader.SendUniform("brdfLUT", 6);
 
 	LightingCombinedShader.SendUniform("aoMap", 7);
-	//LightingCombinedShader.SendUniform("emissiveMap", 9);
 	LightingCombinedShader.SendUniform("combinedLights", 8);
 	LightingCombinedShader.SendUniform("camPos", m_Camera->GetPosition());
+	LightingCombinedShader.SendUniform("Exposure", m_Camera->Exposure);
 
 
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
@@ -710,4 +683,48 @@ void Renderer::SubmitFrame()
 	//LightpassBuffer.MoveToBackBuffer(m_WindowWidth, m_WindowHeight);
 	//glutSwapBuffers();
 	SDL_GL_SwapWindow(m_Window);
+}
+
+void Renderer::PreDirectionalLightPass()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	DirectionalLightPassShader.Bind();
+
+	DirectionalLightPassShader.SendUniform("albedoMap", 0);
+	DirectionalLightPassShader.SendUniform("normalMap", 1);
+	DirectionalLightPassShader.SendUniform("positionMap", 2);
+
+	DirectionalLightPassShader.SendUniform("materialMap", 3);
+
+	DirectionalLightPassShader.SendUniform("camPos", m_Camera->GetPosition());
+
+
+	LightpassBuffer.Bind();
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(3));
+}
+
+void Renderer::PostDirectionalLightPass()
+{
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+	LightpassBuffer.UnBind();
+	DirectionalLightPassShader.UnBind();
+
+	glDisable(GL_BLEND);
 }

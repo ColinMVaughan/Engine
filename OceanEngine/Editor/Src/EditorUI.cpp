@@ -374,7 +374,7 @@ void Editor::DrawEntityListWindow()
 	
 	//**************
 	// This is where you list the entities
-	for (int i = 1; i < m_Scene->GetNumEntities(); ++i)
+	for (int i = 0; i < m_Scene->GetNumEntities(); ++i)
 	{
 		if (ImGui::Selectable(m_Scene->GetEntity(i).GetName().c_str(), SelectedEntity == i))
 			SelectedEntity = i;

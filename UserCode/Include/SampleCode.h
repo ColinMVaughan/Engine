@@ -41,10 +41,12 @@ class SplineComponent
 public:
 	std::vector<glm::vec3> nodes;
 	float time = 0.1f;
-
+	float speed = 0.25f;
 
 	void ExposeToEditor()
 	{
+		ImGui::DragFloat("Speed", &speed);
+
 		for (int i = 0; i < nodes.size(); ++i)
 			ImGui::DragFloat3((std::string("Node ") + std::to_string(i)).c_str(), &nodes[i].x, 0.1f);
 	}
@@ -116,7 +118,7 @@ public:
 		*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), transform->GetTransform()->q);
 
 
-		spline->time += deltaTime;
+		spline->time += deltaTime * spline->speed;
 	}
 
 

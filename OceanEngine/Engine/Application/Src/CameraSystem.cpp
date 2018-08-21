@@ -3,10 +3,12 @@
 DebugCameraControlSystem::DebugCameraControlSystem(ECS::ComponentManager* a_cmanager, EventManager& a_eManager)
 	:System(a_cmanager, a_eManager)
 {
-	MoveDirection = PxVec3(0);
-	rotations = PxVec2(0);
+	m_Translation = PxVec3(0);
+	m_Rotation = PxVec2(0);
 	m_MotionType = MOTION_NONE;
 
+	m_Position = PxVec3(0);
+	
 
 	RegisterEventListner<KeyPressedEvent>(a_eManager, [this](KeyPressedEvent& eve) {MyKeyDown(eve); });
 	//RegisterEventListner<KeyReleasedEvent>(a_eManager, [this](KeyReleasedEvent& eve) {MyKeyUp(eve); });
@@ -32,13 +34,14 @@ void DebugCameraControlSystem::Update(double deltaTime, ECS::Entity& entity)
 	PxMat44 Rot = PxMat44(physx::PxIdentity);
 	PxMat44 Translate = PxMat44(physx::PxIdentity);
 
-	PxQuat quatRot = PxQuat(rotations.x, PxVec3(0, 1, 0)) * PxQuat(rotations.y, PxVec3(1, 0, 0));
-
+	PxQuat quatRot = PxQuat(m_Rotation.x, PxVec3(0, 1, 0)) * PxQuat(m_Rotation.y, PxVec3(1, 0, 0));
+	m_Position += quatRot.rotate(m_Translation);
+	m_Translation *= 0;
 
 	//Set up position, rotation, and zoom matricies
-	Zoom.setPosition(PxVec3(0.0f, 0.0f, MyZoom));
+	Zoom.setPosition(PxVec3(0.0f, 0.0f, m_Zoom));
 	Rot = PxMat44(quatRot);
-	Translate.setPosition(quatRot.rotate(MoveDirection));
+	Translate.setPosition(m_Position);
 
 	PxMat44 finalMat = Translate * Rot * Zoom;
 
@@ -69,18 +72,18 @@ void DebugCameraControlSystem::MyKeyUp(KeyReleasedEvent& key)
 void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 {
 	const float rotationSpeed = 0.005f;
-	const float dragSpeed = 0.005f;
+	const float dragSpeed = 0.009f;
 
 	switch (m_MotionType)
 	{
 	case MOTION_TRANSLATE:
-		MoveDirection.y += motion.InputEvent.yrel * dragSpeed;
-		MoveDirection.x -= motion.InputEvent.xrel * dragSpeed; //set to minus to give a dragging effect
+		m_Translation.y += motion.InputEvent.yrel * dragSpeed;
+		m_Translation.x -= motion.InputEvent.xrel * dragSpeed; //set to minus to give a dragging effect
 		break;
 
 	case MOTION_ROTATE:
-		rotations.x += motion.InputEvent.xrel * rotationSpeed;
-		rotations.y += motion.InputEvent.yrel * rotationSpeed;
+		m_Rotation.x += motion.InputEvent.xrel * rotationSpeed;
+		m_Rotation.y += motion.InputEvent.yrel * rotationSpeed;
 		break;
 	}
 
@@ -90,7 +93,10 @@ void DebugCameraControlSystem::MyMouseMoved(MouseMovedEvent& motion)
 void DebugCameraControlSystem::MouseScroll(ScrollWheelEvent & eve)
 {
 	const float speed = 1.0f;
-	MyZoom -= eve.InputEvent.y * speed;
+	m_Zoom -= eve.InputEvent.y * speed;
+
+	//clamp MyZoom at 0.5 so that we dont run into strange camera behaviour at negitive (or near 0) zoom
+	m_Zoom = m_Zoom < 0.5 ? 0.5 : m_Zoom; 
 }
 
 void DebugCameraControlSystem::ButtonDown(MouseClickedEvent & eve)

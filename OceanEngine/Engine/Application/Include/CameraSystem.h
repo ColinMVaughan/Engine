@@ -204,21 +204,21 @@ public:
 	void ButtonUp(MouseReleasedEvent& eve);
 
 private:
-	PxVec3 MovementDirection;
 
-	float speed = 0.3f;
-	PxVec3 MoveDirection;
-	PxQuat rotation;
 
-	PxVec2 rotations;
+
+
+
+
 
 	enum MotionType{MOTION_NONE=0, MOTION_TRANSLATE = 2, MOTION_ROTATE = 4} m_MotionType;
 
-	//---------------------
-	float MyZoom = 1.0f; // Construct zoom
-	glm::vec3 Pos; //Construct position
-	glm::vec2 Rotation;// construct rotations
-	
+
+	float m_Zoom = 1.0f; // Construct zoom
+	PxVec3 m_Position;
+	PxVec3 m_Translation;
+	PxVec2 m_Rotation;
+	float speed = 0.3f;
 };
 
 #endif

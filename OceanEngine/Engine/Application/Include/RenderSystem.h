@@ -355,7 +355,7 @@ public:
 
 		//Send the renderer the shadow matricies, and request a framebuffer pointer for the shadowmap
 		if (m_Renderer->AddShadowCaster(&light->m_ShadowMap, light->shadowTransform, light->shadowProjection))
-			light->m_ShadowMap->InitDepthTexture(500, 500, GL_CLAMP_TO_BORDER);
+			light->m_ShadowMap->InitDepthTexture(2048, 2048, GL_CLAMP_TO_BORDER);
 		else
 			std::cout << "Something fucked up with the shadowmap generation.\n";
 	}

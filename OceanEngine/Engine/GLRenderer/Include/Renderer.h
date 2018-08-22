@@ -110,6 +110,8 @@ public:
 
 	FrameBuffer UIBuffer;
 	FrameBuffer DebugBuffer;
+	FrameBuffer GBuffer;
+	FrameBuffer SSAOBuffer;
 	FrameBuffer* FinalBuffer;
 	Camera* m_Camera;
 private:
@@ -139,10 +141,8 @@ private:
 	Timer* m_UpdateTimer;
 
 	//Framebuffers
-	FrameBuffer GBuffer;
 	FrameBuffer LightpassBuffer;
 	FrameBuffer CombinedLighingBuffer;
-	FrameBuffer SSAOBuffer;
 	FrameBuffer PostProccessBuffer;
 
 

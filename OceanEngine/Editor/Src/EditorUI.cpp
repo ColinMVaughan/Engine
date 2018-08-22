@@ -57,6 +57,8 @@ void Editor::DoInitalize()
 		it->second(m_Scene, ECS::detail::AddUserSystem);
 	}
 
+
+	m_ViewportFramebuffer = m_Renderer->FinalBuffer->GetColorHandle(0);
 }
 
 
@@ -209,6 +211,16 @@ void Editor::DrawMenuBar(double deltaTime)
 	if (ImGui::BeginMenu("View"))
 	{
 		if (ImGui::MenuItem("Material Editor", NULL, IsMaterialEditorActive)) { IsMaterialEditorActive = !IsMaterialEditorActive; }
+		if (ImGui::BeginMenu("Viewport"))
+		{
+			static int selectedView = 0;
+			if (ImGui::RadioButton("Default", &selectedView, 0)) { m_ViewportFramebuffer = m_Renderer->FinalBuffer->GetColorHandle(0); }
+			if (ImGui::RadioButton("Normals", &selectedView, 1)) { m_ViewportFramebuffer = m_Renderer->GBuffer.GetColorHandle(1); }
+			if (ImGui::RadioButton("Materials", &selectedView, 2)) { m_ViewportFramebuffer = m_Renderer->GBuffer.GetColorHandle(3); }
+			if (ImGui::RadioButton("Depth", &selectedView, 3)) { m_ViewportFramebuffer = m_Renderer->GBuffer.GetDepthHandle(); }
+
+			ImGui::EndMenu();
+		}
 
 		ImGui::EndMenu();
 	}
@@ -678,7 +690,7 @@ void Editor::DrawSceneWindow()
 	//Gat FrameBuffer
 
 
-	ImTextureID frame = (void*)m_Renderer->FinalBuffer->GetColorHandle(0);
+	ImTextureID frame = (void*)m_ViewportFramebuffer;//(void*)m_Renderer->FinalBuffer->GetColorHandle(0);
 
 	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
 	contentRegion.y -= 2;

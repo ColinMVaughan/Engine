@@ -55,5 +55,5 @@ private:
 
 	int WindowSizeX, WindowSizeY;
 	double m_DeltaTime;
-
+	GLuint m_ViewportFramebuffer;
 };

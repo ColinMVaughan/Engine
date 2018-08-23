@@ -275,8 +275,8 @@ void Editor::DrawEditor()
 	float windowWidth = ImGui::GetContentRegionMax().x - 22;
 
 	static float LeftPane = windowWidth * 0.75;
-	static float Left_UpPane = windowHeight * 0.75;
-	static float Left_DownPane = windowHeight * 0.25;
+	static float Left_UpPane = windowHeight * 0.825;
+	static float Left_DownPane = windowHeight * 0.175;
 
 	static float RightPane = windowWidth * 0.25;
 	static float Right_UpPane = windowHeight * 0.5;

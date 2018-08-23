@@ -74,25 +74,59 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }  
 
+float ShadowCalculationPCF(vec4 fragPosLightSpace, vec3 normal)
+{
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w; // not nessisary
+	projCoords = projCoords * 0.5 + 0.5;
+	float shadow = 0.0;
+
+	if(projCoords.z > 1.0)
+	{
+		shadow = 0.0;
+		return shadow;
+	}
+
+	//float closestDepth = texture(shadowMap, projCoords.xy).r;
+	float currentDepth = projCoords.z;
+
+	float bias = max(0.05 * (1.0 - dot(normal, lightDirection)), 0.0005);
+	//shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+				float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y)*texelSize).r;
+				shadow += currentDepth /*- bias*/ > pcfDepth? 1.0 : 0.0;
+		}
+	}
+
+	shadow /= 9.0;
+	return shadow;
+}
+
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
 {
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w; // not nessisary
 	projCoords = projCoords * 0.5 + 0.5;
+	float shadow = 0.0;
 
 	if(projCoords.z > 1.0)
 	{
-		float shadow = 0.0;
+		shadow = 0.0;
 		return shadow;
 	}
 
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
 	float currentDepth = projCoords.z;
 
-	float bias = max(0.05 * (1.0 - dot(normal, lightDirection)), 0.005);
-	float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+	float bias = max(0.0005 * (1.0 - dot(normal, lightDirection)), 0.00005);
+	shadow = (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
+
+
 	return shadow;
 }
-
 //=================================================================================================
 //=================================================================================================
 
@@ -165,6 +199,6 @@ void main()
 	//-----------------------------------------------------------
 	
 	//if the fragment is in shadow, do not add light
-	float shadow = ShadowCalculation(lightSpaceMatrix * vec4(position.xyz, 1), normal);
+	float shadow = ShadowCalculationPCF(lightSpaceMatrix * vec4(position.xyz, 1), normal);
 	FragColor = vec4(Lo * (1.0 - shadow), 1.0);
 }

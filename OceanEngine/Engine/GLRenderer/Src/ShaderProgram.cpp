@@ -293,7 +293,7 @@ std::string ShaderProgram::ReadFile(const std::string &fileName) const
 
 	if (!inStream.good())
 	{
-		std::cout << "Shader file not found!\n";
+		std::cout << "Shader file not found! Looking In: " << fileName<< "\n";
 		return std::string();
 	}
 

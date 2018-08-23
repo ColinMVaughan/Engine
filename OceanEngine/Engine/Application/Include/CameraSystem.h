@@ -130,7 +130,7 @@ public:
 		auto cam = entity.GetComponent<CameraComponent>();
 		
 		//set default projection
-		cam->m_Camera.m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+		cam->m_Camera.m_Projection = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 300.0f);
 
 		
 		//if there is no editor camera set, use this camera

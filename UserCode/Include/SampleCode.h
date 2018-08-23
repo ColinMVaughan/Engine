@@ -7,6 +7,9 @@
 #include <DebugShapes.h>
 #include <string>
 
+#include <glm/gtc/quaternion.hpp>
+#include <string>
+
 class ShiftComponent
 {
 public:
@@ -34,7 +37,11 @@ private:
 USER_SYSTEM_REGISTER(LightShiftSystem, "LightShiftSystem")
 
 
-
+struct SplineNode
+{
+	glm::vec3 Position;
+	unsigned int OrientationTargetIndex = 0;
+};
 
 class SplineComponent
 {
@@ -48,7 +55,21 @@ public:
 		ImGui::DragFloat("Speed", &speed, 0.01f, 0.0001f);
 
 		for (int i = 0; i < nodes.size(); ++i)
+		{
 			ImGui::DragFloat3((std::string("Node ") + std::to_string(i)).c_str(), &nodes[i].x, 0.1f);
+			//ImGui::SameLine();
+
+			//if (ImGui::BeginCombo("", "No Target"))
+			//{
+			//	ImGui::Selectable(std::string("Target " + std::to_string(1)).c_str());
+			//	ImGui::EndCombo();
+			//}
+
+		}
+		if (ImGui::Button("+"))
+		{
+			nodes.push_back(glm::vec3(nodes.back()));
+		}
 	}
 
 	glm::vec3 GetSplinePoint(float t)
@@ -78,8 +99,79 @@ public:
 		return glm::vec3(tx, ty, tz);
 	}
 
+	glm::quat GetSplineOrientation(float t)
+	{
+		int p0, p1, p2;
+		p0 = (int)t;
+		p1 = p0 + 1;
+		p2 = p1 + 1;
+
+
+
+		glm::quat rotation1;
+		glm::quat rotation2;
+		//if the orientation node is not overriden
+		if (true)
+		{
+
+			//Calculate a quaternion pointing towards the next node
+			rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001));
+
+			//calculate the direction quaternion for the next node
+			if(p2 < nodes.size() - 2)
+				rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p2 - 0.0001f));
+			else 
+				rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001f));
+			//Interpolate between the two quaternions
+
+			t = t - (int)t;
+			return glm::slerp(rotation1, rotation2, t);
+		}
+	}
+
 private:
+
+
+	glm::quat LookAtNode(glm::vec3 position, glm::vec3 target, glm::vec3 up = glm::vec3(0, 1, 0))
+	{
+		//glm::vec3 lookDir = position - target;
+		//lookDir = glm::normalize(lookDir);
+
+		auto matrix = glm::lookAt(position, target, up);
+		matrix = glm::transpose(matrix);
+
+		return glm::quat_cast(matrix);
+	}
+
+	//Creates a Quaternion rotated towards the direction vector
+	glm::quat QuaternionLookAt(const glm::vec3& direction, const glm::vec3& up)
+	{
+		glm::vec3 xAxis = glm::cross(direction, up);
+		xAxis = glm::normalize(xAxis);
+
+		glm::vec3 yAxis = glm::cross(direction, xAxis);
+		yAxis = glm::normalize(yAxis);
+
+		glm::mat3 rotationMatrix;
+
+		rotationMatrix[0].x = xAxis.x;
+		rotationMatrix[0].y = yAxis.x;
+		rotationMatrix[0].z = direction.x;
+
+		rotationMatrix[1].x = xAxis.y;
+		rotationMatrix[1].y = yAxis.y;
+		rotationMatrix[1].z = direction.y;
+
+		rotationMatrix[2].x = xAxis.z;
+		rotationMatrix[2].y = yAxis.z;
+		rotationMatrix[2].z = direction.z;
+
+		
+		return glm::quat_cast(rotationMatrix);
+	}
+
 };
+
 USER_COMPONENT_REGISTER(SplineComponent, "SplineComponent")
 
 
@@ -115,7 +207,9 @@ public:
 			spline->time = 0.1f; //reset T
 
 		auto newPos = spline->GetSplinePoint(spline->time);
-		*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), transform->GetTransform()->q);
+		auto newRot = spline->GetSplineOrientation(spline->time);
+		*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), PxQuat(newRot.x,newRot.y,newRot.z,newRot.w));
+
 
 
 		spline->time += deltaTime * spline->speed;

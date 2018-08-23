@@ -17,9 +17,12 @@ bool HotReloadHandler::LoadDLL()
 
 	BOOL freeResult, runtimeLinkSuccess = FALSE;
 
+#ifdef _DEBUG
 	//Load UserCode library.
 	m_LibInstance = LoadLibrary(TEXT("../Debug/UserCoded.dll"));
-
+#else
+	m_LibInstance = LoadLibrary(TEXT("../Release/UserCode.dll"));
+#endif
 	//If the handle is valid, the library has been loaded
 	if (m_LibInstance != NULL)
 	{

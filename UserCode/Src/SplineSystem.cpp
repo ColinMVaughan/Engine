@@ -24,10 +24,21 @@ void SplineComponent::ExposeToEditor()
 		//}
 
 	}
-	if (ImGui::Button("+"))
+
+	if (nodes.size() > 0)
+		if (ImGui::Button("+"))
+		{
+			//create a new node with the same starting position of the previous node.
+			nodes.push_back(SplineNode(glm::vec3(nodes.back().Position)));
+		}
+
+	if (nodes.size() > 1)
 	{
-		//create a new node with the same starting position of the previous node.
-		nodes.push_back(SplineNode(glm::vec3(nodes.back().Position)));
+		ImGui::SameLine(); if (ImGui::Button("-"))
+		{
+			//Remove the last created node.
+			nodes.pop_back();
+		}
 	}
 }
 
@@ -67,34 +78,54 @@ glm::quat SplineComponent::GetSplineOrientation(float t)
 
 
 
-	glm::quat rotation1;
-	glm::quat rotation2;
+	//glm::quat rotation1;
+	//glm::quat rotation2;
 	//if the orientation node is not overriden
 	if (false)
 	{
 
-		//Calculate a quaternion pointing towards the next node
-		rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001));
+		////Calculate a quaternion pointing towards the next node
+		//rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001));
 
-		//calculate the direction quaternion for the next node
-		if (p2 < nodes.size() - 2)
-			rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p2 - 0.0001f));
-		else
-			rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001f));
-		//Interpolate between the two quaternions
+		////calculate the direction quaternion for the next node
+		//if (p2 < nodes.size() - 2)
+		//	rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p2 - 0.0001f));
+		//else
+		//	rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001f));
+		////Interpolate between the two quaternions
 
-		t = t - (int)t;
-		return glm::slerp(rotation1, rotation2, t);
+		//t = t - (int)t;
+		//return glm::slerp(rotation1, rotation2, t);
 	}
 	else
 	{
-		if (p1 < nodes.size() - 2)
-			rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint(t + 0.1f));
-		else
-			rotation1 = glm::inverse(LookAtNode(GetSplinePoint(t), GetSplinePoint(t - 0.001)));
+		//if (p1 < nodes.size() - 2)
+		//	rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint(t + 0.1f));
+		//else
+		//	rotation1 = glm::inverse(LookAtNode(GetSplinePoint(t), GetSplinePoint(t - 0.001)));
 
-		return rotation1;
+		//return rotation1;
 	}
+//-----------------------------------------------------------------------------------------------
+
+	glm::quat targetRot[2];
+
+	for (int i = 0; i < 2; ++i)
+	{
+		if (nodes[p0 + i].OrientationTargetIndex != 0)
+		{
+			glm::vec3 target(0, 0, 0);
+			targetRot[i] = LookAtNode(GetSplinePoint(t), target);
+		}
+		else
+		{
+			if (p0 + i >= nodes.size() - 2) { targetRot[i] = glm::inverse(LookAtNode(GetSplinePoint(t), GetSplinePoint(t - 0.001))); continue; }
+			targetRot[i] = LookAtNode(GetSplinePoint(t), GetSplinePoint(t + 0.1f));
+		}
+	}
+
+	t = t - (int)t;
+	return glm::slerp(targetRot[0], targetRot[1], t);
 }
 
 glm::quat SplineComponent::LookAtNode(glm::vec3 position, glm::vec3 target, glm::vec3 up)
@@ -160,17 +191,19 @@ void SplineMoveSystem::Update(double deltaTime, ECS::Entity& entity)
 	auto spline = entity.GetComponent<SplineComponent>();
 	auto transform = entity.GetComponent<Transform>();
 
-	//if the current t is greater than the max node - 1, it will be out of range and raise an exception
-	if (spline->time >= spline->nodes.size() - 3)
-		spline->time = 0.1f; //reset T
+	if (spline->nodes.size() >= 4)
+	{
+		//if the current t is greater than the max node - 1, it will be out of range and raise an exception
+		if (spline->time >= spline->nodes.size() - 3)
+			spline->time = 0.1f; //reset T
 
-	auto newPos = spline->GetSplinePoint(spline->time);
-	auto newRot = spline->GetSplineOrientation(spline->time);
-	*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), PxQuat(newRot.x, newRot.y, newRot.z, newRot.w));
+		auto newPos = spline->GetSplinePoint(spline->time);
+		auto newRot = spline->GetSplineOrientation(spline->time);
+		*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), PxQuat(newRot.x, newRot.y, newRot.z, newRot.w));
 
+		spline->time += deltaTime * spline->speed;
+	}
 
-
-	spline->time += deltaTime * spline->speed;
 }
 
 float SplineMoveSystem::GetT(float t, glm::vec3 p0, glm::vec3 p1)
@@ -191,10 +224,6 @@ void SplineMoveSystem::EntityRegistered(ECS::Entity& entity)
 	glm::vec3 position(p.x, p.y, p.z);
 
 	spline->nodes.push_back(position);
-	spline->nodes.push_back(position + glm::vec3(1.0, 0, 0));
-	spline->nodes.push_back(position + glm::vec3(2.0, 0, 0));
-	spline->nodes.push_back(position + glm::vec3(3.0, 0, 0));
-	spline->nodes.push_back(position + glm::vec3(4.0, 0, 0));
 }
 
 void SplineMoveSystem::DrawGizmo(ECS::Entity& entity)

@@ -61,8 +61,10 @@ bool ECS::Scene::SaveScene(std::string filePath)
 	File.open(filePath, std::ios::out | std::ios::binary);
 
 	auto registry = ECS::detail::GetComponentRegistry(); //component registry
+	auto userRegistry = ECS::DynamicDetail::GetDynamicComponentRegistry();
+
 	uint32_t numEntities = GetNumEntities(); //number of entities in scene
-	uint32_t numComponents = registry.size(); //Number of registered Components
+	uint32_t numComponents = registry.size() + userRegistry.size(); //Number of registered Components
 	std::vector<std::string> componentNames;
 
 	//Write number of entities
@@ -78,6 +80,14 @@ bool ECS::Scene::SaveScene(std::string filePath)
 		//Write name of component (it->first == string)
 		File.write(it->first.c_str(), it->first.size() + 1);
 	}
+	//iterate throughthe user component types
+	for (auto it = userRegistry.begin(); it != userRegistry.end(); ++it)
+	{
+		componentNames.push_back(it->first);
+		//Write name of component (it->first == string)
+		File.write(it->first.c_str(), it->first.size() + 1);
+	}
+
 
 	//Create serialization
 	cereal::BinaryOutputArchive archive(File);
@@ -96,6 +106,15 @@ bool ECS::Scene::SaveScene(std::string filePath)
 		//Get Number of Components registered to the entity
 		//--------------------------------------------------------------------------------
 		for (auto it = registry.begin(); it != registry.end(); ++it)
+		{
+			//If the ectity has the component type, add it's index to the vector
+			if (ECS::CheckComponentFromString(it->first, this, GetEntity(i)))
+				components.push_back(compIndex);
+
+			compIndex++;
+		}
+		//check the user component registry as well
+		for (auto it = userRegistry.begin(); it != userRegistry.end(); ++it)
 		{
 			//If the ectity has the component type, add it's index to the vector
 			if (ECS::CheckComponentFromString(it->first, this, GetEntity(i)))
@@ -151,8 +170,10 @@ bool ECS::Scene::SaveEntityPrefab(Entity& entity)
 	File.open("./Assets/Prefabs/"+entity.GetName()+".prefab", std::ios::out | std::ios::binary);
 
 	auto registry = ECS::detail::GetComponentRegistry(); //component registry
+	auto userRegistry = ECS::DynamicDetail::GetDynamicComponentRegistry(); // User component registry
+
 	uint32_t numEntities = GetNumEntities(); //number of entities in scene
-	uint32_t numComponents = registry.size(); //Number of registered Components
+	uint32_t numComponents = registry.size() + userRegistry.size(); //Number of registered Components
 	std::vector<std::string> componentNames;
 
 
@@ -161,6 +182,13 @@ bool ECS::Scene::SaveEntityPrefab(Entity& entity)
 
 	//iterate through each registered component type
 	for (auto it = registry.begin(); it != registry.end(); ++it)
+	{
+		componentNames.push_back(it->first);
+		//Write name of component (it->first == string)
+		File.write(it->first.c_str(), it->first.size() + 1);
+	}
+	//iterate through each user registered component type
+	for (auto it = userRegistry.begin(); it != userRegistry.end(); ++it)
 	{
 		componentNames.push_back(it->first);
 		//Write name of component (it->first == string)
@@ -183,6 +211,14 @@ bool ECS::Scene::SaveEntityPrefab(Entity& entity)
 	//Get Number of Components registered to the entity
 	//--------------------------------------------------------------------------------
 	for (auto it = registry.begin(); it != registry.end(); ++it)
+	{
+		//If the ectity has the component type, add it's index to the vector
+		if (ECS::CheckComponentFromString(it->first, this, entity))
+			components.push_back(compIndex);
+
+		compIndex++;
+	}
+	for (auto it = userRegistry.begin(); it != userRegistry.end(); ++it)
 	{
 		//If the ectity has the component type, add it's index to the vector
 		if (ECS::CheckComponentFromString(it->first, this, entity))

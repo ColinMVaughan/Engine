@@ -15,13 +15,22 @@ void SplineComponent::ExposeToEditor()
 	for (int i = 0; i < nodes.size(); ++i)
 	{
 		ImGui::DragFloat3((std::string("Node ") + std::to_string(i)).c_str(), &nodes[i].Position.x, 0.1f);
-		//ImGui::SameLine();
+		ImGui::SameLine();
 
-		//if (ImGui::BeginCombo("", "No Target"))
-		//{
-		//	ImGui::Selectable(std::string("Target " + std::to_string(1)).c_str());
-		//	ImGui::EndCombo();
-		//}
+		//get the label for the combo box, if the target is 0, use "no target", otherwiae use the index
+		std::string label = nodes[i].OrientationTargetIndex == 0 ? "No Target" : std::string("Target " + std::to_string(nodes[i].OrientationTargetIndex));
+
+		if (ImGui::BeginCombo(std::string(std::to_string(i) + "Targets").c_str(), label.c_str()))
+		{
+			if (ImGui::Selectable(std::string("No Target ").c_str())) { nodes[i].OrientationTargetIndex = 0; }
+
+			for (int j = 0; j < LookTargets.size(); ++j)
+			{
+				if (ImGui::Selectable(std::string("Target " + std::to_string(j)).c_str())) { nodes[i].OrientationTargetIndex = j + 1; }
+			}
+
+			ImGui::EndCombo();
+		}
 
 	}
 
@@ -39,6 +48,21 @@ void SplineComponent::ExposeToEditor()
 			//Remove the last created node.
 			nodes.pop_back();
 		}
+	}
+
+	if(ImGui::TreeNodeEx("Orientation Targets"))
+	{
+		for (int i = 0; i < LookTargets.size(); ++i)
+		{
+			ImGui::DragFloat3((std::string("Target ") + std::to_string(i)).c_str(), &LookTargets[i].Position.x, 0.1f);
+		}
+
+		if (ImGui::Button("+"))
+		{
+			//create a new node with the same starting position of the previous node.
+			LookTargets.push_back(SplineNode(glm::vec3(nodes.back().Position)));
+		}
+		ImGui::TreePop();
 	}
 }
 
@@ -114,8 +138,8 @@ glm::quat SplineComponent::GetSplineOrientation(float t)
 	{
 		if (nodes[p0 + i].OrientationTargetIndex != 0)
 		{
-			glm::vec3 target(0, 0, 0);
-			targetRot[i] = LookAtNode(GetSplinePoint(t), target);
+			auto target = LookTargets[nodes[p0 + i].OrientationTargetIndex - 1];
+			targetRot[i] = LookAtNode(GetSplinePoint(t), target.Position);
 		}
 		else
 		{
@@ -181,8 +205,12 @@ SplineMoveSystem::SplineMoveSystem(ECS::ComponentManager* cManager, EventManager
 	m_DrawNodeEvent.colour = glm::vec3(0, 1, 0);
 	m_DrawNodeEvent.drawMode = GL_TRIANGLES;
 
+	m_DrawTargetEvent.colour = glm::vec3(0, 0, 1);
+	m_DrawTargetEvent.drawMode = GL_TRIANGLES;
+
 	LoadDebugSphere(m_nodeMesh);
 	m_DrawNodeEvent.mesh = &m_nodeMesh;
+	m_DrawTargetEvent.mesh = &m_nodeMesh;
 }
 
 void SplineMoveSystem::Update(double deltaTime, ECS::Entity& entity)
@@ -255,5 +283,16 @@ void SplineMoveSystem::DrawGizmo(ECS::Entity& entity)
 		m_DrawNodeEvent.matrix = &tempMat[0][0];
 
 		entity.DispatchEvent<DrawGizmoEvent>(m_DrawNodeEvent);
+	}
+
+	for (int i = 0; i < spline->LookTargets.size(); ++i)
+	{
+		glm::mat4 tempMat;
+
+		tempMat = glm::translate(tempMat, glm::vec3(spline->LookTargets[i].Position));
+		tempMat = glm::scale(tempMat, glm::vec3(0.1, 0.1, 0.1));
+		m_DrawTargetEvent.matrix = &tempMat[0][0];
+
+		entity.DispatchEvent<DrawGizmoEvent>(m_DrawTargetEvent);
 	}
 }

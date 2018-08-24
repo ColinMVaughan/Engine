@@ -32,6 +32,8 @@ class SplineComponent
 {
 public:
 	std::vector<SplineNode> nodes;
+	std::vector<SplineNode> LookTargets;
+
 	float time = 0.1f;
 	float speed = 0.30f;
 
@@ -70,6 +72,7 @@ public:
 	std::vector<glm::vec3> pathDrawBuffer;
 	DrawGizmoEvent m_DrawSplineEvent;
 	DrawGizmoEvent m_DrawNodeEvent;
+	DrawGizmoEvent m_DrawTargetEvent;
 
 	glm::mat4 mat;
 	Mesh m_pathMesh;

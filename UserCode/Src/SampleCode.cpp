@@ -24,3 +24,4 @@ void LightShiftSystem::Update(double deltaTime, ECS::Entity & entity)
 	light->Color.b = 125 * (1 + sin(1 * pi * frequency * time));
 
 }
+

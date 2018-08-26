@@ -42,8 +42,9 @@ public:
 	template<typename Archive>
 	void serialize(Archive& arc)
 	{
-		arc(nodes);
+		arc(nodes, LookTargets);
 	}
+
 
 	glm::vec3 GetSplinePoint(float t);
 	glm::quat GetSplineOrientation(float t);

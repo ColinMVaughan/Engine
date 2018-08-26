@@ -37,3 +37,26 @@ private:
 USER_SYSTEM_REGISTER(LightShiftSystem, "LightShiftSystem")
 
 
+
+
+class FireflyMotionComponent
+{
+public:
+	float MovementStrength = 0.1f;
+	glm::vec3 Motion;
+	glm::vec3 Target;
+};
+//USER_COMPONENT_REGISTER(FireflyMotionComponent, "FireflyMotionComp")
+
+class FireflyMotionSystem : public ECS::System<Transform, FireflyMotionComponent>
+{
+public:
+	FireflyMotionSystem(ECS::ComponentManager* cManager, EventManager& eManager)
+		:System(cManager, eManager) {}
+
+	void Start(ECS::Entity& entity) override;
+
+	void Update(double deltaTime, ECS::Entity& entity) override;
+	void EntityRegistered(ECS::Entity& entity) override;
+};
+//USER_SYSTEM_REGISTER(FireflyMotionSystem, "FireflyMotionSys")

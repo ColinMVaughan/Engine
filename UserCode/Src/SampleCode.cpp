@@ -25,3 +25,37 @@ void LightShiftSystem::Update(double deltaTime, ECS::Entity & entity)
 
 }
 
+void FireflyMotionSystem::Start(ECS::Entity & entity)
+{
+	auto transform = entity.GetComponent<Transform>();
+	auto motion = entity.GetComponent<FireflyMotionComponent>();
+
+
+	auto pos = transform->GetTransform()->p;
+	motion->Target = glm::vec3(pos.x, pos.y, pos.z);
+	motion->Motion = glm::vec3(0, 0, 0);
+}
+
+void FireflyMotionSystem::Update(double deltaTime, ECS::Entity & entity)
+{
+	auto transform = entity.GetComponent<Transform>();
+	auto motion = entity.GetComponent<FireflyMotionComponent>();
+
+	auto pxPos = transform->GetTransform()->p;
+	glm::vec3 position(pxPos.x + 0.01, pxPos.y = + 0.01, pxPos.z + 0.01);
+
+	glm::vec3 difference = position - motion->Target;
+	float length = difference.length();
+
+	difference = glm::normalize(difference);
+
+	if (length = 0.0f) { length = 0.000001f; }
+
+	motion->Motion += difference * (1.0f / length) * motion->MovementStrength * (float)deltaTime;
+	transform->GetTransform()->p += PxVec3(motion->Motion.x, motion->Motion.y, motion->Motion.z) ;
+}
+
+void FireflyMotionSystem::EntityRegistered(ECS::Entity& entity)
+{
+
+}

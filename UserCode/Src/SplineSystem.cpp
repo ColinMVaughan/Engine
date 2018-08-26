@@ -62,6 +62,14 @@ void SplineComponent::ExposeToEditor()
 			//create a new node with the same starting position of the previous node.
 			LookTargets.push_back(SplineNode(glm::vec3(nodes.back().Position)));
 		}
+		if (nodes.size() > 1)
+		{
+			ImGui::SameLine(); if (ImGui::Button("-"))
+			{
+				//Remove the last created node.
+				LookTargets.pop_back();
+			}
+		}
 		ImGui::TreePop();
 	}
 }
@@ -100,37 +108,6 @@ glm::quat SplineComponent::GetSplineOrientation(float t)
 	p1 = p0 + 1;
 	p2 = p1 + 1;
 
-
-
-	//glm::quat rotation1;
-	//glm::quat rotation2;
-	//if the orientation node is not overriden
-	if (false)
-	{
-
-		////Calculate a quaternion pointing towards the next node
-		//rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001));
-
-		////calculate the direction quaternion for the next node
-		//if (p2 < nodes.size() - 2)
-		//	rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p2 - 0.0001f));
-		//else
-		//	rotation2 = LookAtNode(GetSplinePoint(t), GetSplinePoint((float)p1 - 0.0001f));
-		////Interpolate between the two quaternions
-
-		//t = t - (int)t;
-		//return glm::slerp(rotation1, rotation2, t);
-	}
-	else
-	{
-		//if (p1 < nodes.size() - 2)
-		//	rotation1 = LookAtNode(GetSplinePoint(t), GetSplinePoint(t + 0.1f));
-		//else
-		//	rotation1 = glm::inverse(LookAtNode(GetSplinePoint(t), GetSplinePoint(t - 0.001)));
-
-		//return rotation1;
-	}
-//-----------------------------------------------------------------------------------------------
 
 	glm::quat targetRot[2];
 

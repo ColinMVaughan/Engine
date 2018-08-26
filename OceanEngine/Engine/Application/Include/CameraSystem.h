@@ -46,7 +46,8 @@ public:
 		ImGui::SliderFloat("Exposure", &m_Camera.Exposure, 0.1f, 3.0f);
 	}
 
-	COMPONENT_SERIALIZE(m_CameraID)
+	COMPONENT_SERIALIZE(m_CameraID, m_Camera.Exposure)
+
 
 	Camera m_Camera;
 	int m_CameraID;

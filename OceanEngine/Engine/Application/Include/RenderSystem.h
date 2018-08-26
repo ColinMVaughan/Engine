@@ -320,6 +320,17 @@ public:
 	}
 
 
+	template<typename Archive>
+	void save(Archive& arc) const
+	{
+		arc(BaseColour.r, BaseColour.g, BaseColour.b, Intensity, distance);
+	}
+	template<typename Archive>
+	void load(Archive& arc)
+	{
+		arc(BaseColour.r, BaseColour.g, BaseColour.b, Intensity, distance);
+	}
+
 	glm::vec3 Colour; //Colour of the light
 	glm::mat4 shadowTransform;
 	glm::mat4 shadowProjection;

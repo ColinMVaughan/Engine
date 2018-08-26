@@ -92,6 +92,8 @@ void Editor::PreUpdate(double deltaTime)
 		case SDL_KEYDOWN:
 			if (InputEvent.key.keysym.sym == SDLK_LALT)
 				LookMode = true;
+			if (InputEvent.key.keysym.sym == SDLK_ESCAPE)
+				Fullscreen = !Fullscreen;
 
 			if (LookMode)
 				m_Scene->DispatchEvent<KeyPressedEvent>(KeyPressedEvent(InputEvent));
@@ -142,15 +144,22 @@ void Editor::PostUpdate(double deltaTime)
 	if (IsMaterialEditorActive)
 		DrawMaterialWindow();
 
-	//m_Renderer->UIBuffer.Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
-	ImGui::Render();
-	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
-	SDL_GL_SwapWindow(m_Window);
-	//m_Renderer->UIBuffer.UnBind();
+	if (!Fullscreen)
+	{
+		//m_Renderer->UIBuffer.Bind();
+		glClear(GL_COLOR_BUFFER_BIT);
+		ImGui::Render();
+		ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+		SDL_GL_SwapWindow(m_Window);
+		//m_Renderer->UIBuffer.UnBind();
+	}
+	else
+	{
+		//submit our final frame
+		m_Renderer->SubmitFrame();
+	}
 
-	//submit our final frame
-	//m_Renderer->SubmitFrame();
+
 }
 
 //---------------------------------------------------
@@ -275,8 +284,8 @@ void Editor::DrawEditor()
 	float windowWidth = ImGui::GetContentRegionMax().x - 22;
 
 	static float LeftPane = windowWidth * 0.75;
-	static float Left_UpPane = windowHeight * 0.825;
-	static float Left_DownPane = windowHeight * 0.175;
+	static float Left_UpPane = windowHeight * 0.81;
+	static float Left_DownPane = windowHeight * 0.19;
 
 	static float RightPane = windowWidth * 0.25;
 	static float Right_UpPane = windowHeight * 0.5;
@@ -391,6 +400,17 @@ void Editor::DrawEntityListWindow()
 		if (ImGui::Selectable(m_Scene->GetEntity(i).GetName().c_str(), SelectedEntity == i))
 			SelectedEntity = i;
 
+		//Drag & drop to assets window to create prefab
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			ECS::Entity* prefab = &m_Scene->GetEntity(SelectedEntity);
+
+			if (prefab)
+				ImGui::SetDragDropPayload("Entity", &prefab, sizeof(ECS::Entity*), ImGuiCond_Once);
+
+			ImGui::EndDragDropSource();
+		}
+
 		//I Know this nested if statement seems unessisary, but ImGUI throws an exception otherwise
 		if (SelectedEntity == i)
 		{
@@ -412,6 +432,13 @@ void Editor::DrawEntityListWindow()
 	if (!GameCompiling)
 		m_SystemManager->UpdateGizmos(m_Scene->GetEntity(SelectedEntity));
 
+
+
+	ImGui::EndChild();
+	ImGui::PopStyleColor();
+
+
+
 	//**************
 	//ImGui::EndChild();
 	//If the user drags a prefab in, add it to the scene
@@ -424,11 +451,8 @@ void Editor::DrawEntityListWindow()
 
 
 
-	ImGui::EndChild();
-	ImGui::PopStyleColor();
-
 	ImGui::Separator();
-	ImGui::Text("Entities: 4");
+	ImGui::Text(std::string("Entities: " + std::to_string(m_Scene->GetNumEntities())).c_str());
 
 	ImGui::PopStyleColor();
 }
@@ -542,6 +566,7 @@ void Editor::DrawAssetsWindow()
 	ImGui::BeginChild("Assets");
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.168, 0.168, 0.168, 1.0));
 
+
 	ImGui::Text("Asset Directory");
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
 	ImGui::BeginChild("List", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.2f, ImGui::GetContentRegionAvail().y - 5), true, ImGuiWindowFlags_HorizontalScrollbar);
@@ -557,6 +582,32 @@ void Editor::DrawAssetsWindow()
 	ImGui::PopStyleVar();
 	ImGui::PopStyleColor();
 	ImGui::EndChild();
+
+
+
+	//------------------------------------
+	//Drag & Drop entity to save it as a prefab
+	//------------------------------------
+	if (ImGui::BeginDragDropTarget())
+	{
+		//If this is something we can accept
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
+		{
+			//Assert that this data is the correct size
+			IM_ASSERT(payload->DataSize == sizeof(ECS::Entity*));
+
+			ECS::Entity* prefab = nullptr;
+			memcpy(&prefab, payload->Data, sizeof(ECS::Entity*));
+
+			if (prefab != nullptr)
+			{
+				m_Scene->SaveEntityPrefab(*prefab);
+			}
+
+		}
+		ImGui::EndDragDropTarget();
+	}
+	//------------------------------------
 }
 
 float aspectRatio(float imageX, float imageY, float screenX, float screenY)

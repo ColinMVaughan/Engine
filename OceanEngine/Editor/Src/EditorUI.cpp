@@ -22,7 +22,7 @@ void Editor::DoInitalize()
 	//  Some Manditory Scene Setup
 	//-------------------------------------------------
 	//Set Skybox for Scene
-	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/GCanyon_C_YumaPoint_3k.hdr");
+	m_Renderer->InitalizePBREnvironmentMaps("./Assets/Textures/CaveInterior.hdr");
 	//m_Renderer->CreateUIBuffer(1920, 1080);
 
 	SDL_GetWindowSize(m_Window, &WindowSizeX, &WindowSizeY);
@@ -788,7 +788,7 @@ bool Editor::DrawSplitter(bool split_vertically, float thickness, float* size1, 
 void Editor::TriggerDLLReload()
 {
 	//Trigger a Rebuild of the User code project
-	system("MSBuild ../UserCode.vcxproj /p:Configuration=Debug /p:BuildProjectReferences=false /t:Build");
+	system("\"C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild\" ../UserCode.vcxproj /p:Configuration=Release /p:BuildProjectReferences=false /t:Build");
 
 	//Add the registered user systems to the scene.
 	bool reloaded = CodeReload.LoadDLL();

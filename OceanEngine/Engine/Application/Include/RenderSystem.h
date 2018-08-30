@@ -169,7 +169,7 @@ public:
 	:System(a_Cmanager, a_eManager)
 	{
 		//Add event listner for drawing debug/gizmo meshes
-		std:std::function<void(DrawGizmoEvent&)> f2 = [this](DrawGizmoEvent& eve) {DrawDebugMesh(eve); };
+		std::function<void(DrawGizmoEvent&)> f2 = [this](DrawGizmoEvent& eve) {DrawDebugMesh(eve); };
 		a_eManager.AddListner<DrawGizmoEvent>(f2);
 	}
 
@@ -222,8 +222,6 @@ public:
 		
 		ImGui::ColorEdit3("Light Colour", &BaseColour.x);
 		ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 1000.0f);
-
-		Color = BaseColour * Intensity;
 	}
 
 	glm::fvec3 position;
@@ -237,6 +235,8 @@ public:
 		Color = BaseColour * Intensity;
 	}
 
+	void SetBaseColour(const glm::vec3& colour) { BaseColour = colour; }
+	inline void UpdateColour() { Color = BaseColour * Intensity; }
 private:
 	glm::vec3 BaseColour;
 	float Intensity = 0;
@@ -266,6 +266,7 @@ public:
 		PxVec3 Pos =entity.GetComponent<Transform>()->GetTransform()->p;
 		PointLightComponent* light = entity.GetComponent<PointLightComponent>();
 
+		light->UpdateColour();
 		m_Renderer->PointLightPass(glm::fvec3(Pos.x, Pos.y, Pos.z), light->Color);
 	}
 

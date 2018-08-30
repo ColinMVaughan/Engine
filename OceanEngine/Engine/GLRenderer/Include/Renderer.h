@@ -47,7 +47,7 @@ public:
 	void Render(Mesh* mesh, Material* material, const float* matrix);
 	void RenderVoxel(Mesh* mesh, Texture* texture, const float* matrix);
 
-	inline void PreShadowMapRender() { glViewport(0, 0, 2048, 2048); for (int i = 0; i < m_ShadowMaps.size(); ++i) { m_ShadowMaps[i].Clear(); } }
+	inline void PreShadowMapRender() { glViewport(0, 0, 2048, 2048); for (unsigned int i = 0; i < m_ShadowMaps.size(); ++i) { m_ShadowMaps[i].Clear(); } }
 	void RenderToShadowMap(Mesh* mesh, const float* matrix);
 	inline void PostShadowMapRender() { glViewport(0,0,m_WindowWidth, m_WindowHeight); }
 

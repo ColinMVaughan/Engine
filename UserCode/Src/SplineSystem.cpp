@@ -10,49 +10,54 @@
 
 void SplineComponent::ExposeToEditor()
 {
-	ImGui::DragFloat("Speed", &speed, 0.01f, 0.0001f);
+	//ImGui::DragFloat("Speed", &speed, 0.01f, 0.0001f);
 
-	for (int i = 0; i < nodes.size(); ++i)
+	if (ImGui::TreeNodeEx("Spline Nodes"))
 	{
-		ImGui::DragFloat3((std::string("Node ") + std::to_string(i)).c_str(), &nodes[i].Position.x, 0.1f);
-		ImGui::SameLine();
 
-		//get the label for the combo box, if the target is 0, use "no target", otherwiae use the index
-		std::string label = nodes[i].OrientationTargetIndex == 0 ? "No Target" : std::string("Target " + std::to_string(nodes[i].OrientationTargetIndex));
-
-		if (ImGui::BeginCombo(std::string(std::to_string(i) + "Targets").c_str(), label.c_str()))
+		for (unsigned int i = 0; i < nodes.size(); ++i)
 		{
-			if (ImGui::Selectable(std::string("No Target ").c_str())) { nodes[i].OrientationTargetIndex = 0; }
+			ImGui::DragFloat3((std::string("Node ") + std::to_string(i)).c_str(), &nodes[i].Position.x, 0.1f);
+			ImGui::SameLine();
 
-			for (int j = 0; j < LookTargets.size(); ++j)
+			//get the label for the combo box, if the target is 0, use "no target", otherwiae use the index
+			std::string label = nodes[i].OrientationTargetIndex == 0 ? "No Target" : std::string("Target " + std::to_string(nodes[i].OrientationTargetIndex));
+
+			if (ImGui::BeginCombo(std::string(std::to_string(i) + "Targets").c_str(), label.c_str()))
 			{
-				if (ImGui::Selectable(std::string("Target " + std::to_string(j)).c_str())) { nodes[i].OrientationTargetIndex = j + 1; }
+				if (ImGui::Selectable(std::string("No Target ").c_str())) { nodes[i].OrientationTargetIndex = 0; }
+
+				for (unsigned int j = 0; j < LookTargets.size(); ++j)
+				{
+					if (ImGui::Selectable(std::string("Target " + std::to_string(j)).c_str())) { nodes[i].OrientationTargetIndex = j + 1; }
+				}
+
+				ImGui::EndCombo();
 			}
 
-			ImGui::EndCombo();
 		}
 
-	}
+		if (nodes.size() > 0)
+			if (ImGui::Button("+"))
+			{
+				//create a new node with the same starting position of the previous node.
+				nodes.push_back(SplineNode(glm::vec3(nodes.back().Position)));
+			}
 
-	if (nodes.size() > 0)
-		if (ImGui::Button("+"))
+		if (nodes.size() > 1)
 		{
-			//create a new node with the same starting position of the previous node.
-			nodes.push_back(SplineNode(glm::vec3(nodes.back().Position)));
+			ImGui::SameLine(); if (ImGui::Button("-"))
+			{
+				//Remove the last created node.
+				nodes.pop_back();
+			}
 		}
 
-	if (nodes.size() > 1)
-	{
-		ImGui::SameLine(); if (ImGui::Button("-"))
-		{
-			//Remove the last created node.
-			nodes.pop_back();
-		}
+		ImGui::TreePop();
 	}
-
 	if(ImGui::TreeNodeEx("Orientation Targets"))
 	{
-		for (int i = 0; i < LookTargets.size(); ++i)
+		for (unsigned int i = 0; i < LookTargets.size(); ++i)
 		{
 			ImGui::DragFloat3((std::string("Target ") + std::to_string(i)).c_str(), &LookTargets[i].Position.x, 0.1f);
 		}
@@ -103,8 +108,8 @@ glm::vec3 SplineComponent::GetSplinePoint(float t)
 
 glm::quat SplineComponent::GetSplineOrientation(float t)
 {
-	int p0, p1, p2;
-	p0 = (int)t;
+	unsigned int p0, p1, p2;
+	p0 = (unsigned int)t;
 	p1 = p0 + 1;
 	p2 = p1 + 1;
 
@@ -120,12 +125,12 @@ glm::quat SplineComponent::GetSplineOrientation(float t)
 		}
 		else
 		{
-			if (p0 + i >= nodes.size() - 2) { targetRot[i] = glm::inverse(LookAtNode(GetSplinePoint(t), GetSplinePoint(t - 0.001))); continue; }
+			if (p0 + i >= nodes.size() - 2) { targetRot[i] = glm::inverse(LookAtNode(GetSplinePoint(t), GetSplinePoint(t - 0.001f))); continue; }
 			targetRot[i] = LookAtNode(GetSplinePoint(t), GetSplinePoint(t + 0.1f));
 		}
 	}
 
-	t = t - (int)t;
+	t = t - (unsigned int)t;
 	return glm::slerp(targetRot[0], targetRot[1], t);
 }
 
@@ -206,7 +211,7 @@ void SplineMoveSystem::Update(double deltaTime, ECS::Entity& entity)
 		auto newRot = spline->GetSplineOrientation(spline->time);
 		*transform->GetTransform() = PxTransform(PxVec3(newPos.x, newPos.y, newPos.z), PxQuat(newRot.x, newRot.y, newRot.z, newRot.w));
 
-		spline->time += deltaTime * spline->speed;
+		spline->time += (float)deltaTime * spline->speed;
 	}
 
 }
@@ -215,7 +220,7 @@ float SplineMoveSystem::GetT(float t, glm::vec3 p0, glm::vec3 p1)
 {
 	float a = pow((p1.x - p0.x), 2.0f) + pow((p1.y - p0.y), 2.0f) + pow((p1.z - p0.z), 2.0f);
 	float b = pow(a, 0.5f);
-	float c = pow(b, 0.5); //alpha
+	float c = pow(b, 0.5f); //alpha
 
 	return (c + t);
 }
@@ -251,7 +256,7 @@ void SplineMoveSystem::DrawGizmo(ECS::Entity& entity)
 
 
 
-	for (int i = 0; i < spline->nodes.size(); ++i)
+	for (unsigned int i = 0; i < spline->nodes.size(); ++i)
 	{
 		glm::mat4 tempMat;
 
@@ -262,7 +267,7 @@ void SplineMoveSystem::DrawGizmo(ECS::Entity& entity)
 		entity.DispatchEvent<DrawGizmoEvent>(m_DrawNodeEvent);
 	}
 
-	for (int i = 0; i < spline->LookTargets.size(); ++i)
+	for (unsigned int i = 0; i < spline->LookTargets.size(); ++i)
 	{
 		glm::mat4 tempMat;
 

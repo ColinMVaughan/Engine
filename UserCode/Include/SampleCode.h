@@ -10,11 +10,38 @@
 #include <glm/gtc/quaternion.hpp>
 #include <cereal/types/vector.hpp>
 
+
 class ShiftComponent
 {
 public:
+	struct Colour
+	{
+		Colour() = default;
+		Colour(glm::vec3 col) : colour(col) {}
+
+		template<typename Archive>
+		void serialize(Archive& arc)
+		{
+			arc(colour.x, colour.y, colour.z);
+		}
+
+		glm::vec3 colour;
+	};
+
+public:
 	void ExposeToEditor();
-	float ShiftSpeed = 0.1;
+	float m_ShiftSpeed = 1.0f;
+	float m_Time = 0.0f;
+
+
+	template<typename Archive>
+	void serialize(Archive& arc)
+	{
+		arc(m_ShiftSpeed, m_Colours);
+	}
+
+
+	std::vector<Colour> m_Colours;
 };
 USER_COMPONENT_REGISTER(ShiftComponent, "ShiftComponent")
 
@@ -31,6 +58,7 @@ public:
 	void Update(double deltaTime, ECS::Entity& entity);
 	//void EntityRegistered(ECS::Entity& entity);
 
+	glm::vec3 LerpColour(glm::vec3 colour1, glm::vec3 colour2, float t);
 private:
 	double time = 0;
 };

@@ -3,12 +3,25 @@
 
 void ShiftComponent::ExposeToEditor()
 {
-	ImGui::SliderFloat("Light Shift Speed", &ShiftSpeed, 0.1, 3.0);
+	ImGui::SliderFloat("Light Shift Speed", &m_ShiftSpeed, 0.1, 5.0);
+
+	if (ImGui::TreeNodeEx("Colours"))
+	{
+		for (int i = 0; i < m_Colours.size(); ++i)
+		{
+			ImGui::ColorEdit3(std::string("Colour " + std::to_string(i)).c_str(), &m_Colours[i].colour.x);
+		}
+
+		if (ImGui::Button("+")) { m_Colours.push_back(glm::vec3(0,0,0)); }
+		ImGui::SameLine();
+		if (ImGui::Button("-")) { m_Colours.pop_back(); }
+
+		ImGui::TreePop();
+	}
 }
 
 void LightShiftSystem::PreUpdate(double deltaTime)
 {
-	time += deltaTime;
 }
 
 void LightShiftSystem::Update(double deltaTime, ECS::Entity & entity)
@@ -16,14 +29,31 @@ void LightShiftSystem::Update(double deltaTime, ECS::Entity & entity)
 	auto light = entity.GetComponent<PointLightComponent>();
 	auto shift = entity.GetComponent<ShiftComponent>();
 
-	const float pi = 3.14;
-	const float frequency = shift->ShiftSpeed; // Frequency in Hz
+	if (shift->m_Colours.size() >= 2)
+	{
+		shift->m_Time += deltaTime * shift->m_ShiftSpeed;
+		float t = shift->m_Time;
 
-	light->Color.r = 125 * (1 + sin(2 * pi * frequency * time));
-	light->Color.g = 125 * (1 + sin(4 * pi * frequency * time));
-	light->Color.b = 125 * (1 + sin(1 * pi * frequency * time));
+		//Get the index of the colour we need to access. Use modulo to make sure we wrap around
+		//instead of overflowing the index.
+		int colourIndex = (int)t % shift->m_Colours.size();
+		int colourIndex2 = ((int)t + 1) % shift->m_Colours.size();
+
+		t = t - (int)t;
+
+		light->SetBaseColour(LerpColour(shift->m_Colours[colourIndex].colour, shift->m_Colours[colourIndex2].colour, t));
+	}
 
 }
+
+glm::vec3 LightShiftSystem::LerpColour(glm::vec3 colour1, glm::vec3 colour2, float t)
+{
+	return (1 - t) * colour1 + t * colour2;
+}
+
+
+
+
 
 void FireflyMotionSystem::Start(ECS::Entity & entity)
 {

@@ -142,48 +142,65 @@ bool Mesh::LoadFromFile(const std::string &file)
 	std::vector<vec3> vertexData;
 	std::vector<vec2> textureData;
 	std::vector<vec3> normalData;
-	//Index / Face data
-	std::vector<MeshFace> faceData;
-	//OpenGL Ready
-	std::vector<float> unPackedVertexData;
-	std::vector<float> unPackedTextureData;
-	std::vector<float> unPackedNormalData;
 
+	//face indecies
+	std::vector<unsigned int> indecies; 
 	
 
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(file, 0 /*aiProcess_Triangulate | aiProcess_FlipUVs*/);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		std::cout << "ASSIMP ERROR" << importer.GetErrorString() << "\n";
-		return;
+		return false;
 	}
 
 
-
-
-
-	for (unsigned i = 0; i < faceData.size(); i++)
+	aiMesh* mesh = scene->mMeshes[0];
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 	{
-		for (unsigned j = 0; j < 3; j++)
+		glm::vec3 tempPos;
+		tempPos.x = mesh->mVertices[i].x;
+		tempPos.y = mesh->mVertices[i].y;
+		tempPos.z = mesh->mVertices[i].z;
+		vertexData.push_back(tempPos);
+
+		glm::vec3 tempNorm;
+		tempNorm.x = mesh->mNormals[i].x;
+		tempNorm.y = mesh->mNormals[i].y;
+		tempNorm.z = mesh->mNormals[i].z;
+		normalData.push_back(tempNorm);
+
+		if (mesh->mTextureCoords[0])
 		{
-			unPackedVertexData.push_back(vertexData[faceData[i].verticies[j] - 1][0]);
-			unPackedVertexData.push_back(vertexData[faceData[i].verticies[j] - 1][1]);
-			unPackedVertexData.push_back(vertexData[faceData[i].verticies[j] - 1][2]);
-
-			unPackedTextureData.push_back(textureData[faceData[i].textureUVs[j] - 1][0]);
-			unPackedTextureData.push_back(textureData[faceData[i].textureUVs[j] - 1][1]);
-
-			unPackedNormalData.push_back(normalData[faceData[i].normals[j] - 1][0]);
-			unPackedNormalData.push_back(normalData[faceData[i].normals[j] - 1][1]);
-			unPackedNormalData.push_back(normalData[faceData[i].normals[j] - 1][2]);
+			glm::vec2 tempUV;
+			tempUV.x = mesh->mTextureCoords[0][i].x;
+			tempUV.y = mesh->mTextureCoords[0][i].y;
+			textureData.push_back(tempUV);
+		}
+		else
+		{
+			glm::vec2 tempUV;
+			tempUV.x = 0.0f;
+			tempUV.y = 0.0f;
+			textureData.push_back(tempUV);
 		}
 	}
 
 
-	_NumFaces = faceData.size();
+	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; ++j)
+		{
+			indecies.push_back(face.mIndices[j]);
+		}
+	}
+
+
+	_NumFaces = indecies.size();
 	_NumVertices = _NumFaces * 3;
 
 	//Send Data to GPU//
@@ -192,6 +209,7 @@ bool Mesh::LoadFromFile(const std::string &file)
 	glGenBuffers(1, &VBO_Verticies);
 	glGenBuffers(1, &VBO_UVs);
 	glGenBuffers(1, &VBO_Normals);
+	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
@@ -200,28 +218,29 @@ bool Mesh::LoadFromFile(const std::string &file)
 	glEnableVertexAttribArray(2); //Normals
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_Verticies);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* unPackedVertexData.size(), &unPackedVertexData[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)* vertexData.size(), &vertexData[0], GL_STATIC_DRAW);
 	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* 3, BUFFER_OFFSET(0));
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_UVs);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* unPackedTextureData.size(), &unPackedTextureData[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2)* textureData.size(), &textureData[0], GL_STATIC_DRAW);
 	glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, sizeof(float)* 2, BUFFER_OFFSET(0));
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_Normals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* unPackedNormalData.size(), &unPackedNormalData[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)* normalData.size(), &normalData[0], GL_STATIC_DRAW);
 	glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, sizeof(float)* 3, BUFFER_OFFSET(0));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indecies.size() * sizeof(unsigned int), &indecies[0], GL_STATIC_DRAW);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	//Cleanup
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	glBindVertexArray(0);
 	
 	vertexData.clear();
 	textureData.clear();
 	normalData.clear();
-	faceData.clear();
-	unPackedVertexData.clear();
-	unPackedTextureData.clear();
-	unPackedNormalData.clear();
 
 	Filepath = file;
 	return true;

@@ -295,9 +295,9 @@ void Renderer::Render(Mesh* mesh, Material* material, const float* matrix)
 
 		glBindVertexArray(mesh->VAO);
 		if (mesh->IsInstanced)
-			glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->GetNumVertices(), mesh->InstanceNumber);
+			glDrawElementsInstanced(GL_TRIANGLES,  mesh->GetNumFaces(),GL_UNSIGNED_INT,0, mesh->InstanceNumber);
 		else
-			glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumVertices());
+			glDrawElements(GL_TRIANGLES,  mesh->GetNumFaces(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		material->Emissive.UnBind();

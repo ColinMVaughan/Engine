@@ -3,8 +3,12 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <cereal\types\string.hpp>
-#include <assimp/Importer.hpp>
+
+
 #include <list>
+
+
+
 
 class Mesh
 {
@@ -64,6 +68,7 @@ public:
 	GLuint VBO_Normals	 = 0;
 	GLuint VBO_Instance  = 0;
 	GLuint VAO			 = 0;
+	GLuint EBO			 = 0;
 
 	bool IsInstanced = false;
 	unsigned int InstanceNumber = 0;
@@ -71,6 +76,7 @@ public:
 
 	unsigned int _NumVertices = 0;
 	unsigned int _NumFaces = 0;
+
 private:
 
 
@@ -147,4 +153,4 @@ private:
 class Animator
 {
 
-}
+};

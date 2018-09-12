@@ -3,9 +3,87 @@
 #include <fstream>
 #include <iostream>
 #include <imgui.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #define CHAR_BUFFER_SIZE 128
 #define BUFFER_OFFSET(i) ((char *)0 + (i))
+
+
+
+
+void ProcessMesh(aiMesh* mesh, const aiScene* scene)
+{
+	std::vector<glm::vec3> VertexPos;
+	std::vector<glm::vec3> VertexNorm;
+	std::vector<glm::vec2> VertexUV;
+
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	{
+		glm::vec3 tempPos;
+		tempPos.x = mesh->mVertices[i].x;
+		tempPos.y = mesh->mVertices[i].y;
+		tempPos.z = mesh->mVertices[i].z;
+		VertexPos.push_back(tempPos);
+
+		glm::vec3 tempNorm;
+		tempNorm.x = mesh->mVertices[i].x;
+		tempNorm.y = mesh->mVertices[i].y;
+		tempNorm.z = mesh->mVertices[i].z;
+		VertexNorm.push_back(tempNorm);
+
+		glm::vec2 tempUV;
+		tempUV.x = mesh->mVertices[i].x;
+		tempUV.y = mesh->mVertices[i].y;
+		VertexUV.push_back(tempUV);
+
+
+	}
+
+	std::cout << "DONE";
+}
+
+
+void ProcessNode(aiNode* node, const aiScene *scene)
+{
+	for (unsigned int i = 0; i < node->mNumMeshes; ++i)
+	{
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		ProcessMesh(mesh, scene);
+	}
+
+	for (unsigned int i = 0; i < node->mNumChildren; ++i)
+	{
+		ProcessNode(node->mChildren[i], scene);
+	}
+}
+
+
+void loadModel(std::string path)
+{
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::cout << "ASSIMP ERROR" << importer.GetErrorString() << "\n";
+		return;
+	}
+
+	std::string directory = path.substr(0, path.find_last_of('/'));
+	ProcessNode(scene->mRootNode, scene);
+}
+
+
+
+
+
+
+
+
+
+
 
 struct MeshFace
 {
@@ -59,16 +137,6 @@ Mesh::~Mesh()
 
 bool Mesh::LoadFromFile(const std::string &file)
 {
-	std::ifstream input;
-	input.open(file);
-
-	if (!input)
-	{
-		std::cout << "Could Not Open File." << std::endl;
-		return false;
-	}
-
-	char inputString[CHAR_BUFFER_SIZE];
 
 	//Unique data
 	std::vector<vec3> vertexData;
@@ -81,46 +149,21 @@ bool Mesh::LoadFromFile(const std::string &file)
 	std::vector<float> unPackedTextureData;
 	std::vector<float> unPackedNormalData;
 
-	while (!input.eof())
+	
+
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		input.getline(inputString, CHAR_BUFFER_SIZE);
-
-		if (std::strstr(inputString, "#") != nullptr)
-		{
-			//this line is a comment 
-			continue;
-		}
-		else if (std::strstr(inputString, "vt") != nullptr)
-		{
-			vec2 temp;
-			std::sscanf(inputString, "vt %f %f", &temp[0], &temp[1]);
-			textureData.push_back(temp);
-		}
-		else if (std::strstr(inputString, "vn") != nullptr)
-		{
-			vec3 temp;
-			std::sscanf(inputString, "vn %f %f %f", &temp[0], &temp[1], &temp[2]);
-			normalData.push_back(temp);
-		}
-		else if (std::strstr(inputString, "v") != nullptr)
-		{
-			vec3 temp;
-			std::sscanf(inputString, "v %f %f %f", &temp[0], &temp[1], &temp[2]);
-			vertexData.push_back(temp);
-		}
-		else if (std::strstr(inputString, "f") != nullptr)
-		{
-			MeshFace temp;
-
-			std::sscanf(inputString, "f %u/%u/%u %u/%u/%u %u/%u/%u",
-				&temp.verticies[0], &temp.textureUVs[0], &temp.normals[0],
-				&temp.verticies[1], &temp.textureUVs[1], &temp.normals[1],
-				&temp.verticies[2], &temp.textureUVs[2], &temp.normals[2]);
-
-			faceData.push_back(temp);
-		}
-
+		std::cout << "ASSIMP ERROR" << importer.GetErrorString() << "\n";
+		return;
 	}
+
+
+
+
 
 	for (unsigned i = 0; i < faceData.size(); i++)
 	{

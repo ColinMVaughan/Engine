@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <cereal\types\string.hpp>
+#include <assimp/Importer.hpp>
+#include <list>
 
 class Mesh
 {
@@ -68,8 +70,81 @@ public:
 	std::string Filepath;
 
 	unsigned int _NumVertices = 0;
-private:
 	unsigned int _NumFaces = 0;
+private:
+
 
 
 };
+
+
+//-------------------------------------------------------
+//
+//-------------------------------------------------------
+
+class SkinnedMesh : public Mesh
+{
+public:
+	SkinnedMesh() = default;
+	SkinnedMesh(std::string filePath);
+};
+
+
+class Joint
+{
+public:
+
+	Joint(int index, std::string name, const glm::mat4& bindLocalTransform)
+		:m_Index(index), m_Name(name), m_LocalBindTransform(bindLocalTransform) {}
+
+	void AddChild(Joint child)
+	{
+		m_ChildJoints.push_back(child);
+		return;
+	}
+
+	glm::mat4 GetAnimatedTransform() { return m_AnimatedTransform; }
+	void SetAnimationTransform(const glm::mat4& animationTransform) { m_AnimatedTransform = animationTransform; }
+	glm::mat4 GetInverseBindTransform() { return m_InverseBindTransform; }
+
+
+	void calcInverseBindTransform(const glm::mat4& parentBindTransform)
+	{
+		glm::mat4 bindTransform = parentBindTransform * m_LocalBindTransform;
+		m_InverseBindTransform = glm::inverse(bindTransform);
+
+		for (auto& child : m_ChildJoints)
+		{
+			child.calcInverseBindTransform(bindTransform);
+		}
+	}
+
+private:
+	int m_Index;
+	std::string m_Name;
+
+	glm::mat4 m_AnimatedTransform;
+	glm::mat4 m_LocalBindTransform;
+	glm::mat4 m_InverseBindTransform;
+
+	std::list<Joint> m_ChildJoints;
+};
+
+
+class Skeleton
+{
+public:
+	
+	void ConstructDummySkeleton()
+	{
+	}
+
+private:
+	Joint RootJoint;
+	unsigned int jointCount = 0;
+};
+
+class Animator
+{
+
+}

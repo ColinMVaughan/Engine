@@ -6,7 +6,7 @@ file(GLOB HEADERS "Include/*.h")
 
 add_library(Physics STATIC ${SOURCES} ${HEADERS})
 
-set(PhysLibType "CHECKED")
+set(PhysLibType "DEBUG")
 set(PhysLibPlatform "_x86")
 set(PhysLibraryPath "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PhysX/Lib/${PhysLibType}${PhysLibPlatform}")
 

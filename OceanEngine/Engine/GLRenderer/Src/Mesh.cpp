@@ -142,6 +142,8 @@ bool Mesh::LoadFromFile(const std::string &file)
 	std::vector<vec3> vertexData;
 	std::vector<vec2> textureData;
 	std::vector<vec3> normalData;
+	std::vector<vec3> weights;
+	std::vector<glm::ivec3> boneIndecies;
 
 	//face indecies
 	std::vector<unsigned int> indecies; 
@@ -159,6 +161,7 @@ bool Mesh::LoadFromFile(const std::string &file)
 
 
 	aiMesh* mesh = scene->mMeshes[0];
+
 	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 	{
 		glm::vec3 tempPos;
@@ -187,8 +190,43 @@ bool Mesh::LoadFromFile(const std::string &file)
 			tempUV.y = 0.0f;
 			textureData.push_back(tempUV);
 		}
+
+		//reserve bone weights that we will fill with values later
+		if (mesh->HasBones())
+		{
+			boneIndecies.push_back(glm::ivec3(0, 0, 0));
+			weights.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+		}
 	}
 
+	//loop th
+	//for (unsigned int i = 0; i < mesh->mNumBones(); ++i)
+	//{
+	//	for (unsigned int j = 0; j < mesh->mBones[i]->mNumWeights(); ++j)
+	//	{
+	//		unsigned int index = mesh->mBones[i]->mWeights[j].mVertexId;
+
+	//		if (boneIndecies[index].x == 0)
+	//		{
+	//			boneIndecies[index].x = i;
+	//			weights[index].x = mesh->mBones[i]->mWeights[j].mWeight;
+	//		}
+	//		else if (boneIndecies[index].y == 0)
+	//		{
+	//			boneIndecies[index].y = i;
+	//			weights[index].y = mesh->mBones[i]->mWeights[j].mWeight;
+	//		}
+	//		else
+	//		{
+	//			boneIndecies[index].z = i;
+	//			weights[index].z = mesh->mBones[i]->mWeights[j].mWeight;
+	//		}
+	//			
+	//		
+	//	}
+	//	
+	//}
+	
 
 	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
 	{
@@ -345,3 +383,7 @@ void Mesh::ExposeToEditor()
 		LoadFromFile(std::string(buff));
 	}
 }
+
+
+
+

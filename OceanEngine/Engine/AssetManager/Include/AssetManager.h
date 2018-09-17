@@ -14,6 +14,16 @@
 #include "AssetPool.h"
 
 
+//An AssetFile can hold reference to more than one asset or asset type. it should be used for
+//files that contain more than one asset
+class AssetFile
+{
+public:
+
+	std::vector<std::string> m_AssetNames;
+};
+
+
 //-----------------------------------------------------------------------
 //						ASSET MANAGER
 //
@@ -44,6 +54,8 @@ private:
 
 	std::thread m_WorkerThread;
 	std::map<std::string, BaseAssetPool*> m_PoolMap;
+	std::map<std::string, AssetFile> m_FileMap;
+
 	bool IsWindowActive = false;
 	std::experimental::filesystem::path m_AssetDirectory;
 	std::experimental::filesystem::path m_SelectedPath;

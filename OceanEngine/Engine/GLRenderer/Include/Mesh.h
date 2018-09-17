@@ -71,6 +71,7 @@ public:
 	GLuint EBO			 = 0;
 
 	bool IsInstanced = false;
+	bool isSkinned = false;
 	unsigned int InstanceNumber = 0;
 	std::string Filepath;
 
@@ -88,12 +89,7 @@ private:
 //
 //-------------------------------------------------------
 
-class SkinnedMesh : public Mesh
-{
-public:
-	SkinnedMesh() = default;
-	SkinnedMesh(std::string filePath);
-};
+
 
 
 class Joint
@@ -148,6 +144,18 @@ public:
 private:
 	Joint RootJoint;
 	unsigned int jointCount = 0;
+};
+
+
+class SkinnedMesh : public Mesh
+{
+public:
+	SkinnedMesh() = default;
+	SkinnedMesh(std::string filePath);
+	
+
+private:
+
 };
 
 class Animator

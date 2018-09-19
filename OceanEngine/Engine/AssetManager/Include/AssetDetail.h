@@ -86,6 +86,52 @@ namespace Assets
 			AssetRegistryEntry& operator=(const AssetRegistryEntry<T>&) = delete;
 		};
 
+
+
+
+		//------------------------------------------------------------------
+		//
+		//-------------------------------------------------------------------
+		
+
+
+		typedef std::function<void(AssetManager&, std::experimental::filesystem::path)> FileLoadFunction;
+		typedef std::map < std::string, FileLoadFunction> FileRegistry;
+		inline FileRegistry& GetFileRegistry()
+		{
+			static FileRegistry reg;
+			return reg;
+		}
+
+
+		template<auto T>
+		struct FileRegistryEntry
+		{
+		public:
+			static FileRegistryEntry<T>& Instance(const std::string& extension, FileLoadFunction& function)
+			{
+				static FileRegistryEntry<T> inst(extension, function);
+				return inst;
+			}
+
+		private:
+			FileRegistryEntry(const std::string& extension, FileLoadFunction& function)
+			{
+				FileRegistry& reg = GetFileRegistry();
+				FileLoadFunction func = function;
+
+				std::pair<AssetRegistry::iterator, bool> ret =
+					reg.insert(AssetRegistry::value_type(extension, func));
+
+				if (ret.second == false)
+				{
+				}
+			}
+
+			FileRegistryEntry(const FileRegistryEntry<T>&) = delete;
+			FileRegistryEntry& operator=(const FileRegistryEntry<T>&) = delete;
+		};
+
 	}
 }
 

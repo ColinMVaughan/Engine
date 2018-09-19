@@ -40,6 +40,7 @@ namespace Assets							\
 
 
 
-	
+#define REGISTER_FILETYPE(EXTENSION, LOADFUNCTION) \
+		
 
 #endif

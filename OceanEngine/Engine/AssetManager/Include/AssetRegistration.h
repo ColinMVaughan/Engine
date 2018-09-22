@@ -13,7 +13,11 @@ namespace Assets
 
 }
 
-
+//Registers a class or struct as an asset. Assets of this type will be loaded and stored by the asset manager,
+//and can be requested by Components.
+//
+// NAME = String name that will be associated with the asset. Eg. "Mesh" (including quotes)
+// TYPE = the Class type. Eg. Mesh (no quotes)
 #define REGISTER_ASSET(EXTENSION, NAME, TYPE) \
 namespace Assets							\
 {											\
@@ -39,8 +43,32 @@ namespace Assets							\
 }																						\
 
 
-
+//Registers an asset File type with a function pointer to the function to be used for loading that file.
+//
+//EXTENSION = String name of the file extension. Eg. ".obj" or ".png" (including quotes)
+//LoadFunction = ...
 #define REGISTER_FILETYPE(EXTENSION, LOADFUNCTION) \
-		
+namespace Assets							\
+{											\
+	namespace detail						\
+	{										\
+		namespace							\
+		{									\
+			template<auto T>				\
+			class FileRegistration;		\
+											\
+			template<>						\
+			class FileRegistration<EXTENSION>	\
+			{								\
+				static const ::Assets::detail::FileRegistryEntry<EXTENSION>& reg;			\
+			};																			\
+																						\
+			const ::Assets::detail::FileRegistryEntry<EXTENSION>&							\
+				FileRegistration<EXTENSION>::reg =											\
+				::Assets::detail::FileRegistryEntry<EXTENSION>::Instance(EXTENSION, LOADFUNCTION);	\
+																						\
+		}																				\
+	}																					\
+}		
 
 #endif

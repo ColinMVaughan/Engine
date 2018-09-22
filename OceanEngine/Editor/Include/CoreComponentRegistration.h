@@ -23,4 +23,17 @@ REGISTER_ASSET(".mat","Material", Material)
 REGISTER_ASSET(".png", "Texture", Texture)
 REGISTER_ASSET(".prefab","Prefab",PrefabEntity)
 
+
+
+
+
+
+void TestFunc(AssetManager& manager, std::experimental::filesystem::path a_path)
+{
+
+}
+REGISTER_FILETYPE(".fbx", [](AssetManager& manager, std::experimental::filesystem::path a_path) {; })
+
+
+
 #endif

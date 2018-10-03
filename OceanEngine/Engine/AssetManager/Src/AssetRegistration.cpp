@@ -34,4 +34,9 @@ namespace Assets
 
 		func(manager, assetPath.string(), assetType, detail::AssetActions::Load);
 	}
+
+	void CheckAsset()
+	{
+
+	}
 }

@@ -13,7 +13,7 @@
 class BaseAssetPool
 {
 public:
-	virtual void LoadAsset(std::experimental::filesystem::path assetPath) = 0;
+	//virtual void LoadAsset(std::experimental::filesystem::path assetPath) = 0;
 	virtual bool RetrieveAsset(BaseAssetRequestEvent* request) = 0;
 private:
 	std::function<void(std::string)> m_Load;
@@ -34,9 +34,9 @@ class AssetPool : public BaseAssetPool
 public:
 	using AssetType = T;
 
-	virtual void LoadAsset(std::experimental::filesystem::path assetPath) override
+	virtual void AddAsset(std::experimental::filesystem::path assetPath, T Asset)
 	{
-		m_Pool.insert(std::make_pair(assetPath.string(), T(assetPath.string())));
+		m_Pool.insert(std::make_pair(assetPath.string(), Asset));
 	}
 
 	virtual bool RetrieveAsset(BaseAssetRequestEvent* a_assetRequest) override

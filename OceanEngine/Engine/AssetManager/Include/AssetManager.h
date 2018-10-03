@@ -39,6 +39,9 @@ public:
 	template<typename T>
 	void AddResourceType(std::string typeName);
 
+	template<typename T>
+	void AddAsset(std::string assetType, T asset, std::experimental::filesystem::path assetPath);
+
 	void AddResource(std::string AssetType, std::experimental::filesystem::path assetPath);
 	void DisplayAssetDirectory();
 	void DisplayDirectoryContents();
@@ -80,5 +83,24 @@ void AssetManager::AddResourceType(std::string typeName)
 	}
 }
 
+
+template<typename T>
+void AssetManager::AddAsset(std::string assetType, T asset, std::experimental::filesystem::path assetPath)
+{
+	auto iterator = m_PoolMap.find(assetType);
+	if (iterator != m_PoolMap.end())
+	{
+		AssetPool<T>* poolPtr = dynamic_cast<AssetPool<T>*>(iterator->second);
+		if (poolPtr)
+		{
+			poolPtr->AddAsset(assetPath, asset);
+		}
+		else
+		{
+			std::cout<< "\n ASSET LOAD ERROR: The Asset typen name does not match the type of the object you passed."
+		}
+
+	}
+}
 
 #endif

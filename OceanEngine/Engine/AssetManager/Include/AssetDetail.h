@@ -15,7 +15,7 @@ namespace Assets
 	{
 		enum AssetActions
 		{
-			Load = 0, Retrieve, Remove
+			Load = 0, Retrieve, Remove, CheckType
 		};
 
 		typedef BaseAssetRequestEvent* (*AssetFunction)(AssetManager*, std::experimental::filesystem::path, std::string, AssetActions);
@@ -29,7 +29,7 @@ namespace Assets
 
 
 		template<class T>
-		BaseAssetRequestEvent* RequestAsset(AssetManager* manager, std::experimental::filesystem::path asset, std::string typeName, AssetActions action)
+		bool RequestAsset(AssetManager* manager, BaseAssetRequestEvent* request, std::experimental::filesystem::path asset, std::string typeName, AssetActions action)
 		{
 			switch (action)
 			{
@@ -37,7 +37,7 @@ namespace Assets
 
 				manager->AddResourceType<T>(typeName);
 				manager->AddResource(typeName, asset);
-				return nullptr;
+				return true;
 				break;
 
 			case Retrieve:
@@ -46,10 +46,14 @@ namespace Assets
 				RE->m_AssetName = asset.string();
 				RE->m_AssetTypeName = typeName;
 
-				BaseAssetRequestEvent* BE = RE;
+				request = RE;
 
 				if(manager->HandleAssetRequestEvent(*BE))
 				return BE;
+
+				break;
+
+			case CheckType:
 
 				break;
 			}

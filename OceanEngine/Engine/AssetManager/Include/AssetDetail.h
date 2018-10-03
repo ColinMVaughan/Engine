@@ -7,7 +7,7 @@
 #include <filesystem>
 
 #include "AssetManager.h"
-
+#include "AssetLoader.h"
 
 namespace Assets
 {
@@ -96,7 +96,7 @@ namespace Assets
 
 
 		typedef std::function<void(AssetManager&, std::experimental::filesystem::path)> FileLoadFunction;
-		typedef std::map < std::string, FileLoadFunction> FileRegistry;
+		typedef std::map < std::string, BaseAssetLoader*> FileRegistry;
 		inline FileRegistry& GetFileRegistry()
 		{
 			static FileRegistry reg;
@@ -104,24 +104,25 @@ namespace Assets
 		}
 
 
-		template<auto T>
+		template<typename T>
 		struct FileRegistryEntry
 		{
 		public:
-			static FileRegistryEntry<T>& Instance(const std::string& extension, FileLoadFunction& function)
+			static FileRegistryEntry<T>& Instance(const std::string& extension)
 			{
-				static FileRegistryEntry<T> inst(extension, function);
+				static_assert(std::is_base_of_v<BaseAssetLoader, T>);
+				static FileRegistryEntry<T> inst(extension, new T);
 				return inst;
+
 			}
 
 		private:
-			FileRegistryEntry(const std::string& extension, FileLoadFunction& function)
+			FileRegistryEntry(const std::string& extension, T* loader)
 			{
 				FileRegistry& reg = GetFileRegistry();
-				FileLoadFunction func = function;
 
-				std::pair<AssetRegistry::iterator, bool> ret =
-					reg.insert(AssetRegistry::value_type(extension, func));
+				std::pair<FileRegistry::iterator, bool> ret =
+					reg.insert(FileRegistry::value_type(extension, loader));
 
 				if (ret.second == false)
 				{

@@ -6,6 +6,7 @@
 #include <PhysicsSystem.h>
 #include "AssetRegistration.h"
 #include "PrefabEntity.h"
+#include "AssetLoader.h"
 
 //REGISTERS SOME OF THE CORE COMPONENTS OF THE ENGINE WITH THE EDITOR.
 
@@ -27,12 +28,16 @@ REGISTER_ASSET(".prefab","Prefab",PrefabEntity)
 
 
 
-
-void TestFunc(AssetManager& manager, std::experimental::filesystem::path a_path)
+//Test function for loading assets
+class TestLoad : public BaseAssetLoader
 {
+public:
+	virtual void LoadFile(AssetManager& manager, std::string filepath) override
+	{
 
-}
-REGISTER_FILETYPE(".fbx", [](AssetManager& manager, std::experimental::filesystem::path a_path) {; })
+	}
+};
+REGISTER_FILETYPE(".fbx", TestLoad)
 
 
 

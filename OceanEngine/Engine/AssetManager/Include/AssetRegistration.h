@@ -47,25 +47,25 @@ namespace Assets							\
 //
 //EXTENSION = String name of the file extension. Eg. ".obj" or ".png" (including quotes)
 //LoadFunction = ...
-#define REGISTER_FILETYPE(EXTENSION, LOADFUNCTION) \
+#define REGISTER_FILETYPE(EXTENSION, LOADER) \
 namespace Assets							\
 {											\
 	namespace detail						\
 	{										\
 		namespace							\
 		{									\
-			template<auto T>				\
+			template<class T>				\
 			class FileRegistration;		\
 											\
 			template<>						\
-			class FileRegistration<EXTENSION>	\
+			class FileRegistration<LOADER>	\
 			{								\
-				static const ::Assets::detail::FileRegistryEntry<EXTENSION>& reg;			\
+				static const ::Assets::detail::FileRegistryEntry<LOADER>& reg;			\
 			};																			\
 																						\
-			const ::Assets::detail::FileRegistryEntry<EXTENSION>&							\
-				FileRegistration<EXTENSION>::reg =											\
-				::Assets::detail::FileRegistryEntry<EXTENSION>::Instance(EXTENSION, LOADFUNCTION);	\
+			const ::Assets::detail::FileRegistryEntry<LOADER>&							\
+				FileRegistration<LOADER>::reg =											\
+				::Assets::detail::FileRegistryEntry<LOADER>::Instance(EXTENSION);	\
 																						\
 		}																				\
 	}																					\

@@ -13,9 +13,10 @@ namespace Assets
 		auto asset = it->second;
 		std::string assetType = std::get<0>(asset);
 		detail::AssetFunction func = std::get<1>(asset);
+		BaseAssetRequestEvent* request = nullptr;
 
-		return func(manager, assetPath.string(), assetType, detail::AssetActions::Retrieve);
-
+		func(manager, request, assetPath.string(), assetType, detail::AssetActions::Retrieve);
+		return request;
 	}
 
 
@@ -32,11 +33,21 @@ namespace Assets
 		std::string assetType = std::get<0>(asset);
 		detail::AssetFunction func = std::get<1>(asset);
 
-		func(manager, assetPath.string(), assetType, detail::AssetActions::Load);
+		func(manager, nullptr, assetPath.string(), assetType, detail::AssetActions::Load);
 	}
 
-	void CheckAsset()
-	{
+	//bool CheckAsset()
+	//{
+	//	detail::AssetRegistry& reg = detail::GetAssetRegistry();
+	//	detail::AssetRegistry::iterator it = reg.find(assetPath.extension().string());
 
-	}
+	//	if (it == reg.end())
+	//		return;
+
+	//	auto asset = it->second;
+	//	std::string assetType = std::get<0>(asset);
+	//	detail::AssetFunction func = std::get<1>(asset);
+
+	//	func(manager, assetPath.string(), assetType, detail::AssetActions::Load);
+	//}
 }

@@ -14,7 +14,9 @@ protected:
 	template<typename T>
 	void LoadAsset(AssetLoadEvent<T> Asset)
 	{
+		//check that the asset type name matches the type
 
+		//Add to the assets vector
 	}
 
 private:

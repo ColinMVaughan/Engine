@@ -18,7 +18,7 @@ namespace Assets
 			Load = 0, Retrieve, Remove, CheckType
 		};
 
-		typedef BaseAssetRequestEvent* (*AssetFunction)(AssetManager*, std::experimental::filesystem::path, std::string, AssetActions);
+		typedef bool (*AssetFunction)(AssetManager*, BaseAssetRequestEvent*, std::experimental::filesystem::path, std::string, AssetActions);
 		typedef std::map < std::string, std::tuple<std::string, AssetFunction>> AssetRegistry;
 
 		inline AssetRegistry& GetAssetRegistry()
@@ -48,17 +48,16 @@ namespace Assets
 
 				request = RE;
 
-				if(manager->HandleAssetRequestEvent(*BE))
-				return BE;
+				if(manager->HandleAssetRequestEvent(request))
+				return true;
 
 				break;
 
 			case CheckType:
-
 				break;
 			}
 
-			return nullptr;
+			return false;
 		}
 
 		template<class T>

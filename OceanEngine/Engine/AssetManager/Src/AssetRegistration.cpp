@@ -2,6 +2,12 @@
 
 namespace Assets
 {
+
+	//-----------------------------------------------------
+	//					REQUEST ASSET
+	//
+	// 
+	//----------------------------------------------------
 	BaseAssetRequestEvent* RequestAsset(AssetManager* manager, std::experimental::filesystem::path assetPath)
 	{
 		detail::AssetRegistry& reg = detail::GetAssetRegistry();
@@ -10,7 +16,7 @@ namespace Assets
 		if (it == reg.end())
 			return nullptr;
 
-		auto asset = it->second;
+		auto assetFunc = it->second;
 		std::string assetType = std::get<0>(asset);
 		detail::AssetFunction func = std::get<1>(asset);
 		BaseAssetRequestEvent* request = nullptr;
@@ -20,20 +26,39 @@ namespace Assets
 	}
 
 
-
-	void LoadNewAsset(AssetManager* manager, std::experimental::filesystem::path assetPath)
+	//--------------------------------------------------------------
+	//					ADD ASSET
+	//
+	//------------------------------------------------------------
+	void AddAsset(AssetManager* manager, BaseAssetRequestEvent* asset)
 	{
 		detail::AssetRegistry& reg = detail::GetAssetRegistry();
-		detail::AssetRegistry::iterator it = reg.find(assetPath.extension().string());
+		detail::AssetRegistry::iterator it = reg.find(asset->GetAssetTypeName());
 
 		if (it == reg.end())
 			return;
 
-		auto asset = it->second;
-		std::string assetType = std::get<0>(asset);
-		detail::AssetFunction func = std::get<1>(asset);
+		detail::AssetFunction assetFunc = it->second;
+		assetFunc(manager, asset, asset->m_AssetName, asset->GetAssetTypeName(), detail::AssetActions::Add);
+	}
 
-		func(manager, nullptr, assetPath.string(), assetType, detail::AssetActions::Load);
+
+	//-------------------------------------------------------
+	//
+	//
+	//-------------------------------------------------------
+	void LoadAssetFile(AssetManager& Manager, std::experimental::filesystem::path assetPath)
+	{
+		detail::FileRegistry& reg = detail::GetFileRegistry();
+		detail::FileRegistry::iterator it = reg.find(assetPath.extension().string());
+
+		if (it == reg.end())
+			return;
+
+		auto assetLoader = it->second;
+		assetLoader->LoadFile(assetPath.string());
+
+		
 	}
 
 	//bool CheckAsset()

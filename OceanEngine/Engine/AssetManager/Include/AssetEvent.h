@@ -17,29 +17,16 @@ public:
 		return m_AssetTypeName;
 	}
 	std::string m_AssetTypeName;
+	std::string m_AssetName;
 };
 
 template<typename T>
 class AssetRequestEvent : public BaseAssetRequestEvent
 {
 public:
-
-	std::string m_AssetName;
 	T* Asset;
 private:
 
-};
-
-
-
-class BaseAssetLoadEvent : public IEvent
-{
-public:
-	std::string GetAssetTypeName()
-	{
-		return m_AssetTypeName;
-	}
-	std::string m_AssetTypeName;
 };
 
 
@@ -47,8 +34,6 @@ template<typename T>
 class AssetLoadEvent : public BaseAssetRequestEvent
 {
 public:
-
-	std::string m_AssetName;
 	T* Asset;
 private:
 

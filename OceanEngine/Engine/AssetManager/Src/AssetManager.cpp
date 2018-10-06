@@ -12,8 +12,6 @@ AssetManager::AssetManager(const std::string &a_assetDirectory)
 AssetManager::AssetManager(const std::string &a_assetDirectory, EventManager & eManager)
 	: m_AssetDirectory(a_assetDirectory), m_SelectedPath(a_assetDirectory)
 {
-	//REGISTER_EVENT_LISTNER(BaseAssetRequestEvent, AssetManager::HandleAssetRequestEvent, eManager)
-	//eManager.AddListner<BaseAssetRequestEvent>(std::bind(&AssetManager::HandleAssetRequestEvent, this, std::placeholders::_1));
 	std:std::function<void(BaseAssetRequestEvent&)> f2 = [this](BaseAssetRequestEvent& eve) {HandleAssetRequestEvent(eve); };
 	eManager.AddListner<BaseAssetRequestEvent>(f2);
 }

@@ -19,10 +19,10 @@ COMPONENT_REGISTER(Collider, "Collider")
 
 //Registeres some of the core assets
 
-REGISTER_ASSET(".obj", "Mesh", Mesh)
-REGISTER_ASSET(".mat","Material", Material)
-REGISTER_ASSET(".png", "Texture", Texture)
-REGISTER_ASSET(".prefab","Prefab",PrefabEntity)
+REGISTER_ASSET("Mesh", Mesh)
+REGISTER_ASSET("Material", Material)
+REGISTER_ASSET("Texture", Texture)
+REGISTER_ASSET("Prefab",PrefabEntity)
 
 
 
@@ -32,7 +32,7 @@ REGISTER_ASSET(".prefab","Prefab",PrefabEntity)
 class TestLoad : public BaseAssetLoader
 {
 public:
-	virtual void LoadFile(AssetManager& manager, std::string filepath) override
+	virtual void LoadFile(std::string filepath) override
 	{
 
 	}

@@ -8,7 +8,8 @@ class BaseAssetLoader
 {
 public:
 	BaseAssetLoader() = default;
-	virtual void LoadFile(AssetManager& manager, std::string) = 0;
+	virtual void LoadFile(std::string filePath) = 0;
+	std::vector<BaseAssetLoadEvent>& GetLoadedAssets() { return Assets; }
 
 protected:
 	template<typename T>

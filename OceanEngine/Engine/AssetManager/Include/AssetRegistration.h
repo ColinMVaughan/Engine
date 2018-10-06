@@ -10,6 +10,7 @@ namespace Assets
 {
 	BaseAssetRequestEvent* RequestAsset(AssetManager* manager, std::experimental::filesystem::path assetPath);
 	void LoadNewAsset(AssetManager* manager, std::experimental::filesystem::path assetPath);
+	void LoadAssetFile(AssetManager& Manager, std::experimental::filesystem::path assetPath);
 
 }
 
@@ -18,7 +19,7 @@ namespace Assets
 //
 // NAME = String name that will be associated with the asset. Eg. "Mesh" (including quotes)
 // TYPE = the Class type. Eg. Mesh (no quotes)
-#define REGISTER_ASSET(EXTENSION, NAME, TYPE) \
+#define REGISTER_ASSET(NAME, TYPE) \
 namespace Assets							\
 {											\
 	namespace detail						\
@@ -36,7 +37,7 @@ namespace Assets							\
 																						\
 			const ::Assets::detail::AssetRegistryEntry<TYPE>&							\
 				AssetRegistration<TYPE>::reg =											\
-				::Assets::detail::AssetRegistryEntry<TYPE>::Instance(EXTENSION, NAME);	\
+				::Assets::detail::AssetRegistryEntry<TYPE>::Instance(NAME);	\
 																						\
 		}																				\
 	}																					\

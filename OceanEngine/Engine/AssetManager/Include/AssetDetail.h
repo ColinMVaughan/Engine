@@ -15,11 +15,11 @@ namespace Assets
 	{
 		enum AssetActions
 		{
-			Load = 0, Retrieve, Remove, CheckType
+			Add = 0, Retrieve, Remove, CheckType
 		};
 
 		typedef bool (*AssetFunction)(AssetManager*, BaseAssetRequestEvent*, std::experimental::filesystem::path, std::string, AssetActions);
-		typedef std::map < std::string, std::tuple<std::string, AssetFunction>> AssetRegistry;
+		typedef std::map < std::string, AssetFunction> AssetRegistry;
 
 		inline AssetRegistry& GetAssetRegistry()
 		{
@@ -29,14 +29,13 @@ namespace Assets
 
 
 		template<class T>
-		bool RequestAsset(AssetManager* manager, BaseAssetRequestEvent* request, std::experimental::filesystem::path asset, std::string typeName, AssetActions action)
+		bool AssetActionFunc(AssetManager* manager, BaseAssetRequestEvent* request, std::experimental::filesystem::path asset, std::string typeName, AssetActions action)
 		{
 			switch (action)
 			{
-			case Load:
+			case Add:
 
-				manager->AddResourceType<T>(typeName);
-				manager->AddResource(typeName, asset);
+				manager->AddAsset<T>()
 				return true;
 				break;
 
@@ -64,21 +63,20 @@ namespace Assets
 		struct AssetRegistryEntry
 		{
 		public:
-			static AssetRegistryEntry<T>& Instance(const std::string& extension, const std::string& name)
+			static AssetRegistryEntry<T>& Instance(const std::string& name)
 			{
-				static AssetRegistryEntry<T> inst(extension, name);
+				static AssetRegistryEntry<T> inst(name);
 				return inst;
 			}
 
 		private:
-			AssetRegistryEntry(const std::string& extension, const std::string& name)
+			AssetRegistryEntry(const std::string& name)
 			{
 				AssetRegistry& reg = GetAssetRegistry();
-				AssetFunction func = RequestAsset<T>;
+				AssetFunction func = AssetActionFunc<T>;
 
 				std::pair<AssetRegistry::iterator, bool> ret =
-					reg.insert(AssetRegistry::value_type(extension, 
-						std::tuple<std::string, AssetFunction>(name, func)));
+					reg.insert(AssetRegistry::value_type(name, func));
 
 				if (ret.second == false)
 				{
@@ -92,8 +90,20 @@ namespace Assets
 
 
 
+
+
+
+
+
+
+
+
+
 		//------------------------------------------------------------------
+		// File Loading Function
 		//
+		// Registers a Asset loader with a file extension. eg. registers ".fbx" with FBXLoader class that will be used to load those
+		// kinds of files.
 		//-------------------------------------------------------------------
 		
 
@@ -136,7 +146,71 @@ namespace Assets
 			FileRegistryEntry& operator=(const FileRegistryEntry<T>&) = delete;
 		};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//========================================================================================================
+		class FileLoaderRegistry
+		{
+		public:
+
+			static FileLoaderRegistry& instance(const std::string& id)
+			{
+				static std::map<std::string, FileLoaderRegistry> instances;
+				auto it = instances.find(id);
+
+				if (it != instances.end())
+					return it->second;
+
+				FileLoaderRegistry instance(id);
+				auto insertIt = instances.emplace(id, std::move(instance));
+				return insertIt.first->second;
+			}
+
+			~FileLoaderRegistry() = default;
+			FileLoaderRegistry(FileLoaderRegistry&) = delete;
+			FileLoaderRegistry(FileLoaderRegistry&&) = delete;
+			FileLoaderRegistry& operator = (const FileLoaderRegistry&) = delete;
+			FileLoaderRegistry& operator = (const FileLoaderRegistry&&) = delete;
+
+
+			void TestFunc()
+			{
+
+			}
+
+		private:
+			FileLoaderRegistry(const std::string& id);
+		};
+
+
+
+
+
+
+
+
+
+
 	}
 }
+
 
 #endif
